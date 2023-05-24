@@ -25,10 +25,8 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            wotdRepository.observeWordOfTheDay().collect {wotd ->
-                _uiState.update {
-                    it.copy(wotd = wotd, isLoading = false)
-                }
+            _uiState.update {
+                it.copy(wotd = wotdRepository.getWordOfTheDay(), isLoading = false)
             }
         }
     }

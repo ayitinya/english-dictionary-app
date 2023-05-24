@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,34 +15,25 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.isContainer
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.Wotd
@@ -80,10 +70,7 @@ fun HomeScreen(
     }) { paddingValues ->
         LazyColumn(contentPadding = paddingValues) {
             item {
-//                AnimatedVisibility(visible = uiState.wotd != null) {
-//                    WordOfTheDay(wordOfTheDay = uiState.wotd!!)
-//                }
-                uiState.wotd?.let { WordOfTheDay(it, modifier = Modifier) }
+                uiState.wotd?.let { WordOfTheDay(it, viewModel, navController, modifier) }
 
                 ListItem(headlineContent = { Text("Random Word") }, leadingContent = {
                     Icon(
@@ -123,7 +110,12 @@ fun HomeScreen(
 
 
 @Composable
-private fun WordOfTheDay(wordOfTheDay: Wotd, modifier: Modifier = Modifier) {
+private fun WordOfTheDay(
+    wordOfTheDay: Wotd,
+    viewModel: HomeScreenViewModel,
+    navController: DestinationsNavigator,
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -143,13 +135,15 @@ private fun WordOfTheDay(wordOfTheDay: Wotd, modifier: Modifier = Modifier) {
             }
             Text(text = wordOfTheDay.word, style = MaterialTheme.typography.headlineLarge)
             Text(text = wordOfTheDay.glosses, style = MaterialTheme.typography.bodyLarge)
-//            for (definition in wordOfTheDay.definitions) {
-//                Text(
-//                    text = definition.text, style = MaterialTheme.typography.bodyLarge
-//                )
-//            }
 
-            TextButton(onClick = { /*TODO*/ }, modifier = Modifier.align(Alignment.End)) {
+            TextButton(onClick = {
+                viewModel.viewModelScope.launch {
+                    viewModel.navigateToDefinitionScreen(
+                        word = wordOfTheDay.word,
+                        navController
+                    )
+                }
+            }, modifier = Modifier.align(Alignment.End)) {
                 Text(text = "Learn More")
             }
 
