@@ -20,15 +20,20 @@ import com.ayitinya.englishdictionary.ui.NavGraphs
 import com.ayitinya.englishdictionary.ui.home.HomeScreenViewModel
 import com.ayitinya.englishdictionary.ui.theme.EnglishDictionaryTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var analytics: FirebaseAnalytics
 
     private val homeScreenViewModel: HomeScreenViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        analytics = Firebase.analytics
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 homeScreenViewModel.uiState.value.isLoading

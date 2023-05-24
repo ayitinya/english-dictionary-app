@@ -22,6 +22,9 @@ ktor_version = "2.3.0"
 serialization_version = "1.5.0"
 compose-destinations = "1.9.42-beta"
 splashscreen-version = "1.0.1"
+firebase-crashlytics-ktx = "18.3.7"
+firebase-analytics-ktx = "21.2.2"
+firebase-perf-ktx = "20.3.2"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -76,6 +79,9 @@ org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", na
 
 io-github-raamcosta-compose-destinations-animations-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "compose-destinations" }
 io-github-raamcosta-compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-crashlytics-ktx" }
+firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
+firebase-perf-ktx = { group = "com.google.firebase", name = "firebase-perf-ktx", version.ref = "firebase-perf-ktx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
