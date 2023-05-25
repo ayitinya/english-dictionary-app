@@ -17,3 +17,4 @@ google-services.json
 *.apk
 app/debug/app-debug.apk
 app/release/app-release.apk
+*.db
