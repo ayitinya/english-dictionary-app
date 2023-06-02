@@ -18,3 +18,5 @@ google-services.json
 app/debug/app-debug.apk
 app/release/app-release.apk
 *.db
+/sentry.properties
+/app/private_key.pepk

@@ -1,5 +1,6 @@
 package com.ayitinya.englishdictionary.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,7 +71,13 @@ fun HomeScreen(
     }) { paddingValues ->
         LazyColumn(contentPadding = paddingValues) {
             item {
-                uiState.wotd?.let { WordOfTheDay(it, viewModel, navController, modifier) }
+                AnimatedVisibility(visible = uiState.wotd != null) {
+                    WordOfTheDay(
+                        wordOfTheDay = uiState.wotd!!,
+                        viewModel = viewModel,
+                        navController = navController
+                    )
+                }
 
                 ListItem(headlineContent = { Text("Random Word") }, leadingContent = {
                     Icon(
