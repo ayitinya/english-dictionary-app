@@ -27,7 +27,7 @@ class WordOfTheDayApiServiceImpl @Inject constructor(private val client: HttpCli
     override suspend fun getWikiWotd(): WotdResponse? {
         return try {
             client.get {
-                url("https://wikipedia-wotd-scrapper.vercel.app/api/main")
+                url("https://wotd.ayitinya.me/api/main")
             }.body()
         } catch (e: Exception) {
             null
