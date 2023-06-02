@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "English Dictionary"
 include(":app")
- 
+include(":baselineprofile")
