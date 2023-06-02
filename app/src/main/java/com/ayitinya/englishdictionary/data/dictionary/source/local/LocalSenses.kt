@@ -12,11 +12,11 @@ import androidx.room.PrimaryKey
         childColumns = arrayOf("word_id"),
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.NO_ACTION
-    )]
+    )],
 )
 data class LocalSenses(
     @ColumnInfo(name = "sense_id") @PrimaryKey(autoGenerate = true) val senseId: Int,
-    @ColumnInfo(name = "word_id") val wordId: Int,
+    @ColumnInfo(name = "word_id", index = true) val wordId: Int,
     @ColumnInfo(name = "glosses") val glosses: String,
     @ColumnInfo(name = "example") val example: String?,
 )
