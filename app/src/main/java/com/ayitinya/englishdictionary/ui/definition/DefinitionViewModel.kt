@@ -3,6 +3,7 @@ package com.ayitinya.englishdictionary.ui.definition
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
@@ -17,6 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DefinitionViewModel @Inject constructor(
+    private val dictionaryRepository: DictionaryRepository,
     private val favouritesRepository: FavouritesRepository,
     private val historyRepository: HistoryRepository,
     savedStateHandle: SavedStateHandle
@@ -24,7 +26,7 @@ class DefinitionViewModel @Inject constructor(
     private val _navArgs: DefinitionScreenNavArgs =
         DefinitionScreenDestination.argsFrom(savedStateHandle)
 
-    private val _uiState = MutableStateFlow(DefinitionUiState())
+    private val _uiState = MutableStateFlow(DefinitionUiState(word = _navArgs.word))
     val uiState: StateFlow<DefinitionUiState> = _uiState
 
 
@@ -32,11 +34,11 @@ class DefinitionViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    word = _navArgs.word,
-                    entries = _navArgs.entries,
+                    entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),
                     isFavourite = isFavourite(_navArgs.word)
                 )
             }
+
             historyRepository.addHistory(_navArgs.word)
 
         }

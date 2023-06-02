@@ -2,7 +2,6 @@ package com.ayitinya.englishdictionary.ui.favourite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -15,7 +14,6 @@ import javax.inject.Inject
 @HiltViewModel
 class FavouriteViewModel @Inject constructor(
     private val favouritesRepository: FavouritesRepository,
-    private val dictionaryRepository: DictionaryRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FavouriteScreenUiState())
     val uiState: MutableStateFlow<FavouriteScreenUiState> = _uiState
@@ -32,11 +30,7 @@ class FavouriteViewModel @Inject constructor(
 
     suspend fun navigateToDefinitionScreen(word: String, navController: DestinationsNavigator) {
         viewModelScope.launch {
-            navController.navigate(
-                DefinitionScreenDestination(
-                    word = word, entries = dictionaryRepository.getDictionaryEntries(word)
-                ), onlyIfResumed = true
-            )
+            navController.navigate(DefinitionScreenDestination(word = word), onlyIfResumed = true)
         }
     }
 }

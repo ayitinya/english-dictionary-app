@@ -2,7 +2,6 @@ package com.ayitinya.englishdictionary.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -14,7 +13,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val historyRepository: HistoryRepository,
-    private val dictionaryRepository: DictionaryRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryScreenUiState())
     val uiState: MutableStateFlow<HistoryScreenUiState> = _uiState
@@ -31,12 +29,7 @@ class HistoryViewModel @Inject constructor(
 
     suspend fun navigateToDefinitionScreen(word: String, navController: DestinationsNavigator) {
         viewModelScope.launch {
-            navController.navigate(
-                DefinitionScreenDestination(
-                    word = word, entries = dictionaryRepository.getDictionaryEntries(word)
-                ), onlyIfResumed = true
-            )
-
+            navController.navigate(DefinitionScreenDestination(word = word), onlyIfResumed = true)
         }
     }
 

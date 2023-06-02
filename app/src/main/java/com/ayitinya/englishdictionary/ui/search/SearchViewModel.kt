@@ -51,19 +51,14 @@ class SearchViewModel @Inject constructor(
     private suspend fun searchDictionary(query: String) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
-            val searchResults = dictionaryRepository.searchDictionary(query)
+            val searchResults = dictionaryRepository.searchDictionary(query.trim())
             _uiState.value = _uiState.value.copy(searchResults = searchResults, isLoading = false)
         }
     }
 
     suspend fun navigateToDefinitionScreen(word: String, navController: DestinationsNavigator) {
         viewModelScope.launch {
-            navController.navigate(
-                DefinitionScreenDestination(
-                    word = word, entries = dictionaryRepository.getDictionaryEntries(word)
-                ), onlyIfResumed = true
-            )
-
+            navController.navigate(DefinitionScreenDestination(word = word), onlyIfResumed = true)
         }
     }
 

@@ -42,11 +42,8 @@ class HomeScreenViewModel @Inject constructor(
     suspend fun navigateToDefinitionScreen(word: String, navController: DestinationsNavigator) {
         viewModelScope.launch {
             navController.navigate(
-                DefinitionScreenDestination(
-                    word = word, entries = dictionaryRepository.getDictionaryEntries(word)
-                ), onlyIfResumed = true
+                DefinitionScreenDestination(word = word), onlyIfResumed = true
             )
-
         }
     }
 }

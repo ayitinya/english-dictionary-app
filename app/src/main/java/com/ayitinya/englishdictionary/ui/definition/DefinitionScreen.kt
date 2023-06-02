@@ -1,5 +1,6 @@
 package com.ayitinya.englishdictionary.ui.definition
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.ui.destinations.SearchScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -71,21 +74,25 @@ fun DefinitionScreen(
         }
 
     ) { paddingValues ->
-        LazyColumn(contentPadding = paddingValues) {
-            uiState.entries?.let {
-                items(it.dictionaryEntries) { dictionaryEntry ->
-                    Definition(
-                        pos = dictionaryEntry.pos,
-                        glosses = dictionaryEntry.glosses,
-                        example = dictionaryEntry.example,
-                        sounds = dictionaryEntry.sounds
-                    )
+        AnimatedVisibility(visible = uiState.entries != null) {
+            LazyColumn(contentPadding = paddingValues) {
+                uiState.entries?.let {
+                    items(it.dictionaryEntries) { dictionaryEntry ->
+                        AnimatedVisibility(visible = true){}
+                        Definition(
+                            pos = dictionaryEntry.pos,
+                            glosses = dictionaryEntry.glosses,
+                            example = dictionaryEntry.example,
+                            sounds = dictionaryEntry.sounds
+                        )
+                    }
+                }
+                item {
+                    Footer()
                 }
             }
-            item {
-                Footer()
-            }
         }
+
     }
 }
 
@@ -102,7 +109,7 @@ private fun TopAppBar(
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
             }
         },
         actions = {
