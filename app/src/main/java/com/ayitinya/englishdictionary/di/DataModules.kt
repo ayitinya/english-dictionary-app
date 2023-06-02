@@ -71,7 +71,7 @@ object DatabaseModule {
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
         return Room.databaseBuilder(
             context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
-        ).createFromAsset("database/data.db").build()
+        ).createFromAsset("database/data.db").fallbackToDestructiveMigration().build()
     }
 
     @Provides
