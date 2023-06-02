@@ -7,11 +7,13 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.sentry.android.gradle.plugin)
     kotlin("kapt")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
@@ -22,8 +24,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 29
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.0.2-alpha-release"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -48,6 +50,9 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
 
@@ -71,6 +76,11 @@ android {
     }
 }
 
+sentry {
+    ignoredVariants.set(setOf("debug", "nonMinifiedRelease"))
+}
+
+
 dependencies {
 
     implementation(libs.core.ktx)
@@ -84,11 +94,14 @@ dependencies {
     implementation(libs.firebase.crashlytics.ktx)
     implementation(libs.firebase.analytics.ktx)
     implementation(libs.firebase.perf.ktx)
+    implementation(libs.profileinstaller)
+    implementation(libs.firebase.messaging.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
+    "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
 
