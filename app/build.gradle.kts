@@ -1,5 +1,3 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
@@ -13,6 +11,7 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
     alias(libs.plugins.androidx.baselineprofile)
+    kotlin("kapt")
 }
 
 android {
@@ -21,10 +20,11 @@ android {
 
     defaultConfig {
         applicationId = "com.ayitinya.englishdictionary"
-        minSdk = 29
+        minSdk = 21
         targetSdk = 33
-        versionCode = 4
-        versionName = "1.0.2-alpha-release"
+        versionCode = 10
+        versionName = "1.0.6"
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -57,7 +57,14 @@ android {
         }
     }
 
+    assetPacks += listOf(":dictionaryassets")
+
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -75,14 +82,20 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    ndkVersion = "25.2.9519653"
+    buildToolsVersion = "34.0.0 rc4"
 }
 
-sentry {
-    ignoredVariants.set(setOf("debug", "nonMinifiedRelease"))
-}
+//sentry {
+//    ignoredVariants.set(setOf("debug", "nonMinifiedRelease"))
+//}
 
 
 dependencies {
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(libs.asset.delivery.ktx)
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -112,6 +125,8 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.androidx.room.testing)
+
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.androidx.core.splashscreen)
 
