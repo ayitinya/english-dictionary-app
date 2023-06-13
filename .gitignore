@@ -22,3 +22,5 @@ app/release/app-release.apk
 /app/private_key.pepk
 /app/src/main/assets/database/db.sqlite
 /dictionaryassets/src/main/assets/database/data.sqlite
+/app/release
+/app/debug
