@@ -1,5 +1,8 @@
 [versions]
-agp = "8.2.0-alpha06"
+agp = "8.2.0-alpha07"
+asset-delivery-ktx = "2.1.0"
+datastore-preferences = "1.0.0"
+desugar_jdk_libs = "2.0.3"
 firebase-crashlytics-gradle = "2.9.5"
 google-services = "4.3.15"
 gradle = "8.2.0-alpha07"
@@ -11,31 +14,31 @@ junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.6.1"
-activity-compose = "1.7.1"
-compose-bom = "2023.05.01"
+activity-compose = "1.7.2"
+compose-bom = "2023.06.00"
 perf-plugin = "1.4.2"
 room_version = "2.5.1"
 ksp = "1.8.10-1.0.9"
-hilt-android = "2.44"
+hilt-android = "2.46.1"
 hilt-navigation-compose = "1.0.0"
 lifecycle_version = "2.6.1"
 arch_version = "2.2.0"
 accompanist_version = "0.30.1"
 constraintlayout_version = "1.0.1"
-nav_version = "2.5.3"
+nav_version = "2.6.0"
 paging_version = "3.1.1"
-ktor_version = "2.3.0"
-serialization_version = "1.5.0"
+ktor_version = "2.3.1"
+serialization_version = "1.5.1"
 compose-destinations = "1.9.42-beta"
 splashscreen-version = "1.0.1"
 firebase-crashlytics-ktx = "18.3.7"
-firebase-analytics-ktx = "21.2.2"
+firebase-analytics-ktx = "21.3.0"
 firebase-perf-ktx = "20.3.2"
 sentry = "3.7.0"
 uiautomator = "2.2.0"
-benchmark-macro-junit4 = "1.2.0-alpha13"
+benchmark-macro-junit4 = "1.2.0-alpha15"
 androidx-baselineprofile = "1.2.0-alpha13"
-profileinstaller = "1.3.0"
+profileinstaller = "1.3.1"
 firebase-messaging-ktx = "23.1.2"
 appcompat = "1.6.1"
 material = "1.9.0"
@@ -47,6 +50,7 @@ androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref =
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-work" }
 asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx", version.ref = "asset-delivery-ktx" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
 google-services = { module = "com.google.gms:google-services", version.ref = "google-services" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -89,7 +93,7 @@ androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version" }
 
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging_version" }
-androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version = "1.0.0-alpha19" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version = "1.0.0-alpha20" }
 
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
