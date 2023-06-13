@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">diccionario de inglés</string>
+    <string name="notification_text">La palabra del día de hoy es</string>
+    <string name="search_hint">Buscar</string>
+    <string name="search_hint_details">Ingrese la palabra o frase a buscar</string>
+    <string name="back">Atrás</string>
+    <string name="add_to_favorites">Agregar a los favoritos</string>
+    <string name="history">Historia</string>
+    <string name="favorites">Favoritos</string>
+    <string name="etymology">Etimología</string>
+    <string name="ipa">API</string>
+    <string name="example">Ejemplo</string>
+    <string name="random_word">Palabra aleatoria</string>
+    <string name="word_of_the_day">Palabra del DIA</string>
+    <string name="learn_more">Aprende más</string>
+    <string name="no_results">No se encontraron resultados</string>
+    <string name="settings">Configuraciones</string>
+    <string name="notify_word_of_the_day">Notificar la palabra del día</string>
+    <string name="permission_rationale">Esta función requiere permiso de notificación</string>
+    <string name="attribution">Entradas de diccionario proporcionadas por Wiktionary, bajo la licencia Creative Commons Attribution-ShareAlike (CC-BY-SA)</string>
+</resources>

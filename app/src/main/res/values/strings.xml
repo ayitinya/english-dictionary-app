@@ -1,5 +1,24 @@
 <resources>
     <string name="app_name">English Dictionary</string>
+    <string name="notification_channel_id" translatable="false">word_of_the_day</string>
+    <string name="notification_channel_name" translatable="false">Word of the day</string>
+    <string name="notification_channel_description" translatable="false">Word of the day</string>
+    <string name="notification_text">Today\'s word of the day is</string>
     <string name="search_hint">Search</string>
+    <string name="search_hint_details">Enter word or phrase to search</string>
     <string name="back">Back</string>
+    <string name="add_to_favorites">Add To Favorites</string>
+    <string name="history">History</string>
+    <string name="favorites">Favorites</string>
+    <string name="etymology">Etymology</string>
+    <string name="ipa">IPA</string>
+    <string name="example">Example</string>
+    <string name="random_word">Random Word</string>
+    <string name="word_of_the_day">Word Of The Day</string>
+    <string name="learn_more">Learn more</string>
+    <string name="no_results">No results found</string>
+    <string name="settings">Settings</string>
+    <string name="notify_word_of_the_day">Notify Word Of The Day</string>
+    <string name="permission_rationale">This feature requires notification permission</string>
+    <string name="attribution">Dictionary entries provided by Wiktionary, under the Creative Commons Attribution-ShareAlike License (CC-BY-SA)</string>
 </resources>

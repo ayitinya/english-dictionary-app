@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">dictionnaire anglais</string>
+    <string name="notification_text">Le mot du jour d\'aujourd\'hui est</string>
+    <string name="search_hint">Recherche</string>
+    <string name="search_hint_details">Entrez le mot ou la phrase à rechercher</string>
+    <string name="back">Dos</string>
+    <string name="add_to_favorites">Ajouter aux Favoris</string>
+    <string name="history">Histoire</string>
+    <string name="favorites">Favoris</string>
+    <string name="etymology">Étymologie</string>
+    <string name="ipa">API</string>
+    <string name="example">Exemple</string>
+    <string name="random_word">Mot aléatoire</string>
+    <string name="word_of_the_day">Mot du jour</string>
+    <string name="learn_more">Apprendre encore plus</string>
+    <string name="no_results">Aucun résultat trouvé</string>
+    <string name="settings">Paramètres</string>
+    <string name="notify_word_of_the_day">Notifier le mot du jour</string>
+    <string name="permission_rationale">Cette fonction nécessite une autorisation de notification</string>
+    <string name="attribution">Entrées de dictionnaire fournies par Wiktionary, sous la licence Creative Commons Attribution-ShareAlike (CC-BY-SA)</string>
+</resources>
