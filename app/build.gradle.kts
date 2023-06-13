@@ -31,9 +31,6 @@ android {
             useSupportLibrary = true
         }
 
-        val wordnikApi: String = gradleLocalProperties(rootDir).getProperty("wordnik_api")
-
-        buildConfigField("String", "WORDNIK_API", "\"$wordnikApi\"")
     }
 
     buildFeatures {
