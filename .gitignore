@@ -20,3 +20,4 @@ app/release/app-release.apk
 *.db
 /sentry.properties
 /app/private_key.pepk
+/app/src/main/assets/database/db.sqlite
