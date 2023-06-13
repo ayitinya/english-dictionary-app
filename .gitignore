@@ -21,3 +21,4 @@ app/release/app-release.apk
 /sentry.properties
 /app/private_key.pepk
 /app/src/main/assets/database/db.sqlite
+/dictionaryassets/src/main/assets/database/data.sqlite
