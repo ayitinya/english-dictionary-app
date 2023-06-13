@@ -9,4 +9,5 @@ data class LocalDictionaryEntry(
     val sounds: String?,
     val glosses: String,
     val example: String?,
+    val etymology: String?,
 )

@@ -10,4 +10,5 @@ data class LocalDictionary(
     @ColumnInfo(name = "word") val word: String,
     @ColumnInfo(name = "pos") val pos: String,
     @ColumnInfo(name = "sounds") val sounds: String?,
+    @ColumnInfo(name = "etymology") val etymology: String?,
 )

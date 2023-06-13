@@ -82,8 +82,37 @@ fun DefinitionScreen(
         AnimatedVisibility(visible = uiState.entries != null) {
             LazyColumn(contentPadding = paddingValues) {
                 uiState.entries?.let {
+                    if (it.dictionaryEntries.first().etymology != null) {
+                        item {
+                            Card(
+                                modifier = modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.padding(16.dp)
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.etymology),
+                                            style = MaterialTheme.typography.titleLarge
+                                        )
+                                    }
+                                    Text(
+                                        text = it.dictionaryEntries.first().etymology!!,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            }
+                        }
+
+                    }
                     items(it.dictionaryEntries) { dictionaryEntry ->
-                        AnimatedVisibility(visible = true){}
                         Definition(
                             pos = dictionaryEntry.pos,
                             glosses = dictionaryEntry.glosses,

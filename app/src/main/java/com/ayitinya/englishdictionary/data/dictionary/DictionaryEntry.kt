@@ -19,6 +19,7 @@ data class DictionaryEntry(
     val sounds: String?,
     val glosses: String,
     val example: String?,
+    val etymology: String?
 ) : Parcelable
 
 @Parcelize
@@ -36,6 +37,7 @@ fun LocalDictionaryEntry.toExternal(): DictionaryEntry {
         sounds = sounds,
         glosses = glosses,
         example = example,
+        etymology = etymology
     )
 }
 

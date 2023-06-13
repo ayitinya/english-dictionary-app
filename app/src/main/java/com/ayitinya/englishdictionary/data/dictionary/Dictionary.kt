@@ -7,6 +7,7 @@ data class Dictionary(
     val word: String,
     val pos: String,
     val sounds: String?,
+    val etymology: String?
 )
 
 fun LocalDictionary.toExternal(): Dictionary {
@@ -15,6 +16,7 @@ fun LocalDictionary.toExternal(): Dictionary {
         word = word,
         pos = pos,
         sounds = sounds,
+        etymology = etymology
     )
 }
 
