@@ -15,6 +15,8 @@ import com.ayitinya.englishdictionary.data.favourite_words.source.local.Favourit
 import com.ayitinya.englishdictionary.data.history.DefaultHistoryRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.data.history.source.local.HistoryDatabase
+import com.ayitinya.englishdictionary.data.settings.SettingsRepository
+import com.ayitinya.englishdictionary.data.settings.SettingsRepositoryImpl
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.DefaultWotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.local.WotdDatabase
@@ -43,6 +45,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+
+    @Singleton
+    @Binds
+    abstract fun bindSettingsRepository(repository: SettingsRepositoryImpl): SettingsRepository
 
     @Singleton
     @Binds
@@ -139,7 +145,6 @@ object ApiModule {
 
 }
 
-@Suppress("unused", "unused", "unused", "unused", "unused")
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ApiServicesModule {
