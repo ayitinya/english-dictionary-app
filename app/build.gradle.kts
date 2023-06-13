@@ -41,6 +41,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            resValue("bool", "FIREBASE_DEACTIVATED", "true")
+        }
+
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -52,6 +56,7 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
+            resValue("bool", "FIREBASE_DEACTIVATED", "false")
         }
     }
 

@@ -37,6 +37,12 @@
         <!--        <meta-data android:name="io.sentry.traces.profiling.sample-rate" android:value="0.9" />-->
 
         <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="@bool/FIREBASE_DEACTIVATED" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="@bool/FIREBASE_DEACTIVATED" />
+        <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_name" />
         <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
