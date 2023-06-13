@@ -39,12 +39,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.ui.destinations.SearchScreenDestination
+import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
 
-@Destination(navArgsDelegate = DefinitionScreenNavArgs::class)
+@Destination(
+    navArgsDelegate = DefinitionScreenNavArgs::class,
+    deepLinks = [DeepLink(uriPattern = "app://com.ayitinya.englishdictionary/$FULL_ROUTE_PLACEHOLDER")]
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefinitionScreen(
