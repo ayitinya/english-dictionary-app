@@ -2,6 +2,7 @@
 <resources>
 
     <style name="Theme.EnglishDictionary" parent="android:Theme.Material.Light.NoActionBar">
-        <!--        <item name="android:navigationBarColor">@android:color/transparent</item>-->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 </resources>
