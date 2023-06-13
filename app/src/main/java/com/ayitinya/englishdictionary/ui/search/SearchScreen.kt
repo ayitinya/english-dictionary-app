@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,9 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import com.ayitinya.englishdictionary.R
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
@@ -60,6 +64,15 @@ fun SearchScreen(
                     .windowInsetsPadding(WindowInsets.statusBars)
             ) {
                 TextField(
+                    keyboardActions = KeyboardActions(onDone = {
+                        if (uiState.searchQuery.isNotBlank() && uiState.searchResults.isNotEmpty()) {
+                            viewModel.viewModelScope.launch {
+                                viewModel.navigateToDefinitionScreen(
+                                    uiState.searchResults.first().word, navController
+                                )
+                            }
+                        }
+                    }),
                     value = uiState.searchQuery,
                     onValueChange = {
                         viewModel.viewModelScope.launch {
@@ -71,12 +84,15 @@ fun SearchScreen(
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .fillMaxWidth(),
-                    placeholder = { Text("Enter the word to search for") },
+                    placeholder = { Text(stringResource(id = R.string.search_hint_details)) },
                     singleLine = true,
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.Search, contentDescription = null
-                        )
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
                     },
                 )
             }
@@ -85,8 +101,19 @@ fun SearchScreen(
             contentPadding = paddingValues, modifier = Modifier.background(Color.Transparent)
         ) {
             if (uiState.searchQuery.isNotEmpty()) {
+                if (uiState.searchResults.isEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.no_results),
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+                }
                 items(uiState.searchResults) { result ->
-                    ListItem(headlineContent = { Text(result.word) },
+                    ListItem(
+                        headlineContent = { Text(result.word) },
                         modifier = Modifier.clickable {
                             viewModel.viewModelScope.launch {
                                 viewModel.navigateToDefinitionScreen(
@@ -104,7 +131,7 @@ fun SearchScreen(
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "History",
+                        text = stringResource(id = R.string.history),
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -112,7 +139,8 @@ fun SearchScreen(
                 items(uiState.history) { history ->
                     ListItem(leadingContent = {
                         Icon(
-                            imageVector = Icons.Filled.History, contentDescription = null
+                            imageVector = Icons.Filled.History,
+                            contentDescription = stringResource(R.string.history)
                         )
                     }, headlineContent = { Text(history.word) }, modifier = Modifier.clickable {
                         viewModel.viewModelScope.launch {
