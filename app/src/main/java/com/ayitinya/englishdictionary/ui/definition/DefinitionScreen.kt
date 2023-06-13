@@ -114,14 +114,14 @@ private fun TopAppBar(
         },
         actions = {
 
-            PlainTooltipBox(tooltip = { Text("Add to favorites") }) {
+            PlainTooltipBox(tooltip = { Text(stringResource(id = R.string.add_to_favorites)) }) {
                 IconButton(
                     onClick = { onIsFavouriteChange(!isFavourite) },
                     modifier = Modifier.tooltipAnchor()
                 ) {
                     Icon(
                         imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = "Localized Description"
+                        contentDescription = stringResource(id = R.string.add_to_favorites)
                     )
                 }
             }
@@ -133,7 +133,7 @@ private fun TopAppBar(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Search,
-                        contentDescription = "Localized Description"
+                        contentDescription = stringResource(id = R.string.back)
                     )
                 }
             }
@@ -159,13 +159,19 @@ private fun Definition(
             ) {
                 Text(text = pos, style = MaterialTheme.typography.titleLarge)
                 if (sounds != null) {
-                    Text(text = "IPA: $sounds", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "${stringResource(id = R.string.ipa)}: $sounds",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
             Text(text = glosses, style = MaterialTheme.typography.bodyLarge)
             if (example != null) {
                 Column {
-                    Text(text = "Example", style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        text = stringResource(id = R.string.example),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                     Text(text = example, style = MaterialTheme.typography.bodyLarge)
                 }
             }
@@ -182,7 +188,7 @@ private fun Footer() {
             .padding(16.dp)
     ) {
         Text(
-            text = "Dictionary entries provided by Wiktionary, under the Creative Commons Attribution-ShareAlike License (CC-BY-SA)",
+            text = stringResource(id = R.string.attribution),
             modifier = Modifier.align(Alignment.Center),
             style = MaterialTheme.typography.bodySmall
         )

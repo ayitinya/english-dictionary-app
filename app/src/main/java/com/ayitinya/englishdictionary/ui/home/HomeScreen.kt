@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,14 +34,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.Wotd
 import com.ayitinya.englishdictionary.ui.destinations.FavouriteScreenDestination
 import com.ayitinya.englishdictionary.ui.destinations.HistoryScreenDestination
 import com.ayitinya.englishdictionary.ui.destinations.SearchScreenDestination
+import com.ayitinya.englishdictionary.ui.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -79,37 +83,51 @@ fun HomeScreen(
                     )
                 }
 
-                ListItem(headlineContent = { Text("Random Word") }, leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = null,
-                    )
-                }, modifier = Modifier.clickable {
-                    viewModel.viewModelScope.launch {
-                        viewModel.getRandomWord()
-                        viewModel.navigateToDefinitionScreen(
-                            uiState.randomWord!!.word, navController
+                ListItem(
+                    headlineContent = { Text(text = stringResource(id = R.string.random_word)) },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = stringResource(id = R.string.random_word),
                         )
-                    }
-                })
-                ListItem(headlineContent = { Text("Favourite Words") }, leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                    )
-                }, modifier = Modifier.clickable {
-                    navController.navigate(
-                        FavouriteScreenDestination, onlyIfResumed = true
-                    )
-                })
-                ListItem(headlineContent = { Text("History") },
+                    },
+                    modifier = Modifier.clickable {
+                        viewModel.viewModelScope.launch {
+                            viewModel.getRandomWord()
+                            viewModel.navigateToDefinitionScreen(
+                                uiState.randomWord!!.word, navController
+                            )
+                        }
+                    })
+                ListItem(
+                    headlineContent = { Text(text = stringResource(id = R.string.favorites)) },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = stringResource(id = R.string.favorites),
+                        )
+                    },
+                    modifier = Modifier.clickable {
+                        navController.navigate(
+                            FavouriteScreenDestination, onlyIfResumed = true
+                        )
+                    })
+                ListItem(headlineContent = { Text(text = stringResource(id = R.string.history)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Default.History,
-                            contentDescription = null,
+                            contentDescription = stringResource(id = R.string.history),
                         )
                     },
                     modifier = Modifier.clickable { navController.navigate(HistoryScreenDestination) })
+                ListItem(headlineContent = { Text(text = stringResource(id = R.string.settings)) },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(id = R.string.settings),
+                        )
+                    },
+                    modifier = Modifier.clickable { navController.navigate(SettingsScreenDestination) })
             }
         }
     }
@@ -137,7 +155,7 @@ private fun WordOfTheDay(
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("WORD OF THE DAY")
+                Text(text = stringResource(id = R.string.word_of_the_day))
                 Text("${wordOfTheDay.date.dayOfMonth} ${wordOfTheDay.date.month} ${wordOfTheDay.date.year}")
             }
             Text(text = wordOfTheDay.word, style = MaterialTheme.typography.headlineLarge)
@@ -151,7 +169,7 @@ private fun WordOfTheDay(
                     )
                 }
             }, modifier = Modifier.align(Alignment.End)) {
-                Text(text = "Learn More")
+                Text(text = stringResource(id = R.string.learn_more))
             }
 
         }
@@ -184,10 +202,10 @@ private fun SearchBarButton(navController: DestinationsNavigator = EmptyDestinat
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     ) {
-        Icon(Icons.Default.Search, contentDescription = null)
+        Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_hint))
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = "Enter the word to search for",
+            text = stringResource(id = R.string.search_hint_details),
             modifier = Modifier
                 .padding(vertical = 8.dp)
                 .fillMaxWidth()
