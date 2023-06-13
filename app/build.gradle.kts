@@ -100,6 +100,7 @@ dependencies {
     implementation(libs.firebase.perf.ktx)
     implementation(libs.profileinstaller)
     implementation(libs.firebase.messaging.ktx)
+    implementation(libs.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -148,6 +149,10 @@ dependencies {
     implementation(libs.io.github.raamcosta.compose.destinations.animations.core)
     ksp(libs.io.github.raamcosta.compose.destinations.ksp)
 
+    implementation(libs.accompanist.permissions)
+
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
 }
 
 ksp {
