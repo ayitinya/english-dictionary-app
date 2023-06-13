@@ -75,9 +75,14 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
+//        val packageContext: Context = context.createPackageContext(
+//            "com.ayitinya.englishdictionary", 0
+//        )
+//        val assetManager: AssetManager = packageContext.assets
+//        val stream: InputStream = assetManager.open("database/db.sqlite")
         return Room.databaseBuilder(
             context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
-        ).createFromAsset("database/data.db").fallbackToDestructiveMigration().build()
+        ).createFromAsset("database/data.sqlite").fallbackToDestructiveMigration().build()
     }
 
     @Provides
