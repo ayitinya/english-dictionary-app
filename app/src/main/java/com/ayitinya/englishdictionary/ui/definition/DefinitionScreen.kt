@@ -82,7 +82,7 @@ fun DefinitionScreen(
         AnimatedVisibility(visible = uiState.entries != null) {
             LazyColumn(contentPadding = paddingValues) {
                 uiState.entries?.let {
-                    if (it.dictionaryEntries.first().etymology != null) {
+                    if (it.dictionaryEntries.isNotEmpty() && it.dictionaryEntries.first().etymology != null) {
                         item {
                             Card(
                                 modifier = modifier
