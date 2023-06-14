@@ -1,5 +1,8 @@
 package com.ayitinya.englishdictionary.ui.definition
 
+import android.content.Context
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,11 +31,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +54,7 @@ import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Destination(
     navArgsDelegate = DefinitionScreenNavArgs::class,
@@ -58,6 +68,7 @@ fun DefinitionScreen(
     viewModel: DefinitionViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -73,7 +84,8 @@ fun DefinitionScreen(
                     onIsFavouriteChange = {
                         viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(it) }
                     },
-                    navController = navController
+                    navController = navController,
+                    context = context
                 )
             }
         }
@@ -130,6 +142,10 @@ fun DefinitionScreen(
     }
 }
 
+enum class TtsInitState {
+    SUCCESS, FAILED, INITIALISING, READY
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopAppBar(
@@ -137,41 +153,90 @@ private fun TopAppBar(
     word: String,
     isFavourite: Boolean,
     onIsFavouriteChange: (Boolean) -> Unit,
-    navController: DestinationsNavigator
+    navController: DestinationsNavigator,
+    context: Context,
 ) {
-    LargeTopAppBar(title = { Text(text = word) },
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-            }
-        },
-        actions = {
 
-            PlainTooltipBox(tooltip = { Text(stringResource(id = R.string.add_to_favorites)) }) {
-                IconButton(
-                    onClick = { onIsFavouriteChange(!isFavourite) },
-                    modifier = Modifier.tooltipAnchor()
-                ) {
-                    Icon(
-                        imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = stringResource(id = R.string.add_to_favorites)
-                    )
+    var initTtsComplete by remember {
+        mutableStateOf(TtsInitState.INITIALISING)
+    }
+    val ttsHandle = remember {
+        TextToSpeech(context) {
+            initTtsComplete = if (it == TextToSpeech.SUCCESS) {
+                TtsInitState.SUCCESS
+            } else {
+                TtsInitState.FAILED
+            }
+        }
+    }
+
+
+    LargeTopAppBar(title = {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = word)
+
+            IconButton(
+                onClick = {
+                    ttsHandle.speak(word, TextToSpeech.QUEUE_FLUSH, null, " ")
+                }, enabled = initTtsComplete == TtsInitState.READY
+            ) {
+                Icon(
+                    Icons.Default.VolumeUp,
+                    contentDescription = stringResource(id = R.string.play_button)
+                )
+            }
+        }
+    }, scrollBehavior = scrollBehavior, navigationIcon = {
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+        }
+    }, actions = {
+
+        PlainTooltipBox(tooltip = { Text(stringResource(id = R.string.add_to_favorites)) }) {
+            IconButton(
+                onClick = { onIsFavouriteChange(!isFavourite) }, modifier = Modifier.tooltipAnchor()
+            ) {
+                Icon(
+                    imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = stringResource(id = R.string.add_to_favorites)
+                )
+            }
+        }
+
+        PlainTooltipBox(tooltip = { Text("Search") }) {
+            IconButton(
+                onClick = { navController.navigate(SearchScreenDestination) },
+                modifier = Modifier.tooltipAnchor()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        }
+    })
+
+    LaunchedEffect(key1 = initTtsComplete) {
+        when (initTtsComplete) {
+            TtsInitState.SUCCESS -> {
+                val result = ttsHandle.setLanguage(Locale.ENGLISH)
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.d("TTS", "LANGUAGE NOT SUPPORTED")
+                } else {
+                    initTtsComplete = TtsInitState.READY
                 }
             }
 
-            PlainTooltipBox(tooltip = { Text("Search") }) {
-                IconButton(
-                    onClick = { navController.navigate(SearchScreenDestination) },
-                    modifier = Modifier.tooltipAnchor()
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            }
-        })
+            TtsInitState.FAILED -> {}
+            TtsInitState.INITIALISING -> {}
+            else -> {}
+        }
+    }
+
 }
 
 @Composable
@@ -249,6 +314,7 @@ private fun TopAppBarPreview() {
         word = "Word",
         isFavourite = false,
         onIsFavouriteChange = {},
-        navController = EmptyDestinationsNavigator
+        navController = EmptyDestinationsNavigator,
+        context = LocalContext.current
     )
 }
