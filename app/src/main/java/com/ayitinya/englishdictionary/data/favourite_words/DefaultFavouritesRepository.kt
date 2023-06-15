@@ -17,6 +17,7 @@ class DefaultFavouritesRepository @Inject constructor(private val localDataSourc
 
     override suspend fun insertFavourite(word: String) {
         withContext(Dispatchers.IO) {
+            if (localDataSource.isFavourite(word)) return@withContext
             localDataSource.insertFavouriteWord(Favourite(word = word).toLocal())
         }
     }
