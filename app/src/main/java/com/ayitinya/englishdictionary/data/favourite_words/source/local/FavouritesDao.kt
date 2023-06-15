@@ -22,4 +22,8 @@ interface FavouritesDao {
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT EXISTS(SELECT * FROM Favourites WHERE word = :word)")
     suspend fun isFavourite(word: String): Boolean
+
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * FROM Favourites WHERE word = :word")
+    suspend fun getFavouriteWord(word: String): LocalFavourite
 }

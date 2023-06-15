@@ -24,7 +24,9 @@ class DefaultFavouritesRepository @Inject constructor(private val localDataSourc
 
     override suspend fun removeFavourite(word: String) {
         withContext(Dispatchers.IO) {
-            localDataSource.removeFavouriteWord(Favourite(word = word).toLocal())
+            if (!localDataSource.isFavourite(word)) return@withContext
+            val favourite = localDataSource.getFavouriteWord(word)
+            localDataSource.removeFavouriteWord(favourite)
         }
     }
 
