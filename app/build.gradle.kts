@@ -22,8 +22,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 33
-        versionCode = 10
-        versionName = "1.0.6"
+        versionCode = 11
+        versionName = "1.0.7"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
