@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -169,24 +171,57 @@ private fun TopAppBar(
 
 
     LargeTopAppBar(title = {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = word)
+        BoxWithConstraints {
+            if (maxWidth > 300.dp) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = word, modifier = Modifier.weight(4f))
+                    IconButton(
+                        onClick = {
+                            ttsHandle.speak(word, TextToSpeech.QUEUE_FLUSH, null, " ")
+                        },
+                        enabled = initTtsComplete == TtsInitState.READY,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            Icons.Default.VolumeUp,
+                            contentDescription = stringResource(id = R.string.play_button)
+                        )
+                    }
+                }
 
-            IconButton(
-                onClick = {
-                    ttsHandle.speak(word, TextToSpeech.QUEUE_FLUSH, null, " ")
-                }, enabled = initTtsComplete == TtsInitState.READY
-            ) {
-                Icon(
-                    Icons.Default.VolumeUp,
-                    contentDescription = stringResource(id = R.string.play_button)
-                )
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = word,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(4f)
+                    )
+                    IconButton(
+                        onClick = {
+                            ttsHandle.speak(word, TextToSpeech.QUEUE_FLUSH, null, " ")
+                        },
+                        enabled = initTtsComplete == TtsInitState.READY,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            Icons.Default.VolumeUp,
+                            contentDescription = stringResource(id = R.string.play_button)
+                        )
+                    }
+                }
             }
         }
+
+
     }, scrollBehavior = scrollBehavior, navigationIcon = {
         IconButton(onClick = { navController.popBackStack() }) {
             Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
