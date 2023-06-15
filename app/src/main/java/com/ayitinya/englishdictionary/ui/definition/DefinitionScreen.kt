@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -101,24 +102,20 @@ fun DefinitionScreen(
                                     .fillMaxWidth()
                                     .padding(16.dp)
                             ) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
+                                SelectionContainer {
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                                        modifier = Modifier.padding(16.dp)
                                     ) {
                                         Text(
                                             text = stringResource(R.string.etymology),
                                             style = MaterialTheme.typography.titleLarge
                                         )
+                                        Text(
+                                            text = it.dictionaryEntries.first().etymology!!,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
                                     }
-                                    Text(
-                                        text = it.dictionaryEntries.first().etymology!!,
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
                                 }
                             }
                         }
@@ -248,30 +245,33 @@ private fun Definition(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+        SelectionContainer {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(16.dp)
             ) {
-                Text(text = pos, style = MaterialTheme.typography.titleLarge)
-                if (sounds != null) {
-                    Text(
-                        text = "${stringResource(id = R.string.ipa)}: $sounds",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = pos, style = MaterialTheme.typography.titleLarge)
+                    if (sounds != null) {
+                        Text(
+                            text = "${stringResource(id = R.string.ipa)}: $sounds",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                 }
-            }
-            Text(text = glosses, style = MaterialTheme.typography.bodyLarge)
-            if (example != null) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.example),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(text = example, style = MaterialTheme.typography.bodyLarge)
+                Text(text = glosses, style = MaterialTheme.typography.bodyLarge)
+                if (example != null) {
+                    Column {
+                        Text(
+                            text = stringResource(id = R.string.example),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(text = example, style = MaterialTheme.typography.bodyLarge)
+                    }
                 }
             }
         }
