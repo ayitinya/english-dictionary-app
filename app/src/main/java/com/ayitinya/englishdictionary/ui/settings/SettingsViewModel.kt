@@ -3,11 +3,12 @@ package com.ayitinya.englishdictionary.ui.settings
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.services.WotdService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,18 +61,26 @@ class SettingsViewModel @Inject constructor(
 
             val timeDiff = dueDate.timeInMillis - currentDate.timeInMillis
 
-            val constraints =
-                Constraints.Builder().setRequiredNetworkType(networkType = NetworkType.CONNECTED)
-                    .setRequiresBatteryNotLow(requiresBatteryNotLow = true).build()
+            val constraints = Constraints
+                .Builder()
+                .setRequiredNetworkType(networkType = NetworkType.CONNECTED)
+                .setRequiresBatteryNotLow(requiresBatteryNotLow = true)
+                .build()
 
 
-            val workRequest: WorkRequest = OneTimeWorkRequestBuilder<WotdService>().setInitialDelay(
-                timeDiff, TimeUnit.MILLISECONDS
-            ).setConstraints(constraints).build()
+            val workRequest = OneTimeWorkRequestBuilder<WotdService>()
+                .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .build()
 
             settingsRepository.saveString("workRequestId", workRequest.id.toString())
 
-            workManager.enqueue(workRequest)
+            workManager.enqueueUniqueWork(
+                "word_of_the_day",
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
 
         } else {
             val workRequestId = settingsRepository.readStringSync("workRequestId")

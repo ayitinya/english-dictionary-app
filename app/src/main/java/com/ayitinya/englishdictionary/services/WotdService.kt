@@ -11,12 +11,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import androidx.hilt.work.HiltWorker
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
@@ -36,6 +37,10 @@ class WotdService @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
+
+        if (runAttemptCount > 5) {
+            return Result.failure()
+        }
 
         if (ActivityCompat.checkSelfPermission(
                 applicationContext, Manifest.permission.INTERNET
@@ -59,7 +64,7 @@ class WotdService @AssistedInject constructor(
         }
 
         wotdRepository.updateWordOfTheDay()
-        val wotd = wotdRepository.getWordOfTheDay() ?: return Result.failure()
+        val wotd = wotdRepository.getWordOfTheDay() ?: return Result.retry()
         val definitionScreenRoute = DefinitionScreenDestination(word = wotd.word).route
 
         val intent = Intent(
@@ -104,16 +109,21 @@ class WotdService @AssistedInject constructor(
 
         val timeDiff = dueDate.timeInMillis - currentDate.timeInMillis
 
-        val constraints =
-            Constraints.Builder().setRequiredNetworkType(networkType = NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(requiresBatteryNotLow = true).build()
+        val constraints = Constraints
+            .Builder()
+            .setRequiredNetworkType(networkType = NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(requiresBatteryNotLow = true).build()
 
 
-        val workRequest: WorkRequest = OneTimeWorkRequestBuilder<WotdService>().setInitialDelay(
-            timeDiff, TimeUnit.MILLISECONDS
-        ).setConstraints(constraints).build()
+        val workRequest = OneTimeWorkRequestBuilder<WotdService>()
+            .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
 
-        WorkManager.getInstance(applicationContext).enqueue(workRequest)
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniqueWork("word_of_the_day", ExistingWorkPolicy.REPLACE, workRequest)
+
 
         settingsRepository.saveString("workRequestId", workRequest.id.toString())
 
