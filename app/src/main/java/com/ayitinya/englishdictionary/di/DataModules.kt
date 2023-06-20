@@ -4,11 +4,11 @@ package com.ayitinya.englishdictionary.di
 
 import android.content.Context
 import androidx.room.Room
-import com.ayitinya.englishdictionary.data.dictionary.DefaultDictionaryRepository
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
+import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepositoryImpl
 import com.ayitinya.englishdictionary.data.dictionary.source.local.DictionaryDatabase
-import com.ayitinya.englishdictionary.data.dictionary.source.remote.WordRelationshipApiService
-import com.ayitinya.englishdictionary.data.dictionary.source.remote.WordRelationshipApiServiceImpl
+import com.ayitinya.englishdictionary.data.dictionary.source.remote.RemoteDictionary
+import com.ayitinya.englishdictionary.data.dictionary.source.remote.RemoteDictionaryImpl
 import com.ayitinya.englishdictionary.data.favourite_words.DefaultFavouritesRepository
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.ayitinya.englishdictionary.data.favourite_words.source.local.FavouritesDatabase
@@ -33,7 +33,7 @@ import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cache.storage.FileStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.ANDROID
+import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -52,7 +52,7 @@ abstract class RepositoryModule {
 
     @Singleton
     @Binds
-    abstract fun bindDictionaryRepository(repository: DefaultDictionaryRepository): DictionaryRepository
+    abstract fun bindDictionaryRepository(repository: DictionaryRepositoryImpl): DictionaryRepository
 
     @Singleton
     @Binds
@@ -138,7 +138,7 @@ object ApiModule {
         }
 
         install(Logging) {
-            logger = Logger.ANDROID
+            logger = Logger.DEFAULT
             level = LogLevel.ALL
         }
 
@@ -160,6 +160,6 @@ abstract class ApiServicesModule {
 
     @Singleton
     @Binds
-    abstract fun bindWordRelationshipApiService(service: WordRelationshipApiServiceImpl): WordRelationshipApiService
+    abstract fun bindWordRelationshipApiService(service: RemoteDictionaryImpl): RemoteDictionary
 
 }
