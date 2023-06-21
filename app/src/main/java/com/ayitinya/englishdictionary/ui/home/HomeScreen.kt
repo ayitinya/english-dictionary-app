@@ -94,9 +94,11 @@ fun HomeScreen(
                     modifier = Modifier.clickable {
                         viewModel.viewModelScope.launch {
                             viewModel.getRandomWord()
-                            viewModel.navigateToDefinitionScreen(
-                                uiState.randomWord!!.word, navController
-                            )
+                            uiState.randomWord?.let {
+                                viewModel.navigateToDefinitionScreen(
+                                    it.word, navController
+                                )
+                            }
                         }
                     })
                 ListItem(
