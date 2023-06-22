@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlinSerialization)
-//    alias(libs.plugins.sentry.android.gradle.plugin)
+    alias(libs.plugins.sentry.android.gradle.plugin)
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
@@ -22,8 +22,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 33
-        versionCode = 11
-        versionName = "1.0.7"
+        versionCode = 15
+        versionName = "1.0.10"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -86,9 +86,9 @@ android {
     buildToolsVersion = "34.0.0 rc4"
 }
 
-//sentry {
-//    ignoredVariants.set(setOf("debug", "nonMinifiedRelease"))
-//}
+sentry {
+    ignoredVariants.set(setOf("debug", "nonMinifiedRelease"))
+}
 
 
 dependencies {
