@@ -24,8 +24,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    @ApplicationContext private val context: Context
+    @ApplicationContext context: Context
 ) : ViewModel() {
+    private val workManager = WorkManager.getInstance(context)
     private val _uiState: MutableStateFlow<SettingsScreenUiState> =
         MutableStateFlow(SettingsScreenUiState())
     val uiState: StateFlow<SettingsScreenUiState> = _uiState
@@ -43,9 +44,6 @@ class SettingsViewModel @Inject constructor(
     suspend fun toggleNotifyWordOfTheDay(state: Boolean) {
 
         settingsRepository.saveBoolean("notify_word_of_the_day", state)
-
-        val workManager = WorkManager.getInstance(context)
-
 
         if (state) {
             val currentDate = Calendar.getInstance()
