@@ -1,8 +1,5 @@
 package com.ayitinya.englishdictionary.ui.definition
 
-import android.content.Context
-import android.speech.tts.TextToSpeech
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,16 +30,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,7 +49,6 @@ import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @Destination(
     navArgsDelegate = DefinitionScreenNavArgs::class,
@@ -71,7 +62,6 @@ fun DefinitionScreen(
     viewModel: DefinitionViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -88,7 +78,8 @@ fun DefinitionScreen(
                         viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(it) }
                     },
                     navController = navController,
-                    context = context
+                    isTextToSpeechReady = uiState.textToSpeechInitState == TextToSpeechInitState.READY,
+                    onSpeakClick = { viewModel.onSpeakClick() }
                 )
             }
         }
@@ -141,10 +132,6 @@ fun DefinitionScreen(
     }
 }
 
-enum class TtsInitState {
-    SUCCESS, FAILED, INITIALISING, READY
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopAppBar(
@@ -153,22 +140,9 @@ private fun TopAppBar(
     isFavourite: Boolean,
     onIsFavouriteChange: (Boolean) -> Unit,
     navController: DestinationsNavigator,
-    context: Context,
+    isTextToSpeechReady: Boolean = false,
+    onSpeakClick: () -> Unit,
 ) {
-
-    var initTtsComplete by remember {
-        mutableStateOf(TtsInitState.INITIALISING)
-    }
-    val ttsHandle = remember {
-        TextToSpeech(context) {
-            initTtsComplete = if (it == TextToSpeech.SUCCESS) {
-                TtsInitState.SUCCESS
-            } else {
-                TtsInitState.FAILED
-            }
-        }
-    }
-
 
     LargeTopAppBar(title = {
         BoxWithConstraints {
@@ -180,10 +154,8 @@ private fun TopAppBar(
                 ) {
                     Text(text = word, modifier = Modifier.weight(4f))
                     IconButton(
-                        onClick = {
-                            ttsHandle.speak(word, TextToSpeech.QUEUE_FLUSH, null, " ")
-                        },
-                        enabled = initTtsComplete == TtsInitState.READY,
+                        onClick = onSpeakClick,
+                        enabled = isTextToSpeechReady,
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
@@ -206,10 +178,8 @@ private fun TopAppBar(
                         modifier = Modifier.weight(4f)
                     )
                     IconButton(
-                        onClick = {
-                            ttsHandle.speak(word, TextToSpeech.QUEUE_FLUSH, null, " ")
-                        },
-                        enabled = initTtsComplete == TtsInitState.READY,
+                        onClick = onSpeakClick,
+                        enabled = isTextToSpeechReady,
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
@@ -251,23 +221,6 @@ private fun TopAppBar(
             }
         }
     })
-
-    LaunchedEffect(key1 = initTtsComplete) {
-        when (initTtsComplete) {
-            TtsInitState.SUCCESS -> {
-                val result = ttsHandle.setLanguage(Locale.ENGLISH)
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.d("TTS", "LANGUAGE NOT SUPPORTED")
-                } else {
-                    initTtsComplete = TtsInitState.READY
-                }
-            }
-
-            TtsInitState.FAILED -> {}
-            TtsInitState.INITIALISING -> {}
-            else -> {}
-        }
-    }
 
 }
 
@@ -350,6 +303,7 @@ private fun TopAppBarPreview() {
         isFavourite = false,
         onIsFavouriteChange = {},
         navController = EmptyDestinationsNavigator,
-        context = LocalContext.current
+        isTextToSpeechReady = true,
+        onSpeakClick = {}
     )
 }

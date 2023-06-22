@@ -6,4 +6,5 @@ data class DefinitionUiState(
     val isFavourite: Boolean = false,
     val word: String? = null,
     val entries: DictionaryEntriesWithRelatedWords? = null,
+    val textToSpeechInitState: TextToSpeechInitState = TextToSpeechInitState.INITIALISING
 )
