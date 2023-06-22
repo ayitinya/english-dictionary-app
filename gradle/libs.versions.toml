@@ -1,11 +1,12 @@
 [versions]
-agp = "8.2.0-alpha07"
+agp = "8.2.0-alpha08"
+apache-log4j-api = "2.20.0"
 asset-delivery-ktx = "2.1.0"
 datastore-preferences = "1.0.0"
 desugar_jdk_libs = "2.0.3"
-firebase-crashlytics-gradle = "2.9.5"
+firebase-crashlytics-gradle = "2.9.6"
 google-services = "4.3.15"
-gradle = "8.2.0-alpha07"
+gradle = "8.2.0-alpha08"
 hilt-compiler = "1.0.0"
 hilt-work = "1.0.0"
 kotlin = "1.8.10"
@@ -16,6 +17,8 @@ espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.6.1"
 activity-compose = "1.7.2"
 compose-bom = "2023.06.00"
+log4j-api = "2.20.0"
+log4j-core = "2.20.0"
 perf-plugin = "1.4.2"
 room_version = "2.5.1"
 ksp = "1.8.10-1.0.9"
@@ -33,7 +36,7 @@ compose-destinations = "1.9.42-beta"
 splashscreen-version = "1.0.1"
 firebase-crashlytics-ktx = "18.3.7"
 firebase-analytics-ktx = "21.3.0"
-firebase-perf-ktx = "20.3.2"
+firebase-perf-ktx = "20.3.3"
 sentry = "3.7.0"
 uiautomator = "2.2.0"
 benchmark-macro-junit4 = "1.2.0-alpha15"
@@ -60,6 +63,8 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "apache-log4j-api" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "apache-log4j-api" }
 perf-plugin = { module = "com.google.firebase:perf-plugin", version.ref = "perf-plugin" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -99,8 +104,10 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 
 io-ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor_version" }
 io-ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor_version" }
+io-ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor_version" }
 io-ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor_version" }
 io-ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor_version" }
+ch-qos-logback-logback-classic = { group = "ch.qos.logback", name = "logback-classic", version = "1.2.3" }
 io-ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor_version" }
 org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization_version" }
 
