@@ -16,14 +16,14 @@ plugins {
 
 android {
     namespace = "com.ayitinya.englishdictionary"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
-        targetSdk = 33
-        versionCode = 15
-        versionName = "1.0.10"
+        targetSdk = 34
+        versionCode = 16
+        versionName = "1.0.11.001"
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
