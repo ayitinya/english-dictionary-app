@@ -10,7 +10,11 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
-import com.ayitinya.englishdictionary.services.WotdService
+import com.ayitinya.englishdictionary.services.WotdNotificationService
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +30,8 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     @ApplicationContext context: Context
 ) : ViewModel() {
+    var analytics: FirebaseAnalytics = Firebase.analytics
+
     private val workManager = WorkManager.getInstance(context)
     private val _uiState: MutableStateFlow<SettingsScreenUiState> =
         MutableStateFlow(SettingsScreenUiState())
@@ -33,6 +39,10 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                param(FirebaseAnalytics.Param.SCREEN_NAME, "SettingsScreen")
+                param(FirebaseAnalytics.Param.SCREEN_CLASS, "SettingsScreen.kt")
+            }
             settingsRepository.readBoolean("notify_word_of_the_day").collect {
                 _uiState.value = SettingsScreenUiState(
                     notifyWordOfTheDay = it
@@ -44,8 +54,12 @@ class SettingsViewModel @Inject constructor(
     suspend fun toggleNotifyWordOfTheDay(state: Boolean) {
 
         settingsRepository.saveBoolean("notify_word_of_the_day", state)
+        analytics.logEvent("toggle_word_of_the_day_notification") {
+            param("state", state.toString())
+        }
 
         if (state) {
+
             val currentDate = Calendar.getInstance()
             val dueDate = Calendar.getInstance()
 
@@ -66,7 +80,7 @@ class SettingsViewModel @Inject constructor(
                 .build()
 
 
-            val workRequest = OneTimeWorkRequestBuilder<WotdService>()
+            val workRequest = OneTimeWorkRequestBuilder<WotdNotificationService>()
                 .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.MINUTES)
                 .setConstraints(constraints)
@@ -82,8 +96,12 @@ class SettingsViewModel @Inject constructor(
 
         } else {
             val workRequestId = settingsRepository.readStringSync("workRequestId")
-            val workRequestUuid = UUID.fromString(workRequestId)
-            workManager.cancelWorkById(workRequestUuid)
+            try {
+                val workRequestUuid = UUID.fromString(workRequestId)
+                workManager.cancelWorkById(workRequestUuid)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 }

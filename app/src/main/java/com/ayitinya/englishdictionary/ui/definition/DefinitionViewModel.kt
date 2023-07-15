@@ -9,6 +9,10 @@ import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +32,7 @@ class DefinitionViewModel @Inject constructor(
     private val historyRepository: HistoryRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private var analytics: FirebaseAnalytics = Firebase.analytics
     private var textToSpeech: TextToSpeech
     private val _navArgs: DefinitionScreenNavArgs =
         DefinitionScreenDestination.argsFrom(savedStateHandle)
@@ -41,6 +46,10 @@ class DefinitionViewModel @Inject constructor(
             onTextToSpeechInit(initState)
         }
         viewModelScope.launch {
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                param(FirebaseAnalytics.Param.SCREEN_NAME, "DefinitionScreen")
+                param(FirebaseAnalytics.Param.SCREEN_CLASS, "DefinitionScreen.kt")
+            }
             _uiState.update {
                 it.copy(
                     entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),

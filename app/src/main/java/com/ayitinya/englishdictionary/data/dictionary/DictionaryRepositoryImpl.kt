@@ -1,7 +1,6 @@
 package com.ayitinya.englishdictionary.data.dictionary
 
 import com.ayitinya.englishdictionary.data.dictionary.source.local.DictionaryDao
-import com.ayitinya.englishdictionary.data.dictionary.source.remote.RemoteDictionary
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,17 +13,12 @@ import javax.inject.Singleton
 @Singleton
 class DictionaryRepositoryImpl @Inject constructor(
     private val localDataSource: DictionaryDao,
-    private val networkDataSource: RemoteDictionary,
     private val favouritesRepository: FavouritesRepository
 ) : DictionaryRepository {
     override suspend fun searchDictionary(query: String): List<Dictionary> {
         return withContext(Dispatchers.IO) {
             localDataSource.search("$query%").toExternal()
         }
-    }
-
-    override suspend fun getRemoteDictionaryEntry(word: String): DictionaryEntriesWithRelatedWords? {
-        return networkDataSource.getWordDetails(word)?.toExternal()
     }
 
     override suspend fun getDictionaryEntries(query: String): DictionaryEntriesWithRelatedWords {

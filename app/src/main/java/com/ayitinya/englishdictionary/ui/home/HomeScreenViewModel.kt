@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,11 +24,17 @@ class HomeScreenViewModel @Inject constructor(
     private val wotdRepository: WotdRepository,
     private val dictionaryRepository: DictionaryRepository,
 ) : ViewModel() {
+    private var analytics: FirebaseAnalytics = Firebase.analytics
+
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState
 
     init {
         viewModelScope.launch {
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                param(FirebaseAnalytics.Param.SCREEN_NAME, "HomeScreen")
+                param(FirebaseAnalytics.Param.SCREEN_CLASS, "HomeScreen.kt")
+            }
             _uiState.update {
                 it.copy(wotd = wotdRepository.getWordOfTheDay(), isLoading = false)
             }

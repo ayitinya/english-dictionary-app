@@ -1,6 +1,7 @@
 package com.ayitinya.englishdictionary.ui.history
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -26,7 +27,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Destination
 @Composable
 fun HistoryScreen(
@@ -54,12 +55,17 @@ fun HistoryScreen(
     }) { paddingValues ->
         LazyColumn(contentPadding = paddingValues) {
             items(uiState.historyList) { history ->
-                ListItem(headlineContent = { Text(text = history.word) },
-                    modifier = Modifier.clickable {
-                        viewModel.viewModelScope.launch {
-                            viewModel.navigateToDefinitionScreen(history.word, navController)
-                        }
-                    })
+                ListItem(
+                    headlineContent = { Text(text = history.word) },
+                    modifier = Modifier
+                        .combinedClickable(onLongClick = {
+                            viewModel.selectHistoryItem(history.word)
+                        }) {
+                            viewModel.viewModelScope.launch {
+                                viewModel.navigateToDefinitionScreen(history.word, navController)
+                            }
+                        },
+                )
             }
         }
     }

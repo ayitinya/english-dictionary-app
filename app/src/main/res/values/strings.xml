@@ -22,4 +22,6 @@
     <string name="play_button" translatable="false">Play</string>
     <string name="permission_rationale">This feature requires notification permission</string>
     <string name="attribution">Dictionary entries provided by Wiktionary, under the Creative Commons Attribution-ShareAlike License (CC-BY-SA)</string>
+    <string name="rate_app">Rate App</string>
+    <string name="version" translatable="false">Version</string>
 </resources>

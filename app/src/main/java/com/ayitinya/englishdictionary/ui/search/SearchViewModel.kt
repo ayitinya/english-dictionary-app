@@ -7,6 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +25,17 @@ class SearchViewModel @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val historyRepository: HistoryRepository
 ) : ViewModel() {
+    private var analytics: FirebaseAnalytics = Firebase.analytics
+
     private val _uiState = MutableStateFlow(SearchScreenUiState())
     val uiState: MutableStateFlow<SearchScreenUiState> = _uiState
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                param(FirebaseAnalytics.Param.SCREEN_NAME, "SearchScreen")
+                param(FirebaseAnalytics.Param.SCREEN_CLASS, "SearchScreen.kt")
+            }
             historyRepository.observeLastNumberHistory(5).collect { history ->
                 _uiState.value = _uiState.value.copy(history = history)
             }

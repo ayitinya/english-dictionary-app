@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -17,6 +18,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.ayitinya.englishdictionary.R
@@ -29,48 +31,25 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
-class WotdService @AssistedInject constructor(
+class WotdNotificationService @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val wotdRepository: DefaultWotdRepository,
     private val settingsRepository: SettingsRepository
 ) : CoroutineWorker(context, workerParameters) {
 
-    override suspend fun doWork(): Result {
-
-        if (runAttemptCount > 5) {
-            return Result.failure()
-        }
-
-        if (ActivityCompat.checkSelfPermission(
-                applicationContext, Manifest.permission.INTERNET
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return Result.failure()
-        }
-
-        if (ActivityCompat.checkSelfPermission(
-                applicationContext, Manifest.permission.ACCESS_NETWORK_STATE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return Result.failure()
-        }
-
-        if (ActivityCompat.checkSelfPermission(
-                applicationContext, Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return Result.failure()
-        }
-
-        wotdRepository.updateWordOfTheDay()
-        val wotd = wotdRepository.getWordOfTheDay() ?: return Result.retry()
+    private suspend fun showNotification() {
+        val wotd = wotdRepository.getWordOfTheDay() ?: return
         val definitionScreenRoute = DefinitionScreenDestination(word = wotd.word).route
 
         val intent = Intent(
             Intent.ACTION_VIEW,
             "app://com.ayitinya.englishdictionary/$definitionScreenRoute".toUri()
         )
+
+        intent.apply {
+            `package` = applicationContext.packageName
+        }
 
         val pendingIntent = PendingIntent.getActivity(
             applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE
@@ -82,7 +61,8 @@ class WotdService @AssistedInject constructor(
             BitmapFactory.decodeResource(
                 applicationContext.resources, R.drawable.dictionary_1_svgrepo_com
             )
-        ).setContentIntent(pendingIntent).setAutoCancel(true)
+        ).setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .setContentTitle(context.getString(R.string.word_of_the_day))
             .setContentText(buildString {
                 append(context.getString(R.string.notification_text))
@@ -93,8 +73,46 @@ class WotdService @AssistedInject constructor(
 
 
         with(NotificationManagerCompat.from(applicationContext)) {
-            notify(1, notificationBuilder.build())
+            if (ActivityCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                notify(1, notificationBuilder.build())
+
+            }
         }
+    }
+
+    private fun updateWordOfTheDay(): Operation {
+        val constraints = Constraints
+            .Builder()
+            .setRequiredNetworkType(networkType = NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(requiresBatteryNotLow = true).build()
+
+
+        val workRequest = OneTimeWorkRequestBuilder<UpdateWordOfTheDay>()
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+            .setConstraints(constraints)
+            .build()
+
+        return WorkManager.getInstance(applicationContext)
+            .enqueueUniqueWork(
+                "update_word_of_the_day",
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
+    }
+
+    override suspend fun doWork(): Result {
+
+        Log.d("WotdNotificationService", "doWork: ")
+
+        if (wotdRepository.getWordOfTheDay() == null) {
+            updateWordOfTheDay().result.get()
+        }
+
+        showNotification()
 
         val currentDate = Calendar.getInstance()
         val dueDate = Calendar.getInstance()
@@ -115,7 +133,7 @@ class WotdService @AssistedInject constructor(
             .setRequiresBatteryNotLow(requiresBatteryNotLow = true).build()
 
 
-        val workRequest = OneTimeWorkRequestBuilder<WotdService>()
+        val workRequest = OneTimeWorkRequestBuilder<WotdNotificationService>()
             .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.MINUTES)
             .setConstraints(constraints)

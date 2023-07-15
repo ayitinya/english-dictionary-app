@@ -19,4 +19,5 @@
     <string name="notify_word_of_the_day">Notifier le mot du jour</string>
     <string name="permission_rationale">Cette fonction nécessite une autorisation de notification</string>
     <string name="attribution">Entrées de dictionnaire fournies par Wiktionary, sous la licence Creative Commons Attribution-ShareAlike (CC-BY-SA)</string>
+    <string name="rate_app">Évaluer l\'application</string>
 </resources>

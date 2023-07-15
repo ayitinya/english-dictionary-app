@@ -19,4 +19,5 @@
     <string name="notify_word_of_the_day">Benachrichtigen Sie das Wort des Tages</string>
     <string name="permission_rationale">Diese Funktion erfordert die Benachrichtigungsberechtigung</string>
     <string name="attribution">Von Wiktionary bereitgestellte Wörterbucheinträge unter der Creative Commons Attribution-ShareAlike-Lizenz (CC-BY-SA)</string>
+    <string name="rate_app">App bewerten</string>
 </resources>

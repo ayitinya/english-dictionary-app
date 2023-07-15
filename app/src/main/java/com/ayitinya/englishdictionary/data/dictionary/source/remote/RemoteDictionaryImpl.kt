@@ -9,10 +9,9 @@ import javax.inject.Inject
 class RemoteDictionaryImpl @Inject constructor(private val client: HttpClient) : RemoteDictionary {
     override suspend fun getWordDetails(word: String): RemoteWordDefinition? {
         return try {
-            val response = client.get {
+            client.get {
                 url("https://api.dictionaryapi.dev/api/v2/entries/en/$word")
-            }.body<List<RemoteWordDefinition>>()
-            response.firstOrNull()
+            }.body<List<RemoteWordDefinition>>().firstOrNull()
         } catch (e: Exception) {
             null
         }

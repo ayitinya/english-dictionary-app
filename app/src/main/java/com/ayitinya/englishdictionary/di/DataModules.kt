@@ -22,6 +22,9 @@ import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.local.WotdDatabase
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.remote.WordOfTheDayApiService
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.remote.WordOfTheDayApiServiceImpl
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -75,14 +78,11 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
-//        val packageContext: Context = context.createPackageContext(
-//            "com.ayitinya.englishdictionary", 0
-//        )
-//        val assetManager: AssetManager = packageContext.assets
-//        val stream: InputStream = assetManager.open("database/db.sqlite")
-        return Room.databaseBuilder(
+        val db = Room.databaseBuilder(
             context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
-        ).createFromAsset("database/data.sqlite").fallbackToDestructiveMigration().build()
+        ).createFromAsset("database/data.sqlite").build()
+        db.query("SELECT 1", null)
+        return db
     }
 
     @Provides
@@ -162,4 +162,12 @@ abstract class ApiServicesModule {
     @Binds
     abstract fun bindWordRelationshipApiService(service: RemoteDictionaryImpl): RemoteDictionary
 
+}
+
+
+@Module
+@InstallIn(SingletonComponent::class)
+object FirebaseModule {
+    @Provides
+    fun provideFirebaseAnalytics(): FirebaseAnalytics = Firebase.analytics
 }

@@ -22,11 +22,11 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 16
-        versionName = "1.0.11.001"
+        versionCode = 18
+        versionName = "1.2.0.1"
 
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -39,10 +39,13 @@ android {
 
     buildTypes {
         debug {
-            resValue("bool", "FIREBASE_DEACTIVATED", "true")
+            manifestPlaceholders["sentryEnvironment"] = "debug"
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
 
         release {
+            manifestPlaceholders += mapOf("sentryEnvironment" to "release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -53,11 +56,14 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
-            resValue("bool", "FIREBASE_DEACTIVATED", "false")
+        }
+
+        create("beta") {
+            initWith(getByName("release"))
+            manifestPlaceholders += mapOf("sentryEnvironment" to "beta")
+            versionNameSuffix = "-beta"
         }
     }
-
-    assetPacks += listOf(":dictionaryassets")
 
     androidResources {
         generateLocaleConfig = true
@@ -83,16 +89,25 @@ android {
         }
     }
     ndkVersion = "25.2.9519653"
-    buildToolsVersion = "34.0.0 rc4"
+
+    packaging {
+        resources.excludes.add("META-INF/*")
+    }
 }
 
+
+
 sentry {
-    ignoredVariants.set(setOf("debug", "nonMinifiedRelease"))
+    ignoredBuildTypes.set(setOf("debug", "nonMinifiedRelease"))
+//    uploadNativeSymbols.set(true)
+    includeNativeSources.set(true)
+    includeSourceContext.set(true)
 }
 
 
 dependencies {
 
+    implementation(libs.androidx.work.testing)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.asset.delivery.ktx)
@@ -165,6 +180,20 @@ dependencies {
 
     implementation(libs.androidx.hilt.work)
     kapt(libs.androidx.hilt.compiler)
+
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.appwidget)
+
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.dagger.hilt.android.compiler)
+
+    debugImplementation(libs.ch.qos.logback.classic)
+    implementation(libs.appcompat)
+
+    implementation(libs.androidx.window)
+    implementation(libs.review)
+    implementation(libs.review.ktx)
+    debugImplementation(libs.appwidget.viewer)
 }
 
 ksp {
@@ -174,4 +203,8 @@ ksp {
 kapt {
     correctErrorTypes = true
     useBuildCache = true
+}
+
+hilt {
+    enableAggregatingTask = true
 }
