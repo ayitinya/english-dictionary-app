@@ -10,6 +10,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
+    id("com.mikepenz.aboutlibraries.plugin")
     alias(libs.plugins.androidx.baselineprofile)
     kotlin("kapt")
 }
@@ -22,8 +23,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 18
-        versionName = "1.2.0.1"
+        versionCode = 21
+        versionName = "1.2.0"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -81,7 +82,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.4.8"
     }
     packaging {
         resources {
@@ -99,7 +100,6 @@ android {
 
 sentry {
     ignoredBuildTypes.set(setOf("debug", "nonMinifiedRelease"))
-//    uploadNativeSymbols.set(true)
     includeNativeSources.set(true)
     includeSourceContext.set(true)
 }
@@ -108,6 +108,8 @@ sentry {
 dependencies {
 
     implementation(libs.androidx.work.testing)
+    implementation(libs.material)
+    "baselineProfile"(project(":baselineprofile"))
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.asset.delivery.ktx)
@@ -131,7 +133,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
-    "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
 
@@ -187,14 +188,22 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.dagger.hilt.android.compiler)
 
-    debugImplementation(libs.ch.qos.logback.classic)
     implementation(libs.appcompat)
 
     implementation(libs.androidx.window)
     implementation(libs.review)
     implementation(libs.review.ktx)
     debugImplementation(libs.appwidget.viewer)
+
+    implementation(libs.napier)
+
+    implementation(libs.aboutlibraries.compose)
+    implementation(libs.aboutlibraries.core)
+
+    implementation(libs.anrwatchdog)
 }
+
+
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")

@@ -5,6 +5,7 @@ import com.ayitinya.englishdictionary.data.dictionary.DictionaryEntriesWithRelat
 data class DefinitionUiState(
     val isFavourite: Boolean = false,
     val word: String? = null,
+    val showBottomModal: Boolean = false,
     val entries: DictionaryEntriesWithRelatedWords? = null,
     val textToSpeechInitState: TextToSpeechInitState = TextToSpeechInitState.INITIALISING
 )

@@ -8,16 +8,18 @@ import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
+import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
+import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
+import com.ayitinya.englishdictionary.domain.ActivateWotdNotificationUseCase
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,26 +32,24 @@ class DefinitionViewModel @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val favouritesRepository: FavouritesRepository,
     private val historyRepository: HistoryRepository,
+    private val activateWotdNotificationUseCase: ActivateWotdNotificationUseCase,
+    analytics: FirebaseAnalytics,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private var analytics: FirebaseAnalytics = Firebase.analytics
     private var textToSpeech: TextToSpeech
     private val _navArgs: DefinitionScreenNavArgs =
         DefinitionScreenDestination.argsFrom(savedStateHandle)
 
+//    private var analytics: FirebaseAnalytics = Firebase.analytics
+
     private val _uiState = MutableStateFlow(DefinitionUiState(word = _navArgs.word))
     val uiState: StateFlow<DefinitionUiState> = _uiState
-
 
     init {
         textToSpeech = TextToSpeech(context) { initState ->
             onTextToSpeechInit(initState)
         }
         viewModelScope.launch {
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-                param(FirebaseAnalytics.Param.SCREEN_NAME, "DefinitionScreen")
-                param(FirebaseAnalytics.Param.SCREEN_CLASS, "DefinitionScreen.kt")
-            }
             _uiState.update {
                 it.copy(
                     entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),
@@ -57,9 +57,24 @@ class DefinitionViewModel @Inject constructor(
                 )
             }
 
+            if (_navArgs.fromWotd) {
+                context.readBoolean("wotd_modal_display").take(1).collect { state ->
+                    if (!state) {
+                        context.saveBoolean("wotd_modal_display", true)
+                        _uiState.update { it.copy(showBottomModal = true) }
+                    }
+                }
+            }
             historyRepository.addHistory(_navArgs.word)
-
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                param(FirebaseAnalytics.Param.SCREEN_NAME, "DefinitionScreen")
+                param(FirebaseAnalytics.Param.SCREEN_CLASS, "DefinitionScreen.kt")
+            }
         }
+    }
+
+    fun dismissModal() {
+        _uiState.update { it.copy(showBottomModal = false) }
     }
 
     /* This is most likely an anti-pattern
@@ -112,6 +127,12 @@ class DefinitionViewModel @Inject constructor(
     private suspend fun removeFavourite(word: String) {
         withContext(Dispatchers.IO) {
             favouritesRepository.removeFavourite(word)
+        }
+    }
+
+    suspend fun activateWotdNotification() {
+        withContext(Dispatchers.IO) {
+            activateWotdNotificationUseCase.execute(true)
         }
     }
 

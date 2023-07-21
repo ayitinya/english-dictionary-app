@@ -62,8 +62,6 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(modifier = modifier, topBar = {
-
-
         Box(
             Modifier
                 .fillMaxWidth()
@@ -96,7 +94,7 @@ fun HomeScreen(
                             viewModel.getRandomWord()
                             uiState.randomWord?.let {
                                 viewModel.navigateToDefinitionScreen(
-                                    it.word, navController
+                                    it.word, navController = navController
                                 )
                             }
                         }
@@ -164,12 +162,11 @@ private fun WordOfTheDay(
             Text(text = wordOfTheDay.glosses, style = MaterialTheme.typography.bodyLarge)
 
             TextButton(onClick = {
-                viewModel.viewModelScope.launch {
-                    viewModel.navigateToDefinitionScreen(
-                        word = wordOfTheDay.word,
-                        navController
-                    )
-                }
+                viewModel.navigateToDefinitionScreen(
+                    word = wordOfTheDay.word,
+                    fromWotd = true,
+                    navController
+                )
             }, modifier = Modifier.align(Alignment.End)) {
                 Text(text = stringResource(id = R.string.learn_more))
             }
@@ -177,21 +174,6 @@ private fun WordOfTheDay(
         }
     }
 }
-
-
-//@Composable
-//@Preview
-//private fun WordOfTheDayPreview() {
-//    WordOfTheDay(
-//        WordApiResponse(
-//            word = "Word", pdd = "24/04/2023", definitions = listOf(
-//                Definition(text = "Definition 1", partOfSpeech = "Noun"),
-//                Definition(text = "Definition 2", partOfSpeech = "Noun"),
-//            )
-//        )
-//    )
-//}
-
 
 @Composable
 @Preview

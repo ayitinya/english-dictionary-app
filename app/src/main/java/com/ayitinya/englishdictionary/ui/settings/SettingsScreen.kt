@@ -1,7 +1,6 @@
 package com.ayitinya.englishdictionary.ui.settings
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -35,15 +34,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.R
+import com.ayitinya.englishdictionary.ui.destinations.AboutScreenDestination
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.play.core.ktx.launchReview
-import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
@@ -57,7 +55,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
-    val context = LocalContext.current.applicationContext
+    val context = LocalContext.current
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -95,7 +93,6 @@ fun SettingsScreen(
         }) { paddingValues ->
         LazyColumn(contentPadding = paddingValues) {
             item {
-                val currentActivity = LocalContext.current as Activity
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.notify_word_of_the_day)) },
                     trailingContent = {
                         Switch(checked = uiState.notifyWordOfTheDay, onCheckedChange = {
@@ -143,41 +140,53 @@ fun SettingsScreen(
                     })
                 ListItem(
                     modifier = Modifier.clickable {
-                        val manager = ReviewManagerFactory.create(context)
-                        val request = manager.requestReviewFlow()
-                        request.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                viewModel.viewModelScope.launch {
-                                    manager.launchReview(currentActivity, task.result)
-                                }
-                            } else {
-                                // There was some problem, log or handle the error code.
-//                                @ReviewErrorCode val reviewErrorCode =
-//                                    (task.exception as ReviewException).errorCode
-                                Firebase.crashlytics.recordException(task.exception!!)
-                                val packageName = context.packageName
-                                try {
-                                    val intent = Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("market://details?id=$packageName")
-                                    )
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    intent.setPackage("com.android.vending") // Specify the package name of the Play Store app
-                                    context.startActivity(intent)
-                                } catch (e: android.content.ActivityNotFoundException) {
-                                    // If the Play Store app is not installed, open the Play Store website
-                                    val intent = Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-                                    )
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    context.startActivity(intent)
-                                }
-                            }
+                        val packageName = context.packageName
+                        try {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=$packageName")
+                            )
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            intent.setPackage("com.android.vending") // Specify the package name of the Play Store app
+                            context.startActivity(intent)
+                        } catch (e: android.content.ActivityNotFoundException) {
+                            // If the Play Store app is not installed, open the Play Store website
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                            )
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
                         }
                     },
                     headlineContent = { Text(text = stringResource(id = R.string.rate_app)) },
                 )
+
+                ListItem(
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_SEND)
+                        intent.type = "text/plain"
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "English Dictionary")
+                        intent.putExtra(
+                            Intent.EXTRA_TEXT,
+                            "https://play.google.com/store/apps/details?id=${context.packageName}"
+                        )
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        context.startActivity(Intent.createChooser(intent, "Share with"))
+                    },
+                    headlineContent = { Text(text = stringResource(id = R.string.share_app)) },
+                )
+
+                ListItem(
+                    modifier = Modifier.clickable {
+                        viewModel.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                            param(FirebaseAnalytics.Param.SCREEN_NAME, "AboutScreen")
+                            param(FirebaseAnalytics.Param.SCREEN_CLASS, "AboutScreen.kt")
+                        }
+                        navController.navigate(AboutScreenDestination)
+                    },
+                    headlineContent = { Text(text = stringResource(id = R.string.about)) })
+
             }
         }
     }

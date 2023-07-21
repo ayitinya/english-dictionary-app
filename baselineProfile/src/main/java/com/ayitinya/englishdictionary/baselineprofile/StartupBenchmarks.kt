@@ -1,4 +1,4 @@
-package com.ayitinya.baselineprofile
+package com.ayitinya.englishdictionary.baselineprofile
 
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode

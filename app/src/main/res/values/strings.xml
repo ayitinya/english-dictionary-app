@@ -23,5 +23,12 @@
     <string name="permission_rationale">This feature requires notification permission</string>
     <string name="attribution">Dictionary entries provided by Wiktionary, under the Creative Commons Attribution-ShareAlike License (CC-BY-SA)</string>
     <string name="rate_app">Rate App</string>
-    <string name="version" translatable="false">Version</string>
+    <string name="version" translatable="false">Version info</string>
+    <string name="share_app" translatable="false">Share App</string>
+    <string name="about" translatable="false">About, licenses and privacy</string>
+    <string name="oss_licenses" translatable="false">Open Source Licenses</string>
+
+    <string name="aboutLibraries_description_showIcon" translatable="false">true</string>
+    <string name="aboutLibraries_description_showVersion" translatable="false">true</string>
+    <string name="aboutLibraries_description_text" translatable="false">Place the description here :D</string>
 </resources>

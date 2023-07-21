@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":English_Dictionary.app:generateReleaseBaselineProfile" />
+          <option value=":app:generateReleaseBaselineProfile" />
         </list>
       </option>
       <option name="vmOptions" />

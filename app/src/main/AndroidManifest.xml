@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
     <application
         android:name=".EnglishDictionaryApplication"
         android:allowBackup="true"
@@ -19,6 +18,7 @@
         android:theme="@style/Theme.App.Starting"
         tools:targetApi="tiramisu">
 
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -30,7 +30,6 @@
                 tools:node="remove" />
         </provider>
 
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -40,7 +39,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -59,16 +57,15 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/wotd_widget_info" />
-
         </receiver>
 
         <meta-data
             android:name="io.sentry.environment"
             android:value="${sentryEnvironment}" />
-
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://3ca0752869f44d5aba59b065c69fb597@o1104921.ingest.sentry.io/4505248530563072" />
@@ -87,17 +84,16 @@
         <meta-data
             android:name="io.sentry.traces.profiling.sample-rate"
             android:value="0.9" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_name" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/black" />
-
-
     </application>
 
 </manifest>

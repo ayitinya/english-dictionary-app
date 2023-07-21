@@ -1,4 +1,4 @@
-package com.ayitinya.baselineprofile
+package com.ayitinya.englishdictionary.baselineprofile
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
  * You can run the generator with the Generate Baseline Profile run configuration,
  * or directly with `generateBaselineProfile` Gradle task:
  * ```
- * ./gradlew :English_Dictionary.app:generateReleaseBaselineProfile -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile
+ * ./gradlew :app:generateReleaseBaselineProfile -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile
  * ```
  * The run configuration runs the Gradle task and applies filtering to run only the generators.
  *
@@ -35,7 +35,7 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() {
-        rule.collectBaselineProfile("com.ayitinya.englishdictionary") {
+        rule.collect("com.ayitinya.englishdictionary") {
             // This block defines the app's critical user journey. Here we are interested in
             // optimizing for app startup. But you can also navigate and scroll
             // through your most important UI.

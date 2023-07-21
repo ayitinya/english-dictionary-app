@@ -22,7 +22,7 @@ import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.local.WotdDatabase
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.remote.WordOfTheDayApiService
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.remote.WordOfTheDayApiServiceImpl
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.ayitinya.englishdictionary.domain.ActivateWotdNotificationUseCase
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import dagger.Binds
@@ -31,12 +31,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cache.storage.FileStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -78,11 +79,9 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
-        val db = Room.databaseBuilder(
+        return Room.databaseBuilder(
             context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
         ).createFromAsset("database/data.sqlite").build()
-        db.query("SELECT 1", null)
-        return db
     }
 
     @Provides
@@ -138,9 +137,13 @@ object ApiModule {
         }
 
         install(Logging) {
-            logger = Logger.DEFAULT
+            logger = object : Logger {
+                override fun log(message: String) {
+                    Napier.v("HTTP Client", null, message)
+                }
+            }
             level = LogLevel.ALL
-        }
+        }.also { Napier.base(DebugAntilog()) }
 
         install(HttpCache) {
             val cacheFile = File.createTempFile("ktor_cache", ".tmp")
@@ -164,10 +167,21 @@ abstract class ApiServicesModule {
 
 }
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
     @Provides
-    fun provideFirebaseAnalytics(): FirebaseAnalytics = Firebase.analytics
+    fun provideFirebaseAnalytics() = Firebase.analytics
+}
+
+
+@Module
+@InstallIn(SingletonComponent::class)
+object UseCaseModule {
+    @Provides
+    fun provideActivateWotdNotificationUseCase(
+        repository: SettingsRepository, @ApplicationContext context: Context
+    ): ActivateWotdNotificationUseCase {
+        return ActivateWotdNotificationUseCase(repository, context)
+    }
 }

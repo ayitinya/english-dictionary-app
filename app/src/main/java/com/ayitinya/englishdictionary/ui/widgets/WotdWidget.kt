@@ -2,7 +2,6 @@ package com.ayitinya.englishdictionary.ui.widgets
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -70,8 +69,6 @@ class WotdWidget() : GlanceAppWidget() {
         analytics = Firebase.analytics
 
         provideContent {
-            Log.d("WotdWidget", "provideGlance: ${LocalSize.current.height}")
-
             GlanceTheme {
                 if (wotd != null) {
                     val definitionScreenRoute = DefinitionScreenDestination(word = wotd.word).route
