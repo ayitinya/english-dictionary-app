@@ -8,17 +8,27 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DefaultHistoryRepository @Inject constructor(private val localDataSource: HistoryDao): HistoryRepository {
+class DefaultHistoryRepository @Inject constructor(private val localDataSource: HistoryDao) :
+    HistoryRepository {
     override suspend fun getHistory(): List<History> {
         return localDataSource.getHistory().toExternal()
     }
 
     override suspend fun addHistory(word: String) {
-        localDataSource.addHistory(History(word = word, lastAccessed = LocalDateTime.now()).toLocal())
+        localDataSource.addHistory(
+            History(
+                word = word,
+                lastAccessed = LocalDateTime.now()
+            ).toLocal()
+        )
     }
 
     override suspend fun deleteHistory(word: String) {
         localDataSource.deleteHistory(word)
+    }
+
+    override suspend fun deleteSelectedHistoryItems(words: List<History>) {
+        localDataSource.deleteSelectedHistoryItems(words.map { it.word })
     }
 
     override suspend fun deleteAllHistory() {
@@ -31,5 +41,9 @@ class DefaultHistoryRepository @Inject constructor(private val localDataSource: 
 
     override fun observeLastNumberHistory(number: Int): Flow<List<History>> {
         return localDataSource.observeLastNumberHistory(number).map { value -> value.toExternal() }
+    }
+
+    override suspend fun clearHistory() {
+        localDataSource.deleteAllHistory()
     }
 }

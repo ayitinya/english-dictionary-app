@@ -21,7 +21,7 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val wotdRepository: WotdRepository,
     private val dictionaryRepository: DictionaryRepository,
-    analytics: FirebaseAnalytics
+    analytics: FirebaseAnalytics?
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
@@ -32,7 +32,7 @@ class HomeScreenViewModel @Inject constructor(
             _uiState.update {
                 it.copy(wotd = wotdRepository.getWordOfTheDay(), isLoading = false)
             }
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "HomeScreen")
                 param(FirebaseAnalytics.Param.SCREEN_CLASS, "HomeScreen.kt")
             }

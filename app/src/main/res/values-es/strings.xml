@@ -6,6 +6,7 @@
     <string name="search_hint_details">Ingrese la palabra o frase a buscar</string>
     <string name="back">Atrás</string>
     <string name="add_to_favorites">Agregar a los favoritos</string>
+    <string name="remove_from_favorites">Quitar de favoritos</string>
     <string name="history">Historia</string>
     <string name="favorites">Favoritos</string>
     <string name="etymology">Etimología</string>
@@ -17,7 +18,27 @@
     <string name="no_results">No se encontraron resultados</string>
     <string name="settings">Configuraciones</string>
     <string name="notify_word_of_the_day">Notificar la palabra del día</string>
+    <string name="play_button">botón de play</string>
     <string name="permission_rationale">Esta función requiere permiso de notificación</string>
     <string name="attribution">Entradas de diccionario proporcionadas por Wiktionary, bajo la licencia Creative Commons Attribution-ShareAlike (CC-BY-SA)</string>
     <string name="rate_app">Califica la aplicación</string>
+    <string name="confirm">confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="rate_app_message">Si te gusta usar esta aplicación, ¿te importaría tomarte un momento para calificarla? No tardará más de un minuto. ¡Gracias por su apoyo!</string>
+    <string name="deactivate_history">historial del navegador</string>
+    <string name="deactivate_history_rationale">Esto desactivará la función de historial. Estás seguro de que quieres continuar?</string>
+    <string name="clear_history">Borrar historial</string>
+    <string name="clear_history_rationale">Esto borrará todo el historial. Estás seguro de que quieres continuar?</string>
+    <string name="clear_favorites">Borrar favoritos</string>
+    <string name="clear_favorites_rationale">Esto borrará todos los favoritos. Estás seguro de que quieres continuar?</string>
+    <string name="version">información de versión</string>
+    <string name="share_app">Compartir aplicación</string>
+    <string name="about">Acerca de, licencias y privacidad</string>
+    <string name="oss_licenses">licencias de código abierto</string>
+    <string name="about_app">Una aplicación de diccionario simple con un conjunto de datos basado en la base de datos Wiktionary</string>
+    <string name="appreciation">Muchas gracias a las numerosas bibliotecas de código abierto que se utilizaron en el desarrollo de esta aplicación. Sin el arduo trabajo y la dedicación de los desarrolladores de estas bibliotecas, nuestra aplicación no hubiera sido posible. Realmente estamos parados sobre los hombros de gigantes.</string>
+    <string name="selected">escogido</string>
+    <string name="history_deactivated">El modo de historial se ha desactivado, habilítelo en la configuración para continuar registrando el historial</string>
+    <string name="no_history">la historia esta vacia</string>
+    <string name="no_favorites">Aún no se han agregado palabras a los favoritos.</string>
 </resources>

@@ -3,10 +3,12 @@ package com.ayitinya.englishdictionary.data.dictionary.source.local
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import com.google.firebase.perf.metrics.AddTrace
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DictionaryDao {
+    @AddTrace(name = "search")
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM Dictionary WHERE word LIKE :query GROUP BY word ORDER BY word COLLATE NOCASE ASC LIMIT 20")
     suspend fun search(query: String): List<LocalDictionary>
@@ -15,6 +17,7 @@ interface DictionaryDao {
     @Query("SELECT * FROM Dictionary NATURAL JOIN Senses WHERE word = :word")
     suspend fun getWordDetails(word: String): List<LocalDictionaryEntry>
 
+    @AddTrace(name = "getRandomWord")
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM Dictionary ORDER BY random() LIMIT 1")
     suspend fun getRandomWord(): LocalDictionary

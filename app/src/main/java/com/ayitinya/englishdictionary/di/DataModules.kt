@@ -3,6 +3,7 @@
 package com.ayitinya.englishdictionary.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepositoryImpl
@@ -17,6 +18,9 @@ import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.data.history.source.local.HistoryDatabase
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.data.settings.SettingsRepositoryImpl
+import com.ayitinya.englishdictionary.data.test.TestDatabase
+import com.ayitinya.englishdictionary.data.test.TestRepository
+import com.ayitinya.englishdictionary.data.test.TestRepositoryImpl
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.DefaultWotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.local.WotdDatabase
@@ -42,6 +46,10 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
+import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
+import io.requery.android.database.sqlite.SQLiteCustomExtension
+import io.requery.android.database.sqlite.SQLiteDatabase
+import io.requery.android.database.sqlite.SQLiteDatabaseConfiguration
 import kotlinx.serialization.json.Json
 import java.io.File
 import javax.inject.Singleton
@@ -57,6 +65,10 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindDictionaryRepository(repository: DictionaryRepositoryImpl): DictionaryRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindTestRepository(repository: TestRepositoryImpl): TestRepository
 
     @Singleton
     @Binds
@@ -81,7 +93,47 @@ object DatabaseModule {
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
         return Room.databaseBuilder(
             context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
-        ).createFromAsset("database/data.sqlite").build()
+        ).createFromAsset("database/data.sqlite").openHelperFactory { configuration ->
+            val config = SQLiteDatabaseConfiguration(
+                context.getDatabasePath("dictionary.db").path,
+                SQLiteDatabase.OPEN_CREATE or SQLiteDatabase.OPEN_READWRITE
+            )
+            config.customExtensions.add(
+                SQLiteCustomExtension(
+                    "libsqlite_zstd",
+                    "sqlite3_sqlitezstd_init"
+                )
+            )
+            val options = RequerySQLiteOpenHelperFactory.ConfigurationOptions { config }
+            RequerySQLiteOpenHelperFactory(listOf(options)).create(configuration)
+
+        }.build()
+    }
+
+    @Provides
+    fun provideTestDao(database: TestDatabase) = database.testDao()
+
+    @Singleton
+    @Provides
+    fun provideTestDatabase(@ApplicationContext context: Context): TestDatabase {
+        return Room.databaseBuilder(
+            context.applicationContext, TestDatabase::class.java, "test.db"
+        ).createFromAsset("database/dictionary.sqlite").openHelperFactory { configuration ->
+            Log.d("DatabaseModule", "provideTestDatabase: ")
+            val config = SQLiteDatabaseConfiguration(
+                context.getDatabasePath("test.db").path,
+                SQLiteDatabase.OPEN_CREATE or SQLiteDatabase.OPEN_READWRITE
+            )
+            config.customExtensions.add(
+                SQLiteCustomExtension(
+                    "libsqlite_zstd",
+                    "sqlite3_sqlitezstd_init"
+                )
+            )
+            val options = RequerySQLiteOpenHelperFactory.ConfigurationOptions { config }
+            RequerySQLiteOpenHelperFactory(listOf(options)).create(configuration)
+
+        }.build()
     }
 
     @Provides

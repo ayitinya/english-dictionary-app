@@ -26,4 +26,10 @@ interface FavouritesDao {
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM Favourites WHERE word = :word")
     suspend fun getFavouriteWord(word: String): LocalFavourite
+
+    @Query("DELETE FROM Favourites")
+    suspend fun deleteAll()
+
+    @Query("DELETE FROM Favourites WHERE word IN (:selectedFavourites)")
+    suspend fun deleteSelectedFavouriteItems(selectedFavourites: List<String>)
 }

@@ -15,23 +15,23 @@ const val PREFERENCES_NAME = "settings_preferences"
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
 
-suspend fun Context.saveBoolean(key: String, value: Boolean) {
+suspend fun Context.saveBoolean(key: SettingsKeys, value: Boolean) {
     dataStore.edit { settings ->
-        settings[booleanPreferencesKey(key)] = value
+        settings[booleanPreferencesKey(key.value)] = value
     }
 }
 
-fun Context.readBoolean(key: String): Flow<Boolean> =
-    dataStore.data.map { settings -> settings[booleanPreferencesKey(key)] ?: false }
+fun Context.readBoolean(key: SettingsKeys): Flow<Boolean> =
+    dataStore.data.map { settings -> settings[booleanPreferencesKey(key.value)] ?: false }
 
-suspend fun Context.saveString(key: String, value: String) {
+suspend fun Context.saveString(key: SettingsKeys, value: String) {
     dataStore.edit { settings ->
-        settings[stringPreferencesKey(key)] = value
+        settings[stringPreferencesKey(key.value)] = value
     }
 }
 
-suspend fun Context.readStringSync(key: String): String? =
-    dataStore.data.first()[stringPreferencesKey(key)]
+suspend fun Context.readStringSync(key: SettingsKeys): String? =
+    dataStore.data.first()[stringPreferencesKey(key.value)]
 
-fun Context.readString(key: String): Flow<String?> =
-    dataStore.data.map { settings -> settings[stringPreferencesKey(key)] }
+fun Context.readString(key: SettingsKeys): Flow<String?> =
+    dataStore.data.map { settings -> settings[stringPreferencesKey(key.value)] }

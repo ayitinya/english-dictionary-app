@@ -22,7 +22,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val dictionaryRepository: DictionaryRepository,
     private val historyRepository: HistoryRepository,
-    analytics: FirebaseAnalytics
+    analytics: FirebaseAnalytics?
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchScreenUiState())
@@ -33,7 +33,7 @@ class SearchViewModel @Inject constructor(
             historyRepository.observeLastNumberHistory(5).collect { history ->
                 _uiState.value = _uiState.value.copy(history = history)
             }
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "SearchScreen")
                 param(FirebaseAnalytics.Param.SCREEN_CLASS, "SearchScreen.kt")
             }

@@ -3,6 +3,7 @@ package com.ayitinya.englishdictionary.data.word_of_the_day.source
 import com.ayitinya.englishdictionary.data.dictionary.source.local.DictionaryDao
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.local.WotdDao
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.remote.WordOfTheDayApiService
+import com.google.firebase.perf.metrics.AddTrace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,6 +39,7 @@ class DefaultWotdRepository @Inject constructor(
         }
     }
 
+    @AddTrace(name = "getWordOfTheDay")
     override suspend fun getWordOfTheDay(): Wotd? {
         val wotd = localDataSource.getWordOfTheDay()?.toExternal()
 

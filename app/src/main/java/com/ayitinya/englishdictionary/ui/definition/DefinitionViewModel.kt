@@ -8,8 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
+import com.ayitinya.englishdictionary.data.settings.SettingsRepository
+import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
+import com.ayitinya.englishdictionary.data.test.TestRepository
 import com.ayitinya.englishdictionary.domain.ActivateWotdNotificationUseCase
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -29,11 +32,13 @@ import javax.inject.Inject
 @HiltViewModel
 class DefinitionViewModel @Inject constructor(
     @ApplicationContext context: Context,
+    private val testRepository: TestRepository,
     private val dictionaryRepository: DictionaryRepository,
     private val favouritesRepository: FavouritesRepository,
     private val historyRepository: HistoryRepository,
     private val activateWotdNotificationUseCase: ActivateWotdNotificationUseCase,
-    analytics: FirebaseAnalytics,
+    private val settingsRepository: SettingsRepository,
+    analytics: FirebaseAnalytics?,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var textToSpeech: TextToSpeech
@@ -52,24 +57,37 @@ class DefinitionViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),
+                    test = testRepository.getDictionaryEntries(_navArgs.word),
                     isFavourite = isFavourite(_navArgs.word)
                 )
             }
 
             if (_navArgs.fromWotd) {
-                context.readBoolean("wotd_modal_display").take(1).collect { state ->
+                context.readBoolean(SettingsKeys.WOTD_MODAL_DISPLAY).take(1).collect { state ->
                     if (!state) {
-                        context.saveBoolean("wotd_modal_display", true)
+                        context.saveBoolean(SettingsKeys.WOTD_MODAL_DISPLAY, true)
                         _uiState.update { it.copy(showBottomModal = true) }
                     }
                 }
             }
-            historyRepository.addHistory(_navArgs.word)
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            launch(Dispatchers.IO) {
+                settingsRepository.readBoolean(SettingsKeys.IS_HISTORY_DEACTIVATED).take(1)
+                    .collect {
+                        if (!it) {
+                            historyRepository.addHistory(_navArgs.word)
+                        }
+                    }
+            }
+
+            analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "DefinitionScreen")
                 param(FirebaseAnalytics.Param.SCREEN_CLASS, "DefinitionScreen.kt")
             }
+
+//            Log.d(
+//                "DefinitionViewModel",
+//                testRepository.getDictionaryEntries(_navArgs.word).toString()
+//            )
         }
     }
 
@@ -103,12 +121,14 @@ class DefinitionViewModel @Inject constructor(
         textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
-    suspend fun onIsFavouriteChange(state: Boolean) {
+    fun onIsFavouriteChange(state: Boolean) {
         _uiState.update { it.copy(isFavourite = state) }
-        if (state) {
-            insertFavourite(_navArgs.word)
-        } else {
-            removeFavourite(_navArgs.word)
+        viewModelScope.launch {
+            if (state) {
+                insertFavourite(_navArgs.word)
+            } else {
+                removeFavourite(_navArgs.word)
+            }
         }
     }
 
@@ -130,9 +150,11 @@ class DefinitionViewModel @Inject constructor(
         }
     }
 
-    suspend fun activateWotdNotification() {
-        withContext(Dispatchers.IO) {
-            activateWotdNotificationUseCase.execute(true)
+    fun activateWotdNotification() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                activateWotdNotificationUseCase.execute(true)
+            }
         }
     }
 

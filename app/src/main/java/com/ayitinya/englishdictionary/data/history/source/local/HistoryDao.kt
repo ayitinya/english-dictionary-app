@@ -19,6 +19,9 @@ interface HistoryDao {
     @Query("DELETE FROM history")
     suspend fun deleteAllHistory()
 
+    @Query("DELETE FROM history WHERE word IN (:words)")
+    suspend fun deleteSelectedHistoryItems(words: List<String>)
+
     @Upsert
     suspend fun addHistory(localHistory: LocalHistory)
 

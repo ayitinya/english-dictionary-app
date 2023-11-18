@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+
 package com.ayitinya.englishdictionary
 
 import android.app.NotificationChannel
@@ -10,11 +12,16 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -27,6 +34,8 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
+import com.ayitinya.englishdictionary.data.settings.source.local.WorkManagerKeys
 import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.readString
 import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
@@ -36,9 +45,15 @@ import com.ayitinya.englishdictionary.services.WotdNotificationService
 import com.ayitinya.englishdictionary.ui.NavGraphs
 import com.ayitinya.englishdictionary.ui.theme.EnglishDictionaryTheme
 import com.ayitinya.englishdictionary.ui.widgets.WotdWidget
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.microsoft.clarity.Clarity
+import com.microsoft.clarity.ClarityConfig
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
+import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.take
@@ -68,11 +83,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val testLabSetting = Settings.System.getString(contentResolver, "firebase.test.lab")
-        if (testLabSetting == "true") {
-            FirebaseAnalytics.getInstance(this.baseContext).setAnalyticsCollectionEnabled(false)
+        Log.d("testLabSetting", "test $testLabSetting")
+        Log.d("BuildConfig", BuildConfig.DEBUG.toString())
+        if (testLabSetting == "false" || !BuildConfig.DEBUG) {
+            FirebaseAnalytics.getInstance(this.baseContext).setAnalyticsCollectionEnabled(true)
+            Clarity.initialize(applicationContext, ClarityConfig("i2vobm1r47"))
+        } else {
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
             Toast.makeText(this.baseContext, "Disabling analytics collection", Toast.LENGTH_SHORT)
                 .show()
         }
@@ -80,9 +101,19 @@ class MainActivity : ComponentActivity() {
         createNotificationChannel()
 
         installSplashScreen()
+
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+            val navHostEngine =
+                rememberAnimatedNavHostEngine(
+                    navHostContentAlignment = Alignment.TopCenter,
+                    rootDefaultAnimations = RootNavGraphDefaultAnimations(enterTransition = {
+                        fadeIn(animationSpec = tween(500))
+                    },
+                        exitTransition = { fadeOut(animationSpec = tween(500)) })
+                )
+
             EnglishDictionaryTheme {
                 val systemUiController = rememberSystemUiController()
                 val useDarkIcons = !isSystemInDarkTheme()
@@ -106,14 +137,13 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    DestinationsNavHost(navGraph = NavGraphs.root)
+                    DestinationsNavHost(navGraph = NavGraphs.root, engine = navHostEngine)
                 }
             }
         }
 
         lifecycle.coroutineScope.launch(Dispatchers.IO) {
-            Log.d("Main Activity", "Global scope")
-            applicationContext.readString("app_version").take(1).collect {
+            applicationContext.readString(SettingsKeys.APP_VERSION).take(1).collect {
 
                 val currentVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     packageManager.getPackageInfo(
@@ -126,25 +156,28 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (it == null) {
-                    applicationContext.saveBoolean("first_open", true)
+                    applicationContext.saveBoolean(SettingsKeys.FIRST_OPEN, true)
                 } else {
-                    applicationContext.saveBoolean("first_open", false)
+                    applicationContext.saveBoolean(SettingsKeys.FIRST_OPEN, false)
                 }
 
                 if (it != currentVersion.toString()) {
 
-                    applicationContext.saveString("app_version", currentVersion.toString())
+                    applicationContext.saveString(
+                        SettingsKeys.APP_VERSION,
+                        currentVersion.toString()
+                    )
                     WorkManager.getInstance(applicationContext).cancelAllWork()
 
                     WorkManager.getInstance(applicationContext).enqueueUniqueWork(
-                        "update_word_of_the_day",
+                        WorkManagerKeys.UPDATE_WORD_OF_THE_DAY.name,
                         ExistingWorkPolicy.REPLACE,
                         OneTimeWorkRequestBuilder<UpdateWordOfTheDay>().setBackoffCriteria(
                             BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS
                         ).build()
                     )
 
-                    applicationContext.readBoolean("notify_word_of_the_day").take(1)
+                    applicationContext.readBoolean(SettingsKeys.NOTIFY_WORD_OF_THE_DAY).take(1)
                         .collect { state ->
                             if (state) {
                                 startWotdNotificationService(applicationContext)
@@ -180,10 +213,12 @@ class MainActivity : ComponentActivity() {
         ).setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.MINUTES)
             .setConstraints(constraints).build()
 
-        applicationContext.saveString("workRequestId", workRequest.id.toString())
+        applicationContext.saveString(SettingsKeys.WORK_REQUEST_ID, workRequest.id.toString())
 
         WorkManager.getInstance(applicationContext).enqueueUniqueWork(
-            "word_of_the_day", ExistingWorkPolicy.REPLACE, workRequest
+            WorkManagerKeys.NOTIFICATION_REQUEST_FOR_WORD_OF_THE_DAY.name,
+            ExistingWorkPolicy.REPLACE,
+            workRequest
         )
     }
 }

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">dictionnaire anglais</string>
+    <string name="app_name">Dictionnaire Anglais</string>
     <string name="notification_text">Le mot du jour d\'aujourd\'hui est</string>
     <string name="search_hint">Recherche</string>
     <string name="search_hint_details">Entrez le mot ou la phrase à rechercher</string>
     <string name="back">Dos</string>
     <string name="add_to_favorites">Ajouter aux Favoris</string>
+    <string name="remove_from_favorites">Retirer des favoris</string>
     <string name="history">Histoire</string>
     <string name="favorites">Favoris</string>
     <string name="etymology">Étymologie</string>
@@ -17,7 +18,27 @@
     <string name="no_results">Aucun résultat trouvé</string>
     <string name="settings">Paramètres</string>
     <string name="notify_word_of_the_day">Notifier le mot du jour</string>
+    <string name="play_button">Bouton jouer</string>
     <string name="permission_rationale">Cette fonction nécessite une autorisation de notification</string>
     <string name="attribution">Entrées de dictionnaire fournies par Wiktionary, sous la licence Creative Commons Attribution-ShareAlike (CC-BY-SA)</string>
     <string name="rate_app">Évaluer l\'application</string>
+    <string name="confirm">vérifier</string>
+    <string name="cancel">Annuler</string>
+    <string name="rate_app_message">Si vous aimez utiliser cette application, cela vous dérangerait-il de prendre un moment pour l\'évaluer ? Cela ne prendra pas plus d\'une minute. Merci pour votre aide!</string>
+    <string name="deactivate_history">Histoire</string>
+    <string name="deactivate_history_rationale">Cela désactivera la fonction d\'historique. Es-tu sur de vouloir continuer?</string>
+    <string name="clear_history">Nettoyer l\'historique</string>
+    <string name="clear_history_rationale">Cela effacera tout l\'historique. Es-tu sur de vouloir continuer?</string>
+    <string name="clear_favorites">Effacer les favoris</string>
+    <string name="clear_favorites_rationale">Cela effacera tous les favoris. Es-tu sur de vouloir continuer?</string>
+    <string name="version">Information sur la version</string>
+    <string name="share_app">Partager l\'application</string>
+    <string name="about">À propos, licences et confidentialité</string>
+    <string name="oss_licenses">licences open source</string>
+    <string name="about_app">Une application de dictionnaire simple avec un ensemble de données basé sur la base de données Wiktionary</string>
+    <string name="appreciation">Un grand merci aux nombreuses bibliothèques open source qui ont été utilisées dans le développement de cette application. Sans le travail acharné et le dévouement des développeurs de ces bibliothèques, notre application n\'aurait pas été possible. Nous sommes vraiment debout sur les épaules de géants</string>
+    <string name="selected">sélectionné</string>
+    <string name="history_deactivated">Le mode historique a été désactivé, activez-le dans les paramètres pour continuer à enregistrer l\'historique</string>
+    <string name="no_history">L\'historique est vide</string>
+    <string name="no_favorites">Aucun mot n\'a encore été ajouté aux favoris</string>
 </resources>

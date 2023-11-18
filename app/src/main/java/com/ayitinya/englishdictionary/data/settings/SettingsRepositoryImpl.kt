@@ -1,6 +1,7 @@
 package com.ayitinya.englishdictionary.data.settings
 
 import android.content.Context
+import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.readString
 import com.ayitinya.englishdictionary.data.settings.source.local.readStringSync
@@ -20,26 +21,26 @@ class SettingsRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     @ApplicationScope private val applicationScope: CoroutineScope
 ) : SettingsRepository {
-    override suspend fun saveBoolean(key: String, value: Boolean) {
+    override suspend fun saveBoolean(key: SettingsKeys, value: Boolean) {
         applicationScope.launch(context = Dispatchers.IO) {
             context.saveBoolean(key, value)
         }
     }
 
-    override suspend fun saveString(key: String, value: String) {
+    override suspend fun saveString(key: SettingsKeys, value: String) {
         applicationScope.launch {
             context.saveString(key, value)
         }
     }
 
-    override suspend fun readStringSync(key: String): String? =
+    override suspend fun readStringSync(key: SettingsKeys): String? =
         context.readStringSync(key)
 
-    override fun readString(key: String): Flow<String?> {
+    override fun readString(key: SettingsKeys): Flow<String?> {
         return context.readString(key)
     }
 
-    override fun readBoolean(key: String): Flow<Boolean> {
+    override fun readBoolean(key: SettingsKeys): Flow<Boolean> {
         return context.readBoolean(key)
     }
 }

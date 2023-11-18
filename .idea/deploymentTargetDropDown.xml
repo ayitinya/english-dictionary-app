@@ -2,57 +2,11 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="BaselineProfileGenerator">
-        <State />
-      </entry>
-      <entry key="StartupBenchmarks">
-        <State />
-      </entry>
       <entry key="TextBox">
         <State />
       </entry>
-      <entry key="UpdateWordOfTheDayServiceTest">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\Ayitinya\.android\avd\Pixel_3a_API_33_x86_64.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-07-07T18:27:59.073410700Z" />
-        </State>
-      </entry>
       <entry key="app">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\Ayitinya\.android\avd\Pixel_3a_API_24.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-07-21T06:56:04.647100500Z" />
-          <runningDeviceTargetsSelectedWithDialog>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\Ayitinya\.android\avd\Resizable_Experimental_API_33.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetsSelectedWithDialog>
-        </State>
+        <State />
       </entry>
       <entry key="app.dictionarydb">
         <State />

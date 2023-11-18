@@ -182,21 +182,36 @@ fun DefinitionScreen(
         },
         floatingActionButton = {
             uiState.word?.let {
-                ExtendedFloatingActionButton(text = { Text(text = stringResource(id = R.string.add_to_favorites)) },
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(
+                            text = if (uiState.isFavourite) stringResource(id = R.string.remove_from_favorites) else stringResource(
+                                id = R.string.add_to_favorites
+                            )
+                        )
+                    },
                     icon = {
                         Icon(
                             imageVector = if (uiState.isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = stringResource(id = R.string.add_to_favorites)
+                            contentDescription = if (uiState.isFavourite) stringResource(id = R.string.remove_from_favorites) else stringResource(
+                                id = R.string.add_to_favorites
+                            )
                         )
                     },
                     expanded = lazyListState.isScrollingUp(),
-                    onClick = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } })
+                    onClick = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } },
+                )
             }
         },
 
         ) { paddingValues ->
         AnimatedVisibility(visible = uiState.entries != null) {
             LazyColumn(contentPadding = paddingValues, state = lazyListState) {
+                uiState.test?.let {
+                    item {
+                        Text(text = it.data.toString())
+                    }
+                }
                 uiState.entries?.let {
                     if (it.dictionaryEntries.isNotEmpty() && it.dictionaryEntries.first().etymology != null) {
                         item {
@@ -226,6 +241,7 @@ fun DefinitionScreen(
                     }
                     items(it.dictionaryEntries) { dictionaryEntry ->
                         Definition(
+                            entryNumber = it.dictionaryEntries.indexOf(dictionaryEntry) + 1,
                             pos = dictionaryEntry.pos,
                             glosses = dictionaryEntry.glosses,
                             example = dictionaryEntry.example,
@@ -324,7 +340,12 @@ private fun TopAppBar(
 
 @Composable
 private fun Definition(
-    pos: String, glosses: String, example: String?, sounds: String?, modifier: Modifier = Modifier
+    entryNumber: Int,
+    pos: String,
+    glosses: String,
+    example: String?,
+    sounds: String?,
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
@@ -341,7 +362,7 @@ private fun Definition(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = pos, style = MaterialTheme.typography.titleLarge)
+                    Text(text = "$entryNumber. $pos", style = MaterialTheme.typography.titleLarge)
                     if (sounds != null) {
                         Text(
                             text = "${stringResource(id = R.string.ipa)}: $sounds",
@@ -371,6 +392,7 @@ private fun Footer() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .padding(bottom = 64.dp)
     ) {
         Text(
             text = stringResource(id = R.string.attribution),
@@ -384,6 +406,7 @@ private fun Footer() {
 @Preview
 private fun DefinitionPreview() {
     Definition(
+        entryNumber = 1,
         pos = "noun",
         glosses = "A word with a very long meaning",
         example = "here is an example of the word",

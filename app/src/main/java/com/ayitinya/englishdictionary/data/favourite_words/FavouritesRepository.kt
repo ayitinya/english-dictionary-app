@@ -10,4 +10,8 @@ interface FavouritesRepository {
     suspend fun removeFavourite(word: String)
 
     suspend fun isFavourite(word: String): Boolean
+
+    suspend fun clearFavorites()
+
+    suspend fun deleteSelectedFavoriteItems(selectedFavourites: List<Favourite>)
 }

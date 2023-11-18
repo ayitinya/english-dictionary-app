@@ -1,58 +1,62 @@
 [versions]
 aboutlibraries-compose = "10.8.3"
-agp = "8.2.0-alpha13"
+agp = "8.3.0-alpha13"
+#agp = "8.1.0"
 anrwatchdog = "1.4.0"
 appwidget-viewer = "0.2.2"
 asset-delivery-ktx = "2.1.0"
+clarity = "1.3.3"
 datastore-preferences = "1.0.0"
-desugar_jdk_libs = "2.0.3"
-firebase-crashlytics-gradle = "2.9.7"
-glance-appwidget = "1.0.0-beta01"
-glance = "1.0.0-beta01"
-google-services = "4.3.15"
+desugar_jdk_libs = "2.0.4"
+firebase-crashlytics-gradle = "2.9.9"
+glance-appwidget = "1.0.0"
+glance = "1.0.0"
+google-services = "4.4.0"
 hilt-android-testing = "2.47"
-hilt-compiler = "1.0.0"
-hilt-work = "1.0.0"
-kotlin = "1.8.22"
-core-ktx = "1.10.1"
+hilt-compiler = "1.1.0"
+hilt-work = "1.1.0"
+junit-jupiter = "5.8.2"
+kotlin = "1.9.10"
+core-ktx = "1.12.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
-lifecycle-runtime-ktx = "2.6.1"
-activity-compose = "1.7.2"
-compose-bom = "2023.06.01"
+lifecycle-runtime-ktx = "2.6.2"
+activity-compose = "1.8.1"
+compose-bom = "2023.10.01"
 napier = "2.6.1"
 perf-plugin = "1.4.2"
 review-ktx = "2.0.1"
 review = "2.0.1"
-room_version = "2.5.2"
-ksp = "1.8.22-1.0.11"
-hilt-android = "2.47"
-hilt-navigation-compose = "1.0.0"
-lifecycle_version = "2.6.1"
+room_version = "2.6.0"
+ksp = "1.9.10-1.0.13"
+hilt-android = "2.48"
+hilt-navigation-compose = "1.1.0"
+lifecycle_version = "2.6.2"
 accompanist_version = "0.30.1"
 constraintlayout_version = "1.0.1"
-nav_version = "2.6.0"
-paging_version = "3.1.1"
-ktor_version = "2.3.2"
+nav_version = "2.7.5"
+paging_version = "3.2.1"
+ktor_version = "2.3.4"
+sentry-android = "6.33.1"
 serialization_version = "1.5.1"
-compose-destinations = "1.9.50"
+compose-destinations = "1.9.52"
 splashscreen-version = "1.0.1"
-firebase-crashlytics-ktx = "18.4.0"
-firebase-analytics-ktx = "21.3.0"
-firebase-perf-ktx = "20.4.0"
-sentry = "3.7.0"
+firebase-crashlytics-ktx = "18.5.1"
+firebase-analytics-ktx = "21.5.0"
+firebase-perf-ktx = "20.5.0"
+sentry = "3.14.0"
+sqlite-android = "3.43.0"
 uiautomator = "2.2.0"
-benchmark-macro-junit4 = "1.2.0-alpha16"
-androidx-baselineprofile = "1.2.0-alpha13"
+benchmark-macro-junit4 = "1.2.0"
+androidx-baselineprofile = "1.2.1"
 profileinstaller = "1.3.1"
-firebase-messaging-ktx = "23.2.0"
+firebase-messaging-ktx = "23.3.1"
 appcompat = "1.6.1"
-material = "1.9.0"
+material = "1.10.0"
 window = "1.1.0"
 work_version = "2.8.1"
 work-testing = "2.8.1"
-com-google-android-material-material = "1.9.0"
 
 [libraries]
 aboutlibraries-compose = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutlibraries-compose" }
@@ -66,15 +70,17 @@ androidx-window = { module = "androidx.window:window", version.ref = "window" }
 anrwatchdog = { module = "com.github.anrwatchdog:anrwatchdog", version.ref = "anrwatchdog" }
 appwidget-viewer = { module = "com.google.android.glance.tools:appwidget-viewer", version.ref = "appwidget-viewer" }
 asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx", version.ref = "asset-delivery-ktx" }
+clarity = { module = "com.microsoft.clarity:clarity", version.ref = "clarity" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
 google-services = { module = "com.google.gms:google-services", version.ref = "google-services" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-android-testing" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-android" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -82,6 +88,9 @@ napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 perf-plugin = { module = "com.google.firebase:perf-plugin", version.ref = "perf-plugin" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
 review = { module = "com.google.android.play:review", version.ref = "review" }
+sentry-android = { module = "io.sentry:sentry-android", version.ref = "sentry-android" }
+sentry-compose-android = { module = "io.sentry:sentry-compose-android", version.ref = "sentry-android" }
+sqlite-android = { module = "com.github.requery:sqlite-android", version.ref = "sqlite-android" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -114,7 +123,7 @@ androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version" }
 
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging_version" }
-androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version = "1.0.0-alpha20" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging_version" }
 
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
@@ -123,6 +132,7 @@ io-ktor-client-android = { group = "io.ktor", name = "ktor-client-android", vers
 io-ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor_version" }
 io-ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor_version" }
 io-ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor_version" }
+io-ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor_version" }
 org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization_version" }
 
 io-github-raamcosta-compose-destinations-animations-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "compose-destinations" }
@@ -138,7 +148,7 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work_version" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist_version" }
 androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work-testing" }
-material = { group = "com.google.android.material", name = "material", version.ref = "com-google-android-material-material" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

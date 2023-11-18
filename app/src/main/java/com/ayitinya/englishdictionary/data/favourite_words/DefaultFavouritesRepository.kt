@@ -35,4 +35,12 @@ class DefaultFavouritesRepository @Inject constructor(private val localDataSourc
             localDataSource.isFavourite(word)
         }
     }
+
+    override suspend fun clearFavorites() {
+        localDataSource.deleteAll()
+    }
+
+    override suspend fun deleteSelectedFavoriteItems(selectedFavourites: List<Favourite>) {
+        localDataSource.deleteSelectedFavouriteItems(selectedFavourites.map { it.word })
+    }
 }

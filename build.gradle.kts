@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.androidx.baselineprofile) apply false
     id("com.mikepenz.aboutlibraries.plugin") version "10.8.3" apply false
+    id("app.cash.sqldelight") version "2.0.0" apply false
 }
 
 

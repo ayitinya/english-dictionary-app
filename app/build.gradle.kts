@@ -6,11 +6,13 @@ plugins {
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.sentry.android.gradle.plugin)
+    id("io.sentry.kotlin.compiler.gradle") version "3.14.0"
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
     id("com.mikepenz.aboutlibraries.plugin")
+    id("app.cash.sqldelight")
     alias(libs.plugins.androidx.baselineprofile)
     kotlin("kapt")
 }
@@ -18,13 +20,14 @@ plugins {
 android {
     namespace = "com.ayitinya.englishdictionary"
     compileSdk = 34
+    ndkVersion = "21.4.7075529"
 
     defaultConfig {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 21
-        versionName = "1.2.0"
+        versionCode = 24
+        versionName = "1.2.3"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -82,14 +85,13 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    ndkVersion = "25.2.9519653"
 
     packaging {
         resources.excludes.add("META-INF/*")
@@ -107,8 +109,9 @@ sentry {
 
 dependencies {
 
-    implementation(libs.androidx.work.testing)
+    testImplementation(libs.androidx.work.testing)
     implementation(libs.material)
+    testImplementation(libs.junit.jupiter)
     "baselineProfile"(project(":baselineprofile"))
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -147,7 +150,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.dagger.hilt.android)
-    kapt(libs.dagger.hilt.android.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -172,6 +175,7 @@ dependencies {
     implementation(libs.io.ktor.serialization.kotlinx.json)
     implementation(libs.io.ktor.client.logging)
     implementation(libs.io.ktor.client.content.negotiation)
+    testImplementation(libs.io.ktor.client.mock)
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
 
     implementation(libs.io.github.raamcosta.compose.destinations.animations.core)
@@ -201,6 +205,12 @@ dependencies {
     implementation(libs.aboutlibraries.core)
 
     implementation(libs.anrwatchdog)
+    implementation(libs.clarity)
+
+    implementation(libs.sqlite.android)
+
+    implementation(libs.sentry.android)
+    implementation(libs.sentry.compose.android)
 }
 
 

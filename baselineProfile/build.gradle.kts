@@ -8,8 +8,14 @@ plugins {
 }
 
 android {
+    buildTypes {
+        create("beta") {
+        }
+        create("nonMinifiedBeta") {
+        }
+    }
     namespace = "com.ayitinya.englishdictionary.baselineprofile"
-    compileSdk = 33
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -22,7 +28,7 @@ android {
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 33
+        targetSdk = 34
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
