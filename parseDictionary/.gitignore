@@ -1,0 +1,8 @@
+__pycache__/
+words.json
+*.db
+
+env/
+venv/
+
+data/

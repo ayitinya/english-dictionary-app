@@ -32,8 +32,8 @@ class DefaultWotdRepository @Inject constructor(
                                 id = 0,
                                 pos = this.pos,
                                 sound = this.sound,
-                                example = "this.senses.firstOrNull().examples.firstOrNull()",
-                                glosses = ""
+                                example = this.senses.firstOrNull()?.examples?.firstOrNull() ?: "",
+                                glosses = this.senses.firstOrNull()?.glosses?.firstOrNull() ?: ""
                             )
                         }
                     )

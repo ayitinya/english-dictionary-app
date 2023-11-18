@@ -1,0 +1,1 @@
+sqlite-zstd @ git+https://github.com/phiresky/sqlite-zstd.git@6e058289e2898d3d23c975d471d581e6bab83d19#subdirectory=python
