@@ -159,7 +159,8 @@ private fun WordOfTheDay(
                 Text("${wordOfTheDay.date.dayOfMonth} ${wordOfTheDay.date.month} ${wordOfTheDay.date.year}")
             }
             Text(text = wordOfTheDay.word, style = MaterialTheme.typography.headlineLarge)
-            Text(text = wordOfTheDay.glosses, style = MaterialTheme.typography.bodyLarge)
+            wordOfTheDay.sense?.glosses?.firstOrNull()
+                ?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
 
             TextButton(onClick = {
                 viewModel.navigateToDefinitionScreen(

@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -207,13 +206,8 @@ fun DefinitionScreen(
         ) { paddingValues ->
         AnimatedVisibility(visible = uiState.entries != null) {
             LazyColumn(contentPadding = paddingValues, state = lazyListState) {
-                uiState.test?.let {
-                    item {
-                        Text(text = it.data.toString())
-                    }
-                }
                 uiState.entries?.let {
-                    if (it.dictionaryEntries.isNotEmpty() && it.dictionaryEntries.first().etymology != null) {
+                    if (it.isNotEmpty() && it.first().etymology != null) {
                         item {
                             Card(
                                 modifier = modifier
@@ -230,7 +224,7 @@ fun DefinitionScreen(
                                             style = MaterialTheme.typography.titleLarge
                                         )
                                         Text(
-                                            text = it.dictionaryEntries.first().etymology!!,
+                                            text = it.first().etymology!!,
                                             style = MaterialTheme.typography.bodyLarge
                                         )
                                     }
@@ -239,14 +233,17 @@ fun DefinitionScreen(
                         }
 
                     }
-                    items(it.dictionaryEntries) { dictionaryEntry ->
-                        Definition(
-                            entryNumber = it.dictionaryEntries.indexOf(dictionaryEntry) + 1,
-                            pos = dictionaryEntry.pos,
-                            glosses = dictionaryEntry.glosses,
-                            example = dictionaryEntry.example,
-                            sounds = dictionaryEntry.sounds
-                        )
+                    it.forEach { entry ->
+                        entry.senses.forEach { sense ->
+                            item {
+                                Definition(pos = entry.pos,
+                                    glosses = sense.glosses.fold("") { acc, s -> acc.plus("$s\n") }
+                                        .trim(),
+                                    example = sense.examples.fold("") { acc, s -> acc.plus("$s\n") }
+                                        .trim(),
+                                    sounds = entry.sound)
+                            }
+                        }
                     }
                 }
                 item {
@@ -340,12 +337,7 @@ private fun TopAppBar(
 
 @Composable
 private fun Definition(
-    entryNumber: Int,
-    pos: String,
-    glosses: String,
-    example: String?,
-    sounds: String?,
-    modifier: Modifier = Modifier
+    pos: String, glosses: String, example: String?, sounds: String?, modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
@@ -362,7 +354,7 @@ private fun Definition(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "$entryNumber. $pos", style = MaterialTheme.typography.titleLarge)
+                    Text(text = pos, style = MaterialTheme.typography.titleLarge)
                     if (sounds != null) {
                         Text(
                             text = "${stringResource(id = R.string.ipa)}: $sounds",
@@ -371,7 +363,7 @@ private fun Definition(
                     }
                 }
                 Text(text = glosses, style = MaterialTheme.typography.bodyLarge)
-                if (example != null) {
+                if (!example.isNullOrEmpty()) {
                     Column {
                         Text(
                             text = stringResource(id = R.string.example),
@@ -406,7 +398,6 @@ private fun Footer() {
 @Preview
 private fun DefinitionPreview() {
     Definition(
-        entryNumber = 1,
         pos = "noun",
         glosses = "A word with a very long meaning",
         example = "here is an example of the word",

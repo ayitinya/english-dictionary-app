@@ -12,7 +12,6 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
     id("com.mikepenz.aboutlibraries.plugin")
-    id("app.cash.sqldelight")
     alias(libs.plugins.androidx.baselineprofile)
     kotlin("kapt")
 }
@@ -26,8 +25,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 24
-        versionName = "1.2.3"
+        versionCode = 26
+        versionName = "2.0.0-beta"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"

@@ -93,7 +93,7 @@ object DatabaseModule {
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
         return Room.databaseBuilder(
             context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
-        ).createFromAsset("database/data.sqlite").openHelperFactory { configuration ->
+        ).createFromAsset("database/dictionary.sqlite").openHelperFactory { configuration ->
             val config = SQLiteDatabaseConfiguration(
                 context.getDatabasePath("dictionary.db").path,
                 SQLiteDatabase.OPEN_CREATE or SQLiteDatabase.OPEN_READWRITE

@@ -57,7 +57,7 @@ class DefinitionViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    test = testRepository.getDictionaryEntries(_navArgs.word),
+                    entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),
                     isFavourite = isFavourite(_navArgs.word)
                 )
             }
@@ -83,11 +83,6 @@ class DefinitionViewModel @Inject constructor(
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "DefinitionScreen")
                 param(FirebaseAnalytics.Param.SCREEN_CLASS, "DefinitionScreen.kt")
             }
-
-//            Log.d(
-//                "DefinitionViewModel",
-//                testRepository.getDictionaryEntries(_navArgs.word).toString()
-//            )
         }
     }
 

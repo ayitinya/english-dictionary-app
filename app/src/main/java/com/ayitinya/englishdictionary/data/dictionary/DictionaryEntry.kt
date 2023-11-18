@@ -1,8 +1,6 @@
 package com.ayitinya.englishdictionary.data.dictionary
 
 import android.os.Parcelable
-import com.ayitinya.englishdictionary.data.dictionary.source.local.LocalDictionaryEntry
-import com.ayitinya.englishdictionary.data.dictionary.source.remote.RemoteWordRelationship
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -29,31 +27,31 @@ data class DictionaryEntriesWithRelatedWords(
     val isFavourite: Boolean = false,
 ) : Parcelable
 
-fun LocalDictionaryEntry.toExternal(): DictionaryEntry {
-    return DictionaryEntry(
-        wordId = wordId,
-        word = word,
-        pos = pos,
-        sounds = sounds,
-        glosses = glosses,
-        example = example,
-        etymology = etymology
-    )
-}
+//fun LocalDictionaryEntry.toExternal(): DictionaryEntry {
+//    return DictionaryEntry(
+//        wordId = wordId,
+//        word = word,
+//        pos = pos,
+//        sounds = sounds,
+//        glosses = glosses,
+//        example = example,
+//        etymology = etymology
+//    )
+//}
 
-@JvmName("toExternalLocalDictionaryEntry")
-fun List<LocalDictionaryEntry>.toExternal(): List<DictionaryEntry> {
-    return map { it.toExternal() }
-}
+//@JvmName("toExternalLocalDictionaryEntry")
+//fun List<LocalDictionaryEntry>.toExternal(): List<DictionaryEntry> {
+//    return map { it.toExternal() }
+//}
 
-fun RemoteWordRelationship.toExternal(): RelatedWords {
-    return RelatedWords(
-        relationshipType = relationshipType,
-        words = words
-    )
-}
+//fun RemoteWordRelationship.toExternal(): RelatedWords {
+//    return RelatedWords(
+//        relationshipType = relationshipType,
+//        words = words
+//    )
+//}
 
-@JvmName("toExternalRemoteWordRelationship")
-fun List<RemoteWordRelationship>.toExternal(): List<RelatedWords> {
-    return map { it.toExternal() }
-}
+//@JvmName("toExternalRemoteWordRelationship")
+//fun List<RemoteWordRelationship>.toExternal(): List<RelatedWords> {
+//    return map { it.toExternal() }
+//}

@@ -134,12 +134,14 @@ class WotdWidget() : GlanceAppWidget() {
                                     modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp),
                                     maxLines = 2,
                                 )
-                                Text(
-                                    text = wotd.glosses, maxLines = 2, style = TextStyle(
-                                        color = GlanceTheme.colors.primary,
-                                        textAlign = TextAlign.Center,
-                                    ), modifier = GlanceModifier.fillMaxWidth()
-                                )
+                                wotd.sense?.glosses?.let {
+                                    Text(
+                                        text = it.first(), maxLines = 2, style = TextStyle(
+                                            color = GlanceTheme.colors.primary,
+                                            textAlign = TextAlign.Center,
+                                        ), modifier = GlanceModifier.fillMaxWidth()
+                                    )
+                                }
                             }
 
                             else -> {

@@ -1,7 +1,6 @@
 package com.ayitinya.englishdictionary.data.dictionary
 
 import com.ayitinya.englishdictionary.data.dictionary.source.local.DictionaryDao
-import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.google.firebase.perf.metrics.AddTrace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +13,6 @@ import javax.inject.Singleton
 @Singleton
 class DictionaryRepositoryImpl @Inject constructor(
     private val localDataSource: DictionaryDao,
-    private val favouritesRepository: FavouritesRepository
 ) : DictionaryRepository {
     @AddTrace(name = "searchDictionary")
     override suspend fun searchDictionary(query: String): List<Dictionary> {
@@ -24,12 +22,9 @@ class DictionaryRepositoryImpl @Inject constructor(
     }
 
     @AddTrace(name = "getDictionaryEntries")
-    override suspend fun getDictionaryEntries(query: String): DictionaryEntriesWithRelatedWords {
+    override suspend fun getDictionaryEntries(query: String): List<Dictionary> {
         return withContext(Dispatchers.IO) {
-            val dictionaryEntries = localDataSource.getWordDetails(query).toExternal()
-            return@withContext DictionaryEntriesWithRelatedWords(
-                dictionaryEntries = dictionaryEntries,
-            )
+            localDataSource.getWordDetails(query).toExternal()
         }
     }
 
@@ -39,12 +34,9 @@ class DictionaryRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun observeDictionaryEntry(word: String): Flow<DictionaryEntriesWithRelatedWords> {
+    override fun observeDictionaryEntry(word: String): Flow<List<Dictionary>> {
         return localDataSource.observeDictionaryEntry(word).map {
-            DictionaryEntriesWithRelatedWords(
-                dictionaryEntries = it.toExternal(),
-                isFavourite = favouritesRepository.isFavourite(word)
-            )
+            it.toExternal()
         }
     }
 }
