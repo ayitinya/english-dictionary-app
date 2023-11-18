@@ -25,7 +25,7 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 26
+        versionCode = 27
         versionName = "2.0.0-beta"
 
 
