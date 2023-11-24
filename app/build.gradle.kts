@@ -9,11 +9,9 @@ plugins {
     id("io.sentry.kotlin.compiler.gradle") version "3.14.0"
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
     id("com.mikepenz.aboutlibraries.plugin")
     alias(libs.plugins.androidx.baselineprofile)
-    kotlin("kapt")
 }
 
 android {
@@ -25,8 +23,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 27
-        versionName = "2.0.0-beta"
+        versionCode = 32
+        versionName = "2.0.0"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -95,6 +93,10 @@ android {
     packaging {
         resources.excludes.add("META-INF/*")
     }
+
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
 }
 
 
@@ -114,8 +116,6 @@ dependencies {
     "baselineProfile"(project(":baselineprofile"))
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation(libs.asset.delivery.ktx)
-
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -124,11 +124,11 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-    implementation(libs.firebase.crashlytics.ktx)
-    implementation(libs.firebase.analytics.ktx)
-    implementation(libs.firebase.perf.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.perf)
     implementation(libs.profileinstaller)
-    implementation(libs.firebase.messaging.ktx)
+    implementation(libs.firebase.messaging)
     implementation(libs.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -156,7 +156,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-    kapt(libs.androidx.lifecycle.compiler)
+    ksp(libs.androidx.lifecycle.compiler)
 
     implementation(libs.accompanist.systemuicontroller)
 
@@ -183,13 +183,13 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     implementation(libs.androidx.hilt.work)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     implementation(libs.androidx.glance)
     implementation(libs.androidx.glance.appwidget)
 
     androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.dagger.hilt.android.compiler)
+    kspAndroidTest(libs.dagger.hilt.android.compiler)
 
     implementation(libs.appcompat)
 
@@ -204,7 +204,6 @@ dependencies {
     implementation(libs.aboutlibraries.core)
 
     implementation(libs.anrwatchdog)
-    implementation(libs.clarity)
 
     implementation(libs.sqlite.android)
 
@@ -213,14 +212,8 @@ dependencies {
 }
 
 
-
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
-}
-
-kapt {
-    correctErrorTypes = true
-    useBuildCache = true
 }
 
 hilt {

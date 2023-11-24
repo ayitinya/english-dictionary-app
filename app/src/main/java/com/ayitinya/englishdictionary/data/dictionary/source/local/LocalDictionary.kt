@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 import androidx.room.SkipQueryVerification
 
 @Entity(tableName = "_zstd_dicts")
-private data class ZstdDicts(
+data class ZstdDicts(
     @PrimaryKey val id: Int?,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB) val dict: ByteArray,
     @ColumnInfo(name = "chooser_key") val chooserKey: String?,

@@ -6,7 +6,7 @@ import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.analytics.logEvent
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,9 +29,12 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(wotd = wotdRepository.getWordOfTheDay(), isLoading = false)
+            dictionaryRepository.getDictionaryEntries("test").run {
+                _uiState.update {
+                    it.copy(wotd = wotdRepository.getWordOfTheDay(), isLoading = false)
+                }
             }
+
             analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "HomeScreen")
                 param(FirebaseAnalytics.Param.SCREEN_CLASS, "HomeScreen.kt")
@@ -48,9 +51,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun navigateToDefinitionScreen(
-        word: String,
-        fromWotd: Boolean? = false,
-        navController: DestinationsNavigator
+        word: String, fromWotd: Boolean? = false, navController: DestinationsNavigator
     ) {
         viewModelScope.launch {
             navController.navigate(

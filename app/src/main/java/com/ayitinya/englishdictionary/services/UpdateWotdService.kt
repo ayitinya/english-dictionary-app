@@ -28,12 +28,13 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
-class UpdateWordOfTheDay @AssistedInject constructor(
-    @Assisted context: Context,
-    @Assisted workerParameters: WorkerParameters,
+class UpdateWotdService @AssistedInject constructor(
+    @Assisted private val context: Context,
+    @Assisted private val workerParameters: WorkerParameters,
     private val wotdRepository: DefaultWotdRepository,
     private val settingsRepository: SettingsRepository
 ) : CoroutineWorker(context, workerParameters) {
+
 
     override suspend fun doWork(): Result {
         if (runAttemptCount > 25) {
@@ -74,17 +75,20 @@ class UpdateWordOfTheDay @AssistedInject constructor(
         val timeDiff = dueDate.timeInMillis - now.timeInMillis
 
         val constraints =
-            Constraints.Builder().setRequiredNetworkType(networkType = NetworkType.CONNECTED)
+            Constraints.Builder()
+                .setRequiredNetworkType(networkType = NetworkType.CONNECTED)
                 .setRequiresBatteryNotLow(requiresBatteryNotLow = true).build()
 
 
-        val workRequest = OneTimeWorkRequestBuilder<UpdateWordOfTheDay>().setInitialDelay(
+        val workRequest = OneTimeWorkRequestBuilder<UpdateWotdService>().setInitialDelay(
             timeDiff, TimeUnit.MILLISECONDS
         ).setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
             .setConstraints(constraints).build()
 
         WorkManager.getInstance(applicationContext).enqueueUniqueWork(
-            WorkManagerKeys.UPDATE_WORD_OF_THE_DAY.name, ExistingWorkPolicy.REPLACE, workRequest
+            WorkManagerKeys.UPDATE_WORD_OF_THE_DAY.name,
+            ExistingWorkPolicy.REPLACE,
+            workRequest
         )
 
 
@@ -127,6 +131,7 @@ class UpdateWordOfTheDay @AssistedInject constructor(
             }
 
         }
+
 
         return Result.success()
     }

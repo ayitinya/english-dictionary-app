@@ -21,6 +21,9 @@ class EnglishDictionaryApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        ANRWatchDog().start()
+        if (!BuildConfig.DEBUG) {
+            ANRWatchDog().start()
+        }
     }
+
 }

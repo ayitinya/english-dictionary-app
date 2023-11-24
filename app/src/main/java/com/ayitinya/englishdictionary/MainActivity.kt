@@ -8,7 +8,6 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,7 +39,7 @@ import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.readString
 import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.saveString
-import com.ayitinya.englishdictionary.services.UpdateWordOfTheDay
+import com.ayitinya.englishdictionary.services.UpdateWotdService
 import com.ayitinya.englishdictionary.services.WotdNotificationService
 import com.ayitinya.englishdictionary.ui.NavGraphs
 import com.ayitinya.englishdictionary.ui.theme.EnglishDictionaryTheme
@@ -48,9 +47,6 @@ import com.ayitinya.englishdictionary.ui.widgets.WotdWidget
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.microsoft.clarity.Clarity
-import com.microsoft.clarity.ClarityConfig
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
@@ -87,13 +83,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val testLabSetting = Settings.System.getString(contentResolver, "firebase.test.lab")
-        Log.d("testLabSetting", "test $testLabSetting")
-        Log.d("BuildConfig", BuildConfig.DEBUG.toString())
         if (testLabSetting == "false" || !BuildConfig.DEBUG) {
             FirebaseAnalytics.getInstance(this.baseContext).setAnalyticsCollectionEnabled(true)
-            Clarity.initialize(applicationContext, ClarityConfig("i2vobm1r47"))
+//            Clarity.initialize(applicationContext, ClarityConfig("i2vobm1r47"))
         } else {
-            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
+            FirebaseAnalytics.getInstance(this.baseContext).setAnalyticsCollectionEnabled(false)
             Toast.makeText(this.baseContext, "Disabling analytics collection", Toast.LENGTH_SHORT)
                 .show()
         }
@@ -142,7 +136,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        lifecycle.coroutineScope.launch(Dispatchers.IO) {
+        lifecycle.coroutineScope.launch(Dispatchers.IO)
+        {
             applicationContext.readString(SettingsKeys.APP_VERSION).take(1).collect {
 
                 val currentVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -172,7 +167,7 @@ class MainActivity : ComponentActivity() {
                     WorkManager.getInstance(applicationContext).enqueueUniqueWork(
                         WorkManagerKeys.UPDATE_WORD_OF_THE_DAY.name,
                         ExistingWorkPolicy.REPLACE,
-                        OneTimeWorkRequestBuilder<UpdateWordOfTheDay>().setBackoffCriteria(
+                        OneTimeWorkRequestBuilder<UpdateWotdService>().setBackoffCriteria(
                             BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS
                         ).build()
                     )

@@ -1,5 +1,6 @@
 package com.ayitinya.englishdictionary.data.word_of_the_day.source.remote
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -12,10 +13,12 @@ class WordOfTheDayApiServiceImpl @Inject constructor(private val client: HttpCli
     WordOfTheDayApiService {
     override suspend fun getWikiWotd(): WotdResponse? {
         return try {
+            Log.d("WordOfTheDayApiService", "getWikiWotd: ")
             client.get {
                 url("https://wotd.ayitinya.me/api/main")
             }.body()
         } catch (e: Exception) {
+            Log.d("WordOfTheDayApiService", "getWikiWotd: ${e.message}")
             null
         }
     }

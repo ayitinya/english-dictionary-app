@@ -15,11 +15,8 @@
 local.properties
 google-services.json
 *.apk
-*.db
 /sentry.properties
 /app/private_key.pepk
-/app/src/main/assets/database/db.sqlite
-/dictionaryassets/src/main/assets/database/data.sqlite
 /app/release
 /app/debug
 /app/beta

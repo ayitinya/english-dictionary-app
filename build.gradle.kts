@@ -1,9 +1,6 @@
 buildscript {
     dependencies {
         classpath(libs.gradle)
-        classpath(libs.google.services)
-        classpath(libs.firebase.crashlytics.gradle)
-        classpath(libs.perf.plugin)
     }
 }
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -14,8 +11,9 @@ plugins {
     alias(libs.plugins.hilt.android.gradle.plugin) apply false
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.androidx.baselineprofile) apply false
-    id("com.mikepenz.aboutlibraries.plugin") version "10.8.3" apply false
-    id("app.cash.sqldelight") version "2.0.0" apply false
+    alias(libs.plugins.aboutlibraries.plugin) apply false
+    id("com.google.gms.google-services") version "4.4.0" apply false
+    id("com.google.firebase.firebase-perf") version "1.4.2" apply false
 }
 
 

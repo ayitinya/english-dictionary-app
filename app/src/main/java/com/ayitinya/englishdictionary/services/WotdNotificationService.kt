@@ -22,6 +22,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
+import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.settings.source.local.WorkManagerKeys
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.DefaultWotdRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
@@ -45,9 +46,7 @@ class WotdNotificationService @AssistedInject constructor(
         val intent = Intent(
             Intent.ACTION_VIEW,
             "app://com.ayitinya.englishdictionary/$definitionScreenRoute".toUri()
-        )
-
-        intent.apply {
+        ).apply {
             `package` = applicationContext.packageName
         }
 
@@ -91,7 +90,7 @@ class WotdNotificationService @AssistedInject constructor(
             .setRequiresBatteryNotLow(requiresBatteryNotLow = true).build()
 
 
-        val workRequest = OneTimeWorkRequestBuilder<UpdateWordOfTheDay>()
+        val workRequest = OneTimeWorkRequestBuilder<UpdateWotdService>()
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
             .setConstraints(constraints)
             .build()
@@ -107,7 +106,9 @@ class WotdNotificationService @AssistedInject constructor(
     override suspend fun doWork(): Result {
 
 //        if (wotdRepository.getWordOfTheDay() == null) {
-//            updateWordOfTheDay().result.get()
+//            runBlocking {
+//                updateWordOfTheDay().result.get()
+//            }
 //        }
 
         showNotification()
@@ -137,15 +138,15 @@ class WotdNotificationService @AssistedInject constructor(
             .setConstraints(constraints)
             .build()
 
-//        WorkManager.getInstance(applicationContext)
-//            .enqueueUniqueWork(
-//                WorkManagerKeys.NOTIFICATION_REQUEST_FOR_WORD_OF_THE_DAY.name,
-//                ExistingWorkPolicy.REPLACE,
-//                workRequest
-//            )
-//
-//
-//        settingsRepository.saveString(SettingsKeys.WORK_REQUEST_ID, workRequest.id.toString())
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniqueWork(
+                WorkManagerKeys.NOTIFICATION_REQUEST_FOR_WORD_OF_THE_DAY.name,
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
+
+
+        settingsRepository.saveString(SettingsKeys.WORK_REQUEST_ID, workRequest.id.toString())
 
         return Result.success()
     }

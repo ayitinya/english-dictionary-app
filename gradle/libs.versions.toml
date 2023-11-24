@@ -1,6 +1,6 @@
 [versions]
 aboutlibraries-compose = "10.8.3"
-agp = "8.3.0-alpha13"
+agp = "8.3.0-alpha14"
 #agp = "8.1.0"
 anrwatchdog = "1.4.0"
 appwidget-viewer = "0.2.2"
@@ -24,6 +24,7 @@ espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.6.2"
 activity-compose = "1.8.1"
 compose-bom = "2023.10.01"
+firebase-bom = "32.6.0"
 napier = "2.6.1"
 perf-plugin = "1.4.2"
 review-ktx = "2.0.1"
@@ -84,6 +85,7 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 perf-plugin = { module = "com.google.firebase:perf-plugin", version.ref = "perf-plugin" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
@@ -137,13 +139,13 @@ org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", na
 
 io-github-raamcosta-compose-destinations-animations-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "compose-destinations" }
 io-github-raamcosta-compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
-firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-crashlytics-ktx" }
-firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
-firebase-perf-ktx = { group = "com.google.firebase", name = "firebase-perf-ktx", version.ref = "firebase-perf-ktx" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-perf = { group = "com.google.firebase", name = "firebase-perf" }
 uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmark-macro-junit4" }
 profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
-firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebase-messaging-ktx" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work_version" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist_version" }
@@ -159,6 +161,8 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 sentry-android-gradle-plugin = { id = "io.sentry.android.gradle", version.ref = "sentry" }
 androidTest = { id = "com.android.test", version.ref = "agp" }
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }
+aboutlibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.8.3" }
+google-firebase-plugin = { id = "com.google.firebase.crashlytics", version = "2.9.9" }
 
 [bundles]
 

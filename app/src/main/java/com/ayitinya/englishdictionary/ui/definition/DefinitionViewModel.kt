@@ -12,11 +12,10 @@ import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
-import com.ayitinya.englishdictionary.data.test.TestRepository
 import com.ayitinya.englishdictionary.domain.ActivateWotdNotificationUseCase
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.analytics.logEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +31,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DefinitionViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    private val testRepository: TestRepository,
     private val dictionaryRepository: DictionaryRepository,
     private val favouritesRepository: FavouritesRepository,
     private val historyRepository: HistoryRepository,
