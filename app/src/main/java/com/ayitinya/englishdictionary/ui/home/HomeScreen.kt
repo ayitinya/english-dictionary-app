@@ -1,6 +1,6 @@
 package com.ayitinya.englishdictionary.ui.home
 
-import androidx.compose.animation.AnimatedVisibility
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
@@ -30,11 +31,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,7 +77,49 @@ fun HomeScreen(
     }) { paddingValues ->
         LazyColumn(contentPadding = paddingValues) {
             item {
-                AnimatedVisibility(visible = uiState.wotd != null) {
+                if (uiState.wotd == null) {
+                    Card(
+                        modifier = Modifier
+                            .height(150.dp)
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            if (uiState.isLoading) {
+                                Text(
+                                    text = stringResource(id = R.string.loading_wotd),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            16.dp
+                                        )
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(id = R.string.failed_to_load_wotd),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            16.dp
+                                        )
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    TextButton(onClick = { viewModel.getWordOfTheDay() }) {
+                                        Text(text = stringResource(id = R.string.retry))
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                } else {
                     WordOfTheDay(
                         wordOfTheDay = uiState.wotd!!,
                         viewModel = viewModel,
@@ -81,8 +127,7 @@ fun HomeScreen(
                     )
                 }
 
-                ListItem(
-                    headlineContent = { Text(text = stringResource(id = R.string.random_word)) },
+                ListItem(headlineContent = { Text(text = stringResource(id = R.string.random_word)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Default.Refresh,
@@ -99,8 +144,7 @@ fun HomeScreen(
                             }
                         }
                     })
-                ListItem(
-                    headlineContent = { Text(text = stringResource(id = R.string.favorites)) },
+                ListItem(headlineContent = { Text(text = stringResource(id = R.string.favorites)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Default.Star,
@@ -129,6 +173,20 @@ fun HomeScreen(
                     },
                     modifier = Modifier.clickable { navController.navigate(SettingsScreenDestination) })
             }
+        }
+    }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = uiState.error) {
+        if (uiState.error != null) {
+            Toast.makeText(
+                context,
+                uiState.error,
+                Toast.LENGTH_LONG
+            ).show()
+
+            viewModel.clearError()
         }
     }
 }
@@ -164,9 +222,7 @@ private fun WordOfTheDay(
 
             TextButton(onClick = {
                 viewModel.navigateToDefinitionScreen(
-                    word = wordOfTheDay.word,
-                    fromWotd = true,
-                    navController
+                    word = wordOfTheDay.word, fromWotd = true, navController
                 )
             }, modifier = Modifier.align(Alignment.End)) {
                 Text(text = stringResource(id = R.string.learn_more))

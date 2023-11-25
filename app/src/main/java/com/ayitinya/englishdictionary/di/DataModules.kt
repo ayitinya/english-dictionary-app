@@ -4,9 +4,6 @@ package com.ayitinya.englishdictionary.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.ayitinya.englishdictionary.AppLogger
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepositoryImpl
 import com.ayitinya.englishdictionary.data.dictionary.source.local.DictionaryDatabase
@@ -87,38 +84,28 @@ object DatabaseModule {
     @Provides
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
 
-        return Room.databaseBuilder(
+        val db = Room.databaseBuilder(
             context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
-        ).createFromAsset("database/data.sqlite").fallbackToDestructiveMigration()
-            .addCallback(callback = object : RoomDatabase.Callback() {
-                override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
-                    super.onDestructiveMigration(db)
-                    AppLogger.d("DataModules", "destructive migration happened")
-                }
-
-                override fun onOpen(db: SupportSQLiteDatabase) {
-                    super.onOpen(db)
-                    AppLogger.d("DataModules", "onOpen migration happened")
-                }
-
-                override fun onCreate(db: SupportSQLiteDatabase) {
-                    super.onCreate(db)
-                    AppLogger.d("DataModules", "onCreate migration happened")
-                }
-            }).openHelperFactory { configuration ->
-                val config = SQLiteDatabaseConfiguration(
-                    context.getDatabasePath("dictionary.db").path,
-                    SQLiteDatabase.OPEN_CREATE or SQLiteDatabase.OPEN_READWRITE
+        ).createFromAsset(
+            "database/data.sqlite"
+        ).fallbackToDestructiveMigration().openHelperFactory { configuration ->
+            val config = SQLiteDatabaseConfiguration(
+                context.getDatabasePath("dictionary.db").path,
+                SQLiteDatabase.OPEN_CREATE or SQLiteDatabase.OPEN_READWRITE
+            )
+            config.customExtensions.add(
+                SQLiteCustomExtension(
+                    "libsqlite_zstd", "sqlite3_sqlitezstd_init"
                 )
-                config.customExtensions.add(
-                    SQLiteCustomExtension(
-                        "libsqlite_zstd", "sqlite3_sqlitezstd_init"
-                    )
-                )
-                val options = RequerySQLiteOpenHelperFactory.ConfigurationOptions { config }
-                RequerySQLiteOpenHelperFactory(listOf(options)).create(configuration)
+            )
+            val options = RequerySQLiteOpenHelperFactory.ConfigurationOptions { config }
+            RequerySQLiteOpenHelperFactory(listOf(options)).create(configuration)
 
-            }.build()
+        }.build()
+
+        db.query("SELECT 1", null)
+
+        return db
     }
 
     @Provides

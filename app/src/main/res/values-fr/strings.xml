@@ -41,4 +41,8 @@
     <string name="history_deactivated">Le mode historique a été désactivé, activez-le dans les paramètres pour continuer à enregistrer l\'historique</string>
     <string name="no_history">L\'historique est vide</string>
     <string name="no_favorites">Aucun mot n\'a encore été ajouté aux favoris</string>
+    <string name="collapse_etymology">L\'étymologie doit toujours s\'afficher dans l\'état réduit</string>
+    <string name="failed_to_load_wotd">Impossible de charger le mot du jour</string>
+    <string name="loading_wotd">Chargement du mot du jour</string>
+    <string name="retry">Réessayer</string>
 </resources>

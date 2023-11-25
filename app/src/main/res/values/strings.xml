@@ -46,4 +46,8 @@
     <string name="history_deactivated">History mode has been deactivated, enable it in settings to continue recording history</string>
     <string name="no_history">History is empty</string>
     <string name="no_favorites">No words have been added to favorites yet</string>
+    <string name="collapse_etymology">Etymology should always display in collapsed state</string>
+    <string name="failed_to_load_wotd">Failed to load word of the day</string>
+    <string name="loading_wotd">Loading word of the day</string>
+    <string name="retry">Retry</string>
 </resources>

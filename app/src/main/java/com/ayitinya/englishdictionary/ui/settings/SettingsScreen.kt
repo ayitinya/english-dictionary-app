@@ -147,6 +147,14 @@ fun SettingsScreen(
                             }
                         })
                     })
+                ListItem(headlineContent = { Text(text = stringResource(id = R.string.collapse_etymology)) },
+                    trailingContent = {
+                        Switch(checked = uiState.etymologyCollapsed, onCheckedChange = {
+                            viewModel.viewModelScope.launch {
+                                viewModel.toggleEtymologyCollapsed(it)
+                            }
+                        })
+                    })
                 DeactivateHistory(state = uiState.isHistoryDeactivated, onConfirm = {
                     viewModel.viewModelScope.launch {
                         viewModel.toggleHistory(it)

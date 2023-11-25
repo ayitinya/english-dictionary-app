@@ -29,9 +29,12 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            dictionaryRepository.getDictionaryEntries("test").run {
+            wotdRepository.getWordOfTheDay().run {
                 _uiState.update {
-                    it.copy(wotd = wotdRepository.getWordOfTheDay(), isLoading = false)
+                    it.copy(
+                        wotd = this,
+                        isLoading = false,
+                    )
                 }
             }
 
@@ -42,11 +45,47 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    fun getWordOfTheDay() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(isLoading = true)
+            }
+            wotdRepository.getWordOfTheDay().run {
+                _uiState.update {
+                    it.copy(
+                        wotd = this,
+                        isLoading = false,
+                    )
+                }
+            }
+        }
+    }
+
     suspend fun getRandomWord() {
         withContext(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(randomWord = dictionaryRepository.getRandomWord())
+            try {
+                dictionaryRepository.getRandomWord().run {
+                    _uiState.update {
+                        it.copy(
+                            randomWord = this,
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                if (e.message == "No word found") {
+                    _uiState.update {
+                        it.copy(error = "No word found, database possibly not initialized, please try again")
+                    }
+                } else {
+                    throw e
+                }
             }
+        }
+    }
+
+    fun clearError() {
+        _uiState.update {
+            it.copy(error = null)
         }
     }
 

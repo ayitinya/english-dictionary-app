@@ -8,6 +8,7 @@ enum class SettingsKeys(val value: String) {
     FIRST_OPEN(value = "first_open"),
     APP_VERSION(value = "app_version"),
     WOTD_MODAL_DISPLAY(value = "wotd_modal_display"),
+    ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED(value = "etymology_initial_display_collapsed"),
 }
 
 enum class WorkManagerKeys {

@@ -11,6 +11,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -29,6 +30,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.VolumeUp
@@ -209,27 +212,36 @@ fun DefinitionScreen(
                 uiState.entries?.let {
                     if (it.isNotEmpty() && it.first().etymology != null) {
                         item {
-                            Card(
-                                modifier = modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
+                            ExpandableCard(
+                                initialState = viewModel.uiState.value.etymologyCollapsed,
+                                title = stringResource(R.string.etymology)
                             ) {
-                                SelectionContainer {
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                                        modifier = Modifier.padding(16.dp)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.etymology),
-                                            style = MaterialTheme.typography.titleLarge
-                                        )
-                                        Text(
-                                            text = it.first().etymology!!,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                    }
-                                }
+                                Text(
+                                    text = it.first().etymology!!,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
                             }
+//                            Card(
+//                                modifier = modifier
+//                                    .fillMaxWidth()
+//                                    .padding(16.dp)
+//                            ) {
+//                                SelectionContainer {
+//                                    Column(
+//                                        verticalArrangement = Arrangement.spacedBy(12.dp),
+//                                        modifier = Modifier.padding(16.dp)
+//                                    ) {
+//                                        Text(
+//                                            text = stringResource(R.string.etymology),
+//                                            style = MaterialTheme.typography.titleLarge
+//                                        )
+//                                        Text(
+//                                            text = it.first().etymology!!,
+//                                            style = MaterialTheme.typography.bodyLarge
+//                                        )
+//                                    }
+//                                }
+//                            }
                         }
 
                     }
@@ -578,6 +590,45 @@ private fun RequestNotificationAccessModal(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpandableCard(
+    initialState: Boolean = true,
+    title: String,
+    content: @Composable () -> Unit
+) {
+    var expanded by remember { mutableStateOf(initialState) }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.clickable { expanded = !expanded })
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                        contentDescription = null
+                    )
+                }
+            }
+            AnimatedVisibility(visible = expanded) {
+                content()
             }
         }
     }

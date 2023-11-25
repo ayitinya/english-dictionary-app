@@ -7,5 +7,6 @@ data class DefinitionUiState(
     val word: String? = null,
     val showBottomModal: Boolean = false,
     val entries: List<Dictionary>? = null,
-    val textToSpeechInitState: TextToSpeechInitState = TextToSpeechInitState.INITIALISING
+    val textToSpeechInitState: TextToSpeechInitState = TextToSpeechInitState.INITIALISING,
+    val etymologyCollapsed: Boolean = false,
 )

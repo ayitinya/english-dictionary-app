@@ -41,4 +41,8 @@
     <string name="history_deactivated">El modo de historial se ha desactivado, habilítelo en la configuración para continuar registrando el historial</string>
     <string name="no_history">la historia esta vacia</string>
     <string name="no_favorites">Aún no se han agregado palabras a los favoritos.</string>
+    <string name="collapse_etymology">La etimología siempre debe mostrarse en estado colapsado</string>
+    <string name="failed_to_load_wotd">Error al cargar la palabra del día</string>
+    <string name="loading_wotd">Cargando la palabra del día</string>
+    <string name="retry">Reintentar</string>
 </resources>

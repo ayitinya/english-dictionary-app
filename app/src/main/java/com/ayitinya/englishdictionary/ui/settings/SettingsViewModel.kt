@@ -41,10 +41,18 @@ class SettingsViewModel @Inject constructor(
             }
 
             launch {
+                settingsRepository.readBoolean(SettingsKeys.ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED)
+                    .collect { state ->
+                        _uiState.update {
+                            it.copy(etymologyCollapsed = state)
+                        }
+                    }
+            }
+
+            launch {
                 settingsRepository.readBoolean(SettingsKeys.IS_HISTORY_DEACTIVATED)
                     .collect { state ->
                         _uiState.update {
-                            Log.d("SettingsViewModel", "isHistoryDeActive: $state")
                             it.copy(isHistoryDeactivated = state)
                         }
                     }
@@ -84,5 +92,14 @@ class SettingsViewModel @Inject constructor(
 
     suspend fun toggleNotifyWordOfTheDay(state: Boolean) {
         activateWotdNotificationUseCase.execute(state)
+    }
+
+    suspend fun toggleEtymologyCollapsed(state: Boolean) {
+        settingsRepository.saveBoolean(SettingsKeys.ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED, state)
+        _uiState.update {
+            it.copy(
+                toastMessage = "Etymology ${if (state) "collapsed" else "expanded"}",
+            )
+        }
     }
 }

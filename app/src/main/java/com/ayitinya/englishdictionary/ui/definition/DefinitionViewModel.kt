@@ -53,11 +53,24 @@ class DefinitionViewModel @Inject constructor(
             onTextToSpeechInit(initState)
         }
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),
-                    isFavourite = isFavourite(_navArgs.word)
-                )
+            launch {
+                context.readBoolean(SettingsKeys.ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED)
+                    .take(1)
+                    .collect {
+                        _uiState.update { uiState ->
+                            uiState.copy(etymologyCollapsed = !it) // tbh i just had to add the ! to make it work
+                        }
+
+                    }
+            }
+
+            launch {
+                _uiState.update {
+                    it.copy(
+                        entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),
+                        isFavourite = isFavourite(_navArgs.word)
+                    )
+                }
             }
 
             if (_navArgs.fromWotd) {
@@ -68,6 +81,7 @@ class DefinitionViewModel @Inject constructor(
                     }
                 }
             }
+
             launch(Dispatchers.IO) {
                 settingsRepository.readBoolean(SettingsKeys.IS_HISTORY_DEACTIVATED).take(1)
                     .collect {

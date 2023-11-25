@@ -10,4 +10,6 @@ data class HomeScreenUiState(
     val randomWord: Dictionary? = null,
     val searchResults: List<Dictionary> = emptyList(),
     val isLoading: Boolean = true,
+    val error: String? = null,
+    val dbInitialized: Boolean = false,
 )

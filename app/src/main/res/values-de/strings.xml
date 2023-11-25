@@ -41,4 +41,8 @@
     <string name="history_deactivated">Der Verlaufsmodus wurde deaktiviert. Aktivieren Sie ihn in den Einstellungen, um mit der Aufzeichnung des Verlaufs fortzufahren</string>
     <string name="no_history">Die Geschichte ist leer</string>
     <string name="no_favorites">Es wurden noch keine Wörter zu den Favoriten hinzugefügt</string>
+    <string name="collapse_etymology">Die Etymologie sollte immer im zusammengeklappten Zustand angezeigt werden</string>
+    <string name="failed_to_load_wotd">Fehler beim Laden des Wortes des Tages</string>
+    <string name="loading_wotd">Laden des Wortes des Tages</string>
+    <string name="retry">Wiederholen</string>
 </resources>

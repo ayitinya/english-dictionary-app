@@ -23,8 +23,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 32
-        versionName = "2.0.0"
+        versionCode = 33
+        versionName = "2.0.1"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
