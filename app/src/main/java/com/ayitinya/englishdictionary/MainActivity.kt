@@ -8,6 +8,8 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,10 +25,13 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.glance.appwidget.updateAll
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
@@ -42,6 +47,7 @@ import com.ayitinya.englishdictionary.data.settings.source.local.saveString
 import com.ayitinya.englishdictionary.services.UpdateWotdService
 import com.ayitinya.englishdictionary.services.WotdNotificationService
 import com.ayitinya.englishdictionary.ui.NavGraphs
+import com.ayitinya.englishdictionary.ui.home.HomeScreenViewModel
 import com.ayitinya.englishdictionary.ui.theme.EnglishDictionaryTheme
 import com.ayitinya.englishdictionary.ui.widgets.WotdWidget
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -95,17 +101,41 @@ class MainActivity : ComponentActivity() {
         createNotificationChannel()
 
         installSplashScreen()
+        val content: View = findViewById(android.R.id.content)
 
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+
+            val composeView = LocalView.current
+            val homeScreenViewModel = composeView.findViewTreeViewModelStoreOwner()
+                ?.let { hiltViewModel<HomeScreenViewModel>() }
+
+            content.viewTreeObserver.addOnPreDrawListener(object :
+                ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    // Check whether the initial data is ready.
+                    return if (homeScreenViewModel != null) {
+                        if (homeScreenViewModel.uiState.value.dbInitialized) {
+                            // The content is ready. Start drawing.
+                            content.viewTreeObserver.removeOnPreDrawListener(this)
+                            true
+                        } else {
+                            // The content isn't ready. Suspend.
+                            false
+                        }
+                    } else {
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                        true
+                    }
+                }
+            })
             val navHostEngine =
                 rememberAnimatedNavHostEngine(
                     navHostContentAlignment = Alignment.TopCenter,
                     rootDefaultAnimations = RootNavGraphDefaultAnimations(enterTransition = {
                         fadeIn(animationSpec = tween(500))
-                    },
-                        exitTransition = { fadeOut(animationSpec = tween(500)) })
+                    }, exitTransition = { fadeOut(animationSpec = tween(500)) })
                 )
 
             EnglishDictionaryTheme {
@@ -136,8 +166,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        lifecycle.coroutineScope.launch(Dispatchers.IO)
-        {
+        lifecycle.coroutineScope.launch(Dispatchers.IO) {
             applicationContext.readString(SettingsKeys.APP_VERSION).take(1).collect {
 
                 val currentVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -159,8 +188,7 @@ class MainActivity : ComponentActivity() {
                 if (it != currentVersion.toString()) {
 
                     applicationContext.saveString(
-                        SettingsKeys.APP_VERSION,
-                        currentVersion.toString()
+                        SettingsKeys.APP_VERSION, currentVersion.toString()
                     )
                     WorkManager.getInstance(applicationContext).cancelAllWork()
 

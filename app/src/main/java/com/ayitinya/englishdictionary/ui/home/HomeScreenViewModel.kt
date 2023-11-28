@@ -3,6 +3,8 @@ package com.ayitinya.englishdictionary.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
+import com.ayitinya.englishdictionary.data.settings.SettingsRepository
+import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -12,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,6 +24,7 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val wotdRepository: WotdRepository,
     private val dictionaryRepository: DictionaryRepository,
+    private val settingsRepository: SettingsRepository,
     analytics: FirebaseAnalytics?
 ) : ViewModel() {
 
@@ -29,6 +33,15 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            settingsRepository.readBoolean(SettingsKeys.IS_DATABASE_INITIALIZED).transformWhile {
+                emit(it)
+                !it
+            }.collect {
+                if (it) {
+                    _uiState.update { state -> state.copy(dbInitialized = true) }
+                }
+            }
+
             wotdRepository.getWordOfTheDay().run {
                 _uiState.update {
                     it.copy(

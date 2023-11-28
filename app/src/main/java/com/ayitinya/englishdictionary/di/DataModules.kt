@@ -17,6 +17,9 @@ import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.data.history.source.local.HistoryDatabase
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.data.settings.SettingsRepositoryImpl
+import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
+import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
+import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.DefaultWotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.local.WotdDatabase
@@ -46,6 +49,12 @@ import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
 import io.requery.android.database.sqlite.SQLiteCustomExtension
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.database.sqlite.SQLiteDatabaseConfiguration
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.io.File
 import javax.inject.Singleton
@@ -80,6 +89,7 @@ abstract class RepositoryModule {
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    @OptIn(DelicateCoroutinesApi::class)
     @Singleton
     @Provides
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
@@ -103,7 +113,16 @@ object DatabaseModule {
 
         }.build()
 
-        db.query("SELECT 1", null)
+        GlobalScope.launch(Dispatchers.IO) {
+            context.readBoolean(SettingsKeys.IS_DATABASE_INITIALIZED).take(1).collect {
+                if (it) return@collect
+
+                db.query("SELECT 1", null)
+                delay(500L)
+
+                context.saveBoolean(SettingsKeys.IS_DATABASE_INITIALIZED, true)
+            }
+        }
 
         return db
     }

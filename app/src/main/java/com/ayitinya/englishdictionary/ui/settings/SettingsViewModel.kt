@@ -1,6 +1,5 @@
 package com.ayitinya.englishdictionary.ui.settings
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
@@ -70,7 +69,6 @@ class SettingsViewModel @Inject constructor(
     }
 
     suspend fun toggleHistory(state: Boolean) {
-        Log.d("DeactivateHistory", "onCheckedChange: $state")
 
         settingsRepository.saveBoolean(SettingsKeys.IS_HISTORY_DEACTIVATED, state)
         _uiState.update {

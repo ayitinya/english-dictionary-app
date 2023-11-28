@@ -23,8 +23,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 33
-        versionName = "2.0.1"
+        versionCode = 35
+        versionName = "2.0.3"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -209,6 +209,8 @@ dependencies {
 
     implementation(libs.sentry.android)
     implementation(libs.sentry.compose.android)
+
+    implementation(libs.billing.ktx)
 }
 
 

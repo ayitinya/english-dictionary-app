@@ -1,12 +1,10 @@
 package com.ayitinya.englishdictionary.data.dictionary.source.local
 
-import android.util.Log
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
-import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [DictionaryZstd::class, ZstdDicts::class],
@@ -23,9 +21,5 @@ abstract class DictionaryDatabase : RoomDatabase() {
     abstract fun dictionaryDao(): DictionaryDao
 
     @DeleteTable.Entries(DeleteTable("Senses"), DeleteTable("Dictionary"))
-    class AutoMigration3To4 : AutoMigrationSpec {
-        override fun onPostMigrate(db: SupportSQLiteDatabase) {
-            Log.d("Migrate", "Migrated")
-        }
-    }
+    class AutoMigration3To4 : AutoMigrationSpec
 }

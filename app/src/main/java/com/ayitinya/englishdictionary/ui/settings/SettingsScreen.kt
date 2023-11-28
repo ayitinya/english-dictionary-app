@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -274,7 +273,6 @@ private fun DeactivateHistory(
     ListItem(headlineContent = { Text(text = stringResource(id = R.string.deactivate_history)) },
         trailingContent = {
             Switch(checked = !state, onCheckedChange = {
-                Log.d("DeactivateHistory", "onCheckedChange: $it")
 
                 if (!it) {
                     dialogOpen.value = true
