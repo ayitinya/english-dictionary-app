@@ -11,7 +11,6 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.firebase-perf")
     id("com.mikepenz.aboutlibraries.plugin")
-    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
@@ -23,8 +22,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 35
-        versionName = "2.0.3"
+        versionCode = 37
+        versionName = "2.0.5"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -46,7 +45,8 @@ android {
         }
 
         release {
-            manifestPlaceholders += mapOf("sentryEnvironment" to "release")
+            manifestPlaceholders += mapOf("sentryEnvironment" to "beta")
+            manifestPlaceholders += mapOf("sentryEnvironment" to "beta")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -61,7 +61,6 @@ android {
 
         create("beta") {
             initWith(getByName("release"))
-            manifestPlaceholders += mapOf("sentryEnvironment" to "beta")
             versionNameSuffix = "-beta"
         }
     }
@@ -76,13 +75,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "19"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
     packaging {
         resources {
@@ -113,7 +112,6 @@ dependencies {
     testImplementation(libs.androidx.work.testing)
     implementation(libs.material)
     testImplementation(libs.junit.jupiter)
-    "baselineProfile"(project(":baselineprofile"))
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.core.ktx)
