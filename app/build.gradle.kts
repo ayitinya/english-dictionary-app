@@ -10,6 +10,7 @@ plugins {
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.google.firebase.firebase-perf")
+    id("com.google.firebase.crashlytics")
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
@@ -22,8 +23,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 37
-        versionName = "2.0.5"
+        versionCode = 38
+        versionName = "2.1.0"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -123,6 +124,7 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.perf)
     implementation(libs.profileinstaller)
@@ -201,14 +203,14 @@ dependencies {
     implementation(libs.aboutlibraries.compose)
     implementation(libs.aboutlibraries.core)
 
-    implementation(libs.anrwatchdog)
-
     implementation(libs.sqlite.android)
 
     implementation(libs.sentry.android)
     implementation(libs.sentry.compose.android)
 
     implementation(libs.billing.ktx)
+
+    implementation(libs.clarity)
 }
 
 
