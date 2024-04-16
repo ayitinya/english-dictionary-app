@@ -53,6 +53,8 @@ import com.ayitinya.englishdictionary.ui.widgets.WotdWidget
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.microsoft.clarity.Clarity
+import com.microsoft.clarity.ClarityConfig
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
@@ -91,7 +93,7 @@ class MainActivity : ComponentActivity() {
         val testLabSetting = Settings.System.getString(contentResolver, "firebase.test.lab")
         if (testLabSetting == "false" || !BuildConfig.DEBUG) {
             FirebaseAnalytics.getInstance(this.baseContext).setAnalyticsCollectionEnabled(true)
-//            Clarity.initialize(applicationContext, ClarityConfig("i2vobm1r47"))
+            Clarity.initialize(applicationContext, ClarityConfig("i2vobm1r47"))
         } else {
             FirebaseAnalytics.getInstance(this.baseContext).setAnalyticsCollectionEnabled(false)
             Toast.makeText(this.baseContext, "Disabling analytics collection", Toast.LENGTH_SHORT)
