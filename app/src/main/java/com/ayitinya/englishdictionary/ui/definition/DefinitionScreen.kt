@@ -29,12 +29,12 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Widgets
@@ -47,7 +47,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.PlainTooltipBox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -213,7 +212,7 @@ fun DefinitionScreen(
                     if (it.isNotEmpty() && it.first().etymology != null) {
                         item {
                             ExpandableCard(
-                                initialState = viewModel.uiState.value.etymologyCollapsed,
+                                initialState = uiState.etymologyCollapsed,
                                 title = stringResource(R.string.etymology)
                             ) {
                                 Text(
@@ -292,7 +291,7 @@ private fun TopAppBar(
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
-                            Icons.Default.VolumeUp,
+                            Icons.AutoMirrored.Filled.VolumeUp,
                             contentDescription = stringResource(id = R.string.play_button)
                         )
                     }
@@ -316,7 +315,7 @@ private fun TopAppBar(
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
-                            Icons.Default.VolumeUp,
+                            Icons.AutoMirrored.Filled.VolumeUp,
                             contentDescription = stringResource(id = R.string.play_button)
                         )
                     }
@@ -327,21 +326,19 @@ private fun TopAppBar(
 
     }, scrollBehavior = scrollBehavior, navigationIcon = {
         IconButton(onClick = { navController.popBackStack() }) {
-            Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back)
+            )
         }
     }, actions = {
-
-
-        PlainTooltipBox(tooltip = { Text("Search") }) {
-            IconButton(
-                onClick = { navController.navigate(SearchScreenDestination) },
-                modifier = Modifier.tooltipAnchor()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
+        IconButton(
+            onClick = { navController.navigate(SearchScreenDestination) },
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = stringResource(id = R.string.back)
+            )
         }
     })
 
@@ -597,9 +594,7 @@ private fun RequestNotificationAccessModal(
 
 @Composable
 private fun ExpandableCard(
-    initialState: Boolean = true,
-    title: String,
-    content: @Composable () -> Unit
+    initialState: Boolean = true, title: String, content: @Composable () -> Unit
 ) {
     var expanded by remember { mutableStateOf(initialState) }
     Card(
@@ -608,16 +603,14 @@ private fun ExpandableCard(
             .padding(16.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(16.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = title,
+                Text(text = title,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.clickable { expanded = !expanded })
                 IconButton(onClick = { expanded = !expanded }) {
@@ -628,7 +621,9 @@ private fun ExpandableCard(
                 }
             }
             AnimatedVisibility(visible = expanded) {
-                content()
+                SelectionContainer {
+                    content()
+                }
             }
         }
     }
