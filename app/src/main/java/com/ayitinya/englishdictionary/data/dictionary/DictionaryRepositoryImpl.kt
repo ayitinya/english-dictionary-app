@@ -1,7 +1,6 @@
 package com.ayitinya.englishdictionary.data.dictionary
 
 import com.ayitinya.englishdictionary.data.dictionary.source.local.DictionaryDao
-import com.google.firebase.perf.metrics.AddTrace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -14,14 +13,12 @@ import javax.inject.Singleton
 class DictionaryRepositoryImpl @Inject constructor(
     private val localDataSource: DictionaryDao,
 ) : DictionaryRepository {
-    @AddTrace(name = "searchDictionary")
     override suspend fun searchDictionary(query: String): List<Dictionary> {
         return withContext(Dispatchers.IO) {
             localDataSource.search("$query%").toExternal()
         }
     }
 
-    @AddTrace(name = "getDictionaryEntries")
     override suspend fun getDictionaryEntries(query: String): List<Dictionary> {
         return withContext(Dispatchers.IO) {
             localDataSource.getWordDetails(query).toExternal()

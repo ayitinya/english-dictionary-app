@@ -4,12 +4,10 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.SkipQueryVerification
-import com.google.firebase.perf.metrics.AddTrace
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DictionaryDao {
-    @AddTrace(name = "search")
     @RewriteQueriesToDropUnusedColumns
     @SkipQueryVerification
     @Query(
@@ -25,7 +23,6 @@ interface DictionaryDao {
     @Query("SELECT * FROM LocalDictionary WHERE word = :word")
     suspend fun getWordDetails(word: String): List<LocalDictionary>
 
-    @AddTrace(name = "getRandomWord")
     @RewriteQueriesToDropUnusedColumns
     @SkipQueryVerification
     @Query("SELECT * FROM LocalDictionary ORDER BY random() LIMIT 1")

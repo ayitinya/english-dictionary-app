@@ -9,8 +9,6 @@ plugins {
     id("io.sentry.kotlin.compiler.gradle") version "3.14.0"
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
-    id("com.google.firebase.firebase-perf")
-    id("com.google.firebase.crashlytics")
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
@@ -46,8 +44,7 @@ android {
         }
 
         release {
-            manifestPlaceholders += mapOf("sentryEnvironment" to "beta")
-            manifestPlaceholders += mapOf("sentryEnvironment" to "beta")
+            manifestPlaceholders += mapOf("sentryEnvironment" to "release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -124,9 +121,7 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
-    implementation(libs.firebase.perf)
     implementation(libs.profileinstaller)
     implementation(libs.firebase.messaging)
     implementation(libs.work.runtime.ktx)
