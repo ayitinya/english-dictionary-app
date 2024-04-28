@@ -48,7 +48,7 @@ splashscreen-version = "1.0.1"
 firebase-crashlytics-ktx = "18.5.1"
 firebase-analytics-ktx = "21.5.0"
 firebase-perf-ktx = "20.5.0"
-sentry = "3.14.0"
+sentry = "4.5.0"
 sqlite-android = "3.43.0"
 uiautomator = "2.3.0"
 benchmark-macro-junit4 = "1.2.3"
@@ -161,6 +161,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android-gradle-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 sentry-android-gradle-plugin = { id = "io.sentry.android.gradle", version.ref = "sentry" }
+sentry-kotlin-compiler-gradle = { id = "io.sentry.kotlin.compiler.gradle", version.ref = "sentry" }
 androidTest = { id = "com.android.test", version.ref = "agp" }
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }
 aboutlibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.8.3" }

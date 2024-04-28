@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.sentry.android.gradle.plugin)
-    id("io.sentry.kotlin.compiler.gradle") version "3.14.0"
+    alias(libs.plugins.sentry.kotlin.compiler.gradle)
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.mikepenz.aboutlibraries.plugin")

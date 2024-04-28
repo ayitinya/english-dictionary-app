@@ -76,6 +76,9 @@
             android:name="io.sentry.traces.user-interaction.enable"
             android:value="true" />
         <meta-data
+            android:name="io.sentry.attach-screenshot"
+            android:value="true" />
+        <meta-data
             android:name="io.sentry.breadcrumbs.user-interaction"
             android:value="true" />
         <meta-data
@@ -87,6 +90,9 @@
         <meta-data
             android:name="io.sentry.traces.profiling.sample-rate"
             android:value="0.9" />
+        <meta-data
+            android:name="io.sentry.traces.profiling.enable-app-start"
+            android:value="true" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_name" />
