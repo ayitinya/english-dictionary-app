@@ -51,9 +51,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build gradle project
-        run: ./gradlew build
-
       - name: Build Release Bundle
         run: ./gradlew app:bundleRelease
         env:
