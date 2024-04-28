@@ -1,0 +1,114 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "c22632012ffc373406c7e68b318752bc",
+    "entities": [
+      {
+        "tableName": "_Dict_zstd",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `word` TEXT NOT NULL, `data` TEXT NOT NULL, `_data_dict` INTEGER DEFAULT null, PRIMARY KEY(`id`), FOREIGN KEY(`_data_dict`) REFERENCES `_zstd_dicts`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "word",
+            "columnName": "word",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data",
+            "columnName": "data",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataDict",
+            "columnName": "_data_dict",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "null"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "_data_dict_idx",
+            "unique": false,
+            "columnNames": [
+              "_data_dict"
+            ],
+            "orders": [
+              "ASC"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `_data_dict_idx` ON `${TABLE_NAME}` (`_data_dict` ASC)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "_zstd_dicts",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "_data_dict"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "_zstd_dicts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `dict` BLOB NOT NULL, `chooser_key` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dict",
+            "columnName": "dict",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chooserKey",
+            "columnName": "chooser_key",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [
+      {
+        "viewName": "LocalDictionary",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT id, word, zstd_decompress_col(data, 1, _data_dict, true) as data from _Dict_zstd"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c22632012ffc373406c7e68b318752bc')"
+    ]
+  }
+}
