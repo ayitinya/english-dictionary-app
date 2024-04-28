@@ -23,7 +23,7 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 38
+        versionCode = 39
         versionName = "2.1.0"
 
 
