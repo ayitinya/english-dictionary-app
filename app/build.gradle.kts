@@ -44,7 +44,7 @@ android {
     signingConfigs {
         create("release") {
             val secretProperties = readProperties(file("../secret.properties"))
-            storeFile = file(secretProperties.getProperty("SIGNING_KEYSTORE_PATH"))
+            storeFile = file("../keystore/keys.jks")
             storePassword = secretProperties.getProperty("SIGNING_STORE_PASSWORD")
             keyAlias = secretProperties.getProperty("SIGNING_KEY_ALIAS")
             keyPassword = secretProperties.getProperty("SIGNING_KEY_PASSWORD")
