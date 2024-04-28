@@ -204,8 +204,6 @@ dependencies {
     implementation(libs.sentry.compose.android)
 
     implementation(libs.billing.ktx)
-
-    implementation(libs.clarity)
 }
 
 
