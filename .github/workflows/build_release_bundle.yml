@@ -25,6 +25,18 @@ jobs:
           echo -ne "\nSIGNING_STORE_PASSWORD=${{ secrets.SIGNING_STORE_PASSWORD }}" >> ./secret.properties
           echo -ne "\nSIGNING_KEY_PASSWORD=${{ secrets.SIGNING_KEY_PASSWORD }}" >> ./secret.properties
 
+      - name: Extract Google Services JSON
+        id: extract-google-services
+        run: |
+          echo -n "${{ secrets.GOOGLE_SERVICES }}" | base64 -d > ./app/google-services.json
+
+      - name: Create sentry.properties
+        id: create-sentry-properties
+        run: |
+          echo -ne "defaults.org=${{ secrets.SENTRY_ORG }}" >> ./sentry.properties
+          echo -ne "\ndefaults.project=${{ secrets.SENTRY_PROJECT }}" >> ./sentry.properties
+          echo -ne "\nauth.token=${{ secrets.SENTRY_AUTH_TOKEN }}" >> ./sentry.properties
+
       - name: Set version code
         run: |
           echo -ne "\nVERSION_CODE=${{ github.run_number }}" >> ./version.properties
