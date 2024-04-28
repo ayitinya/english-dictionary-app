@@ -1,3 +1,5 @@
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
@@ -18,10 +20,13 @@ android {
     ndkVersion = "21.4.7075529"
 
     defaultConfig {
+        val versionProperties = readProperties(file("../version.properties"))
+
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = 39
+        versionCode = versionProperties.getProperty("VERSION_CODE")
+            .toInt() + 39 // 39 is the last version code before migrating to GHA for builds
         versionName = "2.1.0"
 
 
@@ -36,6 +41,16 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        create("release") {
+            val secretProperties = readProperties(file("../secret.properties"))
+            storeFile = file(secretProperties.getProperty("SIGNING_KEYSTORE_PATH"))
+            storePassword = secretProperties.getProperty("SIGNING_STORE_PASSWORD")
+            keyAlias = secretProperties.getProperty("SIGNING_KEY_ALIAS")
+            keyPassword = secretProperties.getProperty("SIGNING_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         debug {
             manifestPlaceholders["sentryEnvironment"] = "debug"
@@ -48,10 +63,10 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
+
             ndk {
                 debugSymbolLevel = "FULL"
             }
@@ -213,4 +228,8 @@ ksp {
 
 hilt {
     enableAggregatingTask = true
+}
+
+fun readProperties(propertiesFile: File) = Properties().apply {
+    propertiesFile.inputStream().use { load(it) }
 }
