@@ -1,7 +1,0 @@
-/python/*.egg-info/
-/python/build/
-/python/dist/
-/target
-*.sqlite3*
-private*
-/bench*
