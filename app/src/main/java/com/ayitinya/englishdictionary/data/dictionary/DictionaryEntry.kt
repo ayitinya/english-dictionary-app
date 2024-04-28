@@ -26,32 +26,3 @@ data class DictionaryEntriesWithRelatedWords(
     val relatedWords: List<RelatedWords> = emptyList(),
     val isFavourite: Boolean = false,
 ) : Parcelable
-
-//fun LocalDictionaryEntry.toExternal(): DictionaryEntry {
-//    return DictionaryEntry(
-//        wordId = wordId,
-//        word = word,
-//        pos = pos,
-//        sounds = sounds,
-//        glosses = glosses,
-//        example = example,
-//        etymology = etymology
-//    )
-//}
-
-//@JvmName("toExternalLocalDictionaryEntry")
-//fun List<LocalDictionaryEntry>.toExternal(): List<DictionaryEntry> {
-//    return map { it.toExternal() }
-//}
-
-//fun RemoteWordRelationship.toExternal(): RelatedWords {
-//    return RelatedWords(
-//        relationshipType = relationshipType,
-//        words = words
-//    )
-//}
-
-//@JvmName("toExternalRemoteWordRelationship")
-//fun List<RemoteWordRelationship>.toExternal(): List<RelatedWords> {
-//    return map { it.toExternal() }
-//}
