@@ -18,24 +18,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.BuildConfig
 import com.ayitinya.englishdictionary.R
-import com.ayitinya.englishdictionary.ui.destinations.OssLicencesDestination
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object AboutRoute
+
+fun NavGraphBuilder.aboutScreen(
+    modifier: Modifier = Modifier,
+    onBackButtonClick: () -> Unit,
+    onNavigateToOSS: () -> Unit
+) {
+    composable<AboutRoute> {
+        AboutScreen(
+            modifier = modifier,
+            onBackButtonClick = onBackButtonClick,
+            onNavigateToOSS = onNavigateToOSS
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
 @Composable
-fun AboutScreen(
-    navController: DestinationsNavigator,
+private fun AboutScreen(
+    modifier: Modifier = Modifier,
+    onBackButtonClick: () -> Unit,
+    onNavigateToOSS: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
 
     Scaffold(topBar = {
         TopAppBar(title = { Text(text = stringResource(id = R.string.about)) }, navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = onBackButtonClick) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.back)
@@ -43,7 +61,7 @@ fun AboutScreen(
             }
         }, scrollBehavior = scrollBehavior
         )
-    }) {
+    }, modifier = modifier) {
         LazyColumn(contentPadding = it) {
             item {
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.version)) },
@@ -58,7 +76,7 @@ fun AboutScreen(
                     })
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.oss_licenses)) },
                     modifier = Modifier.clickable {
-                        navController.navigate(OssLicencesDestination)
+                        onNavigateToOSS()
                     })
             }
         }

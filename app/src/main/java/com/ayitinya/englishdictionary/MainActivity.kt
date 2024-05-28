@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+//@file:OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 
 package com.ayitinya.englishdictionary
 
@@ -13,16 +13,11 @@ import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
@@ -44,18 +39,14 @@ import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.readString
 import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.saveString
+import com.ayitinya.englishdictionary.navigation.EnglishDictionaryNavHost
 import com.ayitinya.englishdictionary.services.UpdateWotdService
 import com.ayitinya.englishdictionary.services.WotdNotificationService
-import com.ayitinya.englishdictionary.ui.NavGraphs
 import com.ayitinya.englishdictionary.ui.home.HomeScreenViewModel
 import com.ayitinya.englishdictionary.ui.theme.EnglishDictionaryTheme
 import com.ayitinya.englishdictionary.ui.widgets.WotdWidget
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
-import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.take
@@ -85,7 +76,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+//    @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val testLabSetting = Settings.System.getString(contentResolver, "firebase.test.lab")
@@ -130,12 +121,12 @@ class MainActivity : ComponentActivity() {
                 }
             })
             val navHostEngine =
-                rememberAnimatedNavHostEngine(
-                    navHostContentAlignment = Alignment.TopCenter,
-                    rootDefaultAnimations = RootNavGraphDefaultAnimations(enterTransition = {
-                        fadeIn(animationSpec = tween(500))
-                    }, exitTransition = { fadeOut(animationSpec = tween(500)) })
-                )
+//                rememberAnimatedNavHostEngine(
+//                    navHostContentAlignment = Alignment.TopCenter,
+//                    rootDefaultAnimations = RootNavGraphDefaultAnimations(enterTransition = {
+//                        fadeIn(animationSpec = tween(500))
+//                    }, exitTransition = { fadeOut(animationSpec = tween(500)) })
+//                )
 
             EnglishDictionaryTheme {
                 val systemUiController = rememberSystemUiController()
@@ -160,7 +151,8 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    DestinationsNavHost(navGraph = NavGraphs.root, engine = navHostEngine)
+                    EnglishDictionaryNavHost()
+//                    DestinationsNavHost(navGraph = NavGraphs.root, engine = navHostEngine)
                 }
             }
         }

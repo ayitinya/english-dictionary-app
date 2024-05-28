@@ -7,10 +7,8 @@ import com.ayitinya.englishdictionary.data.history.History
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
-import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,12 +51,6 @@ class HistoryViewModel @Inject constructor(
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "HistoryScreen")
                 param(FirebaseAnalytics.Param.SCREEN_CLASS, "HistoryScreen.kt")
             }
-        }
-    }
-
-    fun navigateToDefinitionScreen(word: String, navController: DestinationsNavigator) {
-        viewModelScope.launch {
-            navController.navigate(DefinitionScreenDestination(word = word), onlyIfResumed = true)
         }
     }
 

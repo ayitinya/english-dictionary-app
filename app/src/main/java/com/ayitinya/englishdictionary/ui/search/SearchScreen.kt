@@ -27,8 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -37,20 +35,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.R
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-@Destination
-@Composable
-fun SearchScreen(
-    navController: DestinationsNavigator,
-    modifier: Modifier = Modifier,
-    viewModel: SearchViewModel = hiltViewModel()
+@Serializable
+data object SearchRoute
+
+fun NavGraphBuilder.searchScreen(
+    modifier: Modifier = Modifier, onNavigateToDefinition: (String) -> Unit, onBack: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    composable<SearchRoute> {
+        val viewModel = hiltViewModel<SearchViewModel>()
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+        SearchScreen(
+            modifier = modifier,
+            uiState = uiState.value,
+            updateSearchQuery = viewModel::updateSearchQuery,
+            onNavigateToDefinition = onNavigateToDefinition,
+            onBack = onBack
+        )
+    }
+}
+
+@Composable
+private fun SearchScreen(
+    modifier: Modifier = Modifier,
+    uiState: SearchScreenUiState,
+    updateSearchQuery: (String) -> Unit,
+    onNavigateToDefinition: (String) -> Unit,
+    onBack: () -> Unit
+) {
     val focusRequester = remember { FocusRequester() }
 
     Scaffold(modifier = modifier.fillMaxSize(),
@@ -66,28 +84,18 @@ fun SearchScreen(
                 TextField(
                     keyboardActions = KeyboardActions(onDone = {
                         if (uiState.searchQuery.isNotBlank() && uiState.searchResults.isNotEmpty()) {
-                            viewModel.viewModelScope.launch {
-                                viewModel.navigateToDefinitionScreen(
-                                    uiState.searchResults.first().word, navController
-                                )
-                            }
+                            onNavigateToDefinition(uiState.searchResults.first().word)
                         }
                     }),
                     value = uiState.searchQuery,
-                    onValueChange = {
-                        viewModel.viewModelScope.launch {
-                            viewModel.updateSearchQuery(
-                                it
-                            )
-                        }
-                    },
+                    onValueChange = updateSearchQuery,
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .fillMaxWidth(),
                     placeholder = { Text(stringResource(id = R.string.search_hint_details)) },
                     singleLine = true,
                     leadingIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
+                        IconButton(onClick = onBack) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(id = R.string.back)
@@ -115,11 +123,7 @@ fun SearchScreen(
                     ListItem(
                         headlineContent = { Text(result.word) },
                         modifier = Modifier.clickable {
-                            viewModel.viewModelScope.launch {
-                                viewModel.navigateToDefinitionScreen(
-                                    result.word, navController
-                                )
-                            }
+                            onNavigateToDefinition(result.word)
                         },
                         colors = ListItemDefaults.colors(
                             containerColor = Color.Transparent,
@@ -143,11 +147,7 @@ fun SearchScreen(
                             contentDescription = stringResource(R.string.history)
                         )
                     }, headlineContent = { Text(history.word) }, modifier = Modifier.clickable {
-                        viewModel.viewModelScope.launch {
-                            viewModel.navigateToDefinitionScreen(
-                                history.word, navController
-                            )
-                        }
+                        onNavigateToDefinition(history.word)
                     }, colors = ListItemDefaults.colors(
                         containerColor = Color.Transparent,
                         headlineColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -155,13 +155,9 @@ fun SearchScreen(
                     )
                 }
             }
-
-
         }
-
     }
     LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
     }
-
 }

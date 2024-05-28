@@ -68,36 +68,45 @@ class SettingsViewModel @Inject constructor(
         _uiState.update { it.copy(toastMessage = null) }
     }
 
-    suspend fun toggleHistory(state: Boolean) {
-
-        settingsRepository.saveBoolean(SettingsKeys.IS_HISTORY_DEACTIVATED, state)
-        _uiState.update {
-            it.copy(
-                toastMessage = "History ${if (state) "disabled" else "enabled"}",
-            )
+    fun toggleHistory(state: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.saveBoolean(SettingsKeys.IS_HISTORY_DEACTIVATED, state)
+            _uiState.update {
+                it.copy(
+                    toastMessage = "History ${if (state) "disabled" else "enabled"}",
+                )
+            }
         }
     }
 
-    suspend fun clearHistory() {
-        historyRepository.clearHistory()
-        _uiState.update { it.copy(toastMessage = "History cleared") }
+    fun clearHistory() {
+        viewModelScope.launch {
+            historyRepository.clearHistory()
+            _uiState.update { it.copy(toastMessage = "History cleared") }
+        }
     }
 
-    suspend fun clearFavourites() {
-        favouriteRepository.clearFavorites()
-        _uiState.update { it.copy(toastMessage = "Favorites cleared") }
+    fun clearFavourites() {
+        viewModelScope.launch {
+            favouriteRepository.clearFavorites()
+            _uiState.update { it.copy(toastMessage = "Favorites cleared") }
+        }
     }
 
-    suspend fun toggleNotifyWordOfTheDay(state: Boolean) {
-        activateWotdNotificationUseCase.execute(state)
+    fun toggleNotifyWordOfTheDay(state: Boolean) {
+        viewModelScope.launch {
+            activateWotdNotificationUseCase.execute(state)
+        }
     }
 
-    suspend fun toggleEtymologyCollapsed(state: Boolean) {
-        settingsRepository.saveBoolean(SettingsKeys.ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED, state)
-        _uiState.update {
-            it.copy(
-                toastMessage = "Etymology ${if (state) "collapsed" else "expanded"}",
-            )
+    fun toggleEtymologyCollapsed(state: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.saveBoolean(SettingsKeys.ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED, state)
+            _uiState.update {
+                it.copy(
+                    toastMessage = "Etymology ${if (state) "collapsed" else "expanded"}",
+                )
+            }
         }
     }
 }

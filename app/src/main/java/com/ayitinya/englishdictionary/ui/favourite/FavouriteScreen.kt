@@ -29,7 +29,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -37,22 +36,65 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.R
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-@Destination
+@Serializable
+data object FavouritesRoute
+
+fun NavGraphBuilder.favouriteScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToDefinition: (String) -> Unit,
+    onBack: () -> Unit
+) {
+    composable<FavouritesRoute> {
+        val viewModel = hiltViewModel<FavouriteViewModel>()
+        val uiState = viewModel.uiState.collectAsState()
+
+        FavouriteScreen(modifier = modifier, uiState = uiState.value, onDeselectAllFavourites = {
+            viewModel.viewModelScope.launch {
+                viewModel.deselectAllFavoriteItems()
+            }
+        }, onSelectAllFavourites = {
+            viewModel.viewModelScope.launch {
+                viewModel.selectAllFavoriteItems()
+            }
+        }, onDeleteSelectedFavourites = {
+            viewModel.viewModelScope.launch {
+                viewModel.deleteSelectedFavoriteItems()
+            }
+        }, onSelectItem = viewModel::selectFavoriteItem,
+            onNavigateToDefinition = onNavigateToDefinition,
+            onToggleItemSelection = viewModel::toggleWordSelection,
+            onShowToast = viewModel::toastShown,
+            onBack = {
+                viewModel.viewModelScope.launch {
+                    viewModel.deselectAllFavoriteItems()
+                }
+                onBack()
+            }
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun FavouriteScreen(
-    navController: DestinationsNavigator,
+private fun FavouriteScreen(
     modifier: Modifier = Modifier,
-    viewModel: FavouriteViewModel = hiltViewModel()
+    uiState: FavouriteScreenUiState,
+    onDeselectAllFavourites: () -> Unit,
+    onSelectAllFavourites: () -> Unit,
+    onDeleteSelectedFavourites: () -> Unit,
+    onSelectItem: (String) -> Unit,
+    onToggleItemSelection: (String) -> Unit,
+    onShowToast: () -> Unit,
+    onNavigateToDefinition: (String) -> Unit,
+    onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-
-    val uiState by viewModel.uiState.collectAsState()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -69,11 +111,7 @@ fun FavouriteScreen(
                 ) {
                     when (it) {
                         true -> {
-                            IconButton(onClick = {
-                                viewModel.viewModelScope.launch {
-                                    viewModel.deselectAllFavoriteItems()
-                                }
-                            }) {
+                            IconButton(onClick = onDeselectAllFavourites) {
                                 Icon(
                                     Icons.Filled.Close,
                                     contentDescription = stringResource(id = R.string.back)
@@ -82,7 +120,7 @@ fun FavouriteScreen(
                         }
 
                         else -> {
-                            IconButton(onClick = { navController.popBackStack() }) {
+                            IconButton(onClick = onBack) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(id = R.string.back)
@@ -94,29 +132,17 @@ fun FavouriteScreen(
             },
             actions = {
                 if (uiState.selectedFavourites.isNotEmpty()) {
-                    IconButton(onClick = {
-                        viewModel.viewModelScope.launch {
-                            viewModel.selectAllFavoriteItems()
-                        }
-                    }) {
+                    IconButton(onClick = onSelectAllFavourites) {
                         Checkbox(checked = uiState.selectedFavourites.size == uiState.favourites.size,
                             onCheckedChange = {
                                 if (it) {
-                                    viewModel.viewModelScope.launch {
-                                        viewModel.selectAllFavoriteItems()
-                                    }
+                                    onSelectAllFavourites()
                                 } else {
-                                    viewModel.viewModelScope.launch {
-                                        viewModel.deselectAllFavoriteItems()
-                                    }
+                                    onDeselectAllFavourites()
                                 }
                             })
                     }
-                    IconButton(onClick = {
-                        viewModel.viewModelScope.launch {
-                            viewModel.deleteSelectedFavoriteItems()
-                        }
-                    }) {
+                    IconButton(onClick = onDeleteSelectedFavourites) {
                         Icon(
                             Icons.Filled.Delete, contentDescription = null
                         )
@@ -148,11 +174,9 @@ fun FavouriteScreen(
                         ListItem(
                             headlineContent = { Text(text = history.word) },
                             modifier = Modifier.combinedClickable(onLongClick = {
-                                viewModel.selectFavoriteItem(history.word)
+                                onSelectItem(history.word)
                             }) {
-                                viewModel.navigateToDefinitionScreen(
-                                    history.word, navController
-                                )
+                                onNavigateToDefinition(history.word)
                             },
                         )
                     }
@@ -162,14 +186,14 @@ fun FavouriteScreen(
                             leadingContent = {
                                 Checkbox(checked = uiState.selectedFavourites.contains(history),
                                     onCheckedChange = {
-                                        viewModel.toggleWordSelection(history.word)
+                                        onToggleItemSelection(history.word)
                                     })
                             },
                             headlineContent = { Text(text = history.word) },
                             modifier = Modifier.combinedClickable(onLongClick = {
-                                viewModel.toggleWordSelection(history.word)
+                                onToggleItemSelection(history.word)
                             }) {
-                                viewModel.toggleWordSelection(history.word)
+                                onToggleItemSelection(history.word)
                             },
                         )
                     }
@@ -180,16 +204,13 @@ fun FavouriteScreen(
     }
 
     BackHandler(enabled = uiState.selectedFavourites.isNotEmpty()) {
-        viewModel.viewModelScope.launch {
-            viewModel.deselectAllFavoriteItems()
-        }
+        onBack()
     }
 
     LaunchedEffect(key1 = uiState.toastMessage) {
-        println("toastMessage: ${uiState.toastMessage}")
         if (uiState.toastMessage != null) {
             Toast.makeText(context, uiState.toastMessage, Toast.LENGTH_SHORT).show()
-            viewModel.toastShown()
+            onShowToast()
         }
     }
 }

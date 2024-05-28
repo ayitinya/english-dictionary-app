@@ -62,6 +62,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,34 +76,62 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import com.ayitinya.englishdictionary.R
-import com.ayitinya.englishdictionary.ui.destinations.SearchScreenDestination
 import com.ayitinya.englishdictionary.ui.widgets.WotdWidgetReceiver
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.ramcosta.composedestinations.annotation.DeepLink
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.FULL_ROUTE_PLACEHOLDER
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-@Destination(
-    navArgsDelegate = DefinitionScreenNavArgs::class,
-    deepLinks = [DeepLink(uriPattern = "app://com.ayitinya.englishdictionary/$FULL_ROUTE_PLACEHOLDER")]
-)
+@Serializable
+data class DefinitionRoute(val word: String, val isWotd: Boolean = false)
+
+fun NavGraphBuilder.definitionScreen(
+    modifier: Modifier = Modifier,
+    onBackButtonClick: () -> Unit,
+    onNavigateToSearch: () -> Unit
+) {
+    composable<DefinitionRoute>(deepLinks = listOf(navDeepLink {
+        uriPattern = "app://com.ayitinya.englishdictionary/{word}"
+    })) {
+        val viewModel = hiltViewModel<DefinitionViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
+
+        DefinitionScreen(
+            modifier = modifier,
+            uiState = uiState,
+            onActivateWotd = {
+                viewModel.viewModelScope.launch { viewModel.activateWotdNotification() }
+            },
+            onDismissRequest = viewModel::dismissModal,
+            onSpeakClick = { viewModel.onSpeakClick() },
+            onFavoriteChange = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } },
+            onBackButtonClick = onBackButtonClick,
+            onNavigateToSearch = onNavigateToSearch
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun DefinitionScreen(
-    navController: DestinationsNavigator,
     modifier: Modifier = Modifier,
-    viewModel: DefinitionViewModel = hiltViewModel()
+    uiState: DefinitionUiState,
+    onActivateWotd: () -> Unit,
+    onDismissRequest: () -> Unit,
+    onSpeakClick: () -> Unit,
+    onFavoriteChange: () -> Unit,
+    onBackButtonClick: () -> Unit,
+    onNavigateToSearch: () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current.applicationContext
+    val coroutineScope = rememberCoroutineScope()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -114,7 +143,7 @@ fun DefinitionScreen(
         val requestPermissionLauncher =
             rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
                 if (it) {
-                    viewModel.viewModelScope.launch { viewModel.activateWotdNotification() }
+                    onActivateWotd()
                 }
             }
 
@@ -123,17 +152,18 @@ fun DefinitionScreen(
                 rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
         }
         RequestNotificationAccessModal(
-            onDismissRequest = viewModel::dismissModal,
+            onDismissRequest = onDismissRequest,
             onActivateWotdNotificationButtonClick = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     when (permissionState!!.status) {
                         PermissionStatus.Granted -> {
-                            viewModel.viewModelScope.launch { viewModel.activateWotdNotification() }
+                            onActivateWotd()
                         }
 
                         else -> {
                             if (permissionState.status.shouldShowRationale) {
-                                viewModel.viewModelScope.launch {
+
+                                coroutineScope.launch {
                                     val result = snackbarHostState.showSnackbar(
                                         message = "This feature requires notification permission",
                                         actionLabel = "Go to settings",
@@ -158,7 +188,7 @@ fun DefinitionScreen(
                         }
                     }
                 } else {
-                    viewModel.viewModelScope.launch { viewModel.activateWotdNotification() }
+                    coroutineScope.launch { onActivateWotd() }
                 }
             },
         )
@@ -176,9 +206,10 @@ fun DefinitionScreen(
                 TopAppBar(
                     scrollBehavior = scrollBehavior,
                     word = it,
-                    navController = navController,
+                    onBackButtonClick = onBackButtonClick,
+                    onNavigateToSearch = onNavigateToSearch,
                     isTextToSpeechReady = uiState.textToSpeechInitState == TextToSpeechInitState.READY
-                ) { viewModel.onSpeakClick() }
+                ) { onSpeakClick() }
             }
         },
         floatingActionButton = {
@@ -200,7 +231,7 @@ fun DefinitionScreen(
                         )
                     },
                     expanded = lazyListState.isScrollingUp(),
-                    onClick = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } },
+                    onClick = onFavoriteChange,
                 )
             }
         },
@@ -271,8 +302,9 @@ fun DefinitionScreen(
 private fun TopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     word: String,
-    navController: DestinationsNavigator,
     isTextToSpeechReady: Boolean = false,
+    onBackButtonClick: () -> Unit,
+    onNavigateToSearch: () -> Unit,
     onSpeakClick: () -> Unit,
 ) {
 
@@ -325,7 +357,7 @@ private fun TopAppBar(
 
 
     }, scrollBehavior = scrollBehavior, navigationIcon = {
-        IconButton(onClick = { navController.popBackStack() }) {
+        IconButton(onClick = onBackButtonClick) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(R.string.back)
@@ -333,7 +365,7 @@ private fun TopAppBar(
         }
     }, actions = {
         IconButton(
-            onClick = { navController.navigate(SearchScreenDestination) },
+            onClick = onNavigateToSearch,
         ) {
             Icon(
                 imageVector = Icons.Outlined.Search,
@@ -421,9 +453,11 @@ private fun TopAppBarPreview() {
     TopAppBar(
         scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
         word = "Word",
-        navController = EmptyDestinationsNavigator,
-        isTextToSpeechReady = true
-    ) {}
+        isTextToSpeechReady = true,
+        onSpeakClick = {},
+        onBackButtonClick = {},
+        onNavigateToSearch = {}
+    )
 }
 
 @Composable

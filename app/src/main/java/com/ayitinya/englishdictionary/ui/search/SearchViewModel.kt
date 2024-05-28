@@ -6,10 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
-import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -42,7 +40,7 @@ class SearchViewModel @Inject constructor(
 
     private val _queryTextChangedJob: MutableState<Job?> = mutableStateOf(null)
 
-    suspend fun updateSearchQuery(query: String) {
+    fun updateSearchQuery(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
         _queryTextChangedJob.value?.cancel()
         if (query.isEmpty()) {
@@ -56,18 +54,11 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun searchDictionary(query: String) {
+    private fun searchDictionary(query: String) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
             val searchResults = dictionaryRepository.searchDictionary(query.trim())
             _uiState.value = _uiState.value.copy(searchResults = searchResults, isLoading = false)
         }
     }
-
-    suspend fun navigateToDefinitionScreen(word: String, navController: DestinationsNavigator) {
-        viewModelScope.launch {
-            navController.navigate(DefinitionScreenDestination(word = word), onlyIfResumed = true)
-        }
-    }
-
 }

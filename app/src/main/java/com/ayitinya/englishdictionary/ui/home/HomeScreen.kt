@@ -32,8 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,29 +40,66 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.Wotd
-import com.ayitinya.englishdictionary.ui.destinations.FavouriteScreenDestination
-import com.ayitinya.englishdictionary.ui.destinations.HistoryScreenDestination
-import com.ayitinya.englishdictionary.ui.destinations.SearchScreenDestination
-import com.ayitinya.englishdictionary.ui.destinations.SettingsScreenDestination
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-@RootNavGraph(start = true)
-@Destination
-@Composable
-fun HomeScreen(
-    navController: DestinationsNavigator,
+@Serializable
+data object Home
+
+fun NavGraphBuilder.homeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeScreenViewModel = hiltViewModel()
+    onNavigateToSearch: () -> Unit,
+    onNavigateToDefinition: (word: String, isWotd: Boolean) -> Unit,
+    onNavigateToHistory: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    composable<Home> {
+        val viewModel = hiltViewModel<HomeScreenViewModel>()
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
+        HomeScreen(
+            modifier = modifier,
+            uiState = uiState.value,
+            getRandomWord = {
+                viewModel.viewModelScope.launch {
+                    viewModel.getRandomWord()
+                    uiState.value.randomWord?.let {
+                        onNavigateToDefinition(it.word, false)
+                    }
+                }
+            },
+            getWordOfTheDay = viewModel::getWordOfTheDay,
+            clearError = viewModel::clearError,
+            onNavigateToSearch = onNavigateToSearch,
+            onNavigateToDefinition = onNavigateToDefinition,
+            onNavigateToFavorites = onNavigateToFavorites,
+            onNavigateToHistory = onNavigateToHistory,
+            onNavigateToSettings = onNavigateToSettings
+        )
+    }
+}
+
+
+@Composable
+private fun HomeScreen(
+    modifier: Modifier = Modifier,
+    uiState: HomeScreenUiState,
+    clearError: () -> Unit,
+    getRandomWord: () -> Unit,
+    getWordOfTheDay: () -> Unit,
+    onNavigateToSearch: () -> Unit,
+    onNavigateToDefinition: (String, Boolean) -> Unit,
+    onNavigateToHistory: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToSettings: () -> Unit
+) {
     Scaffold(modifier = modifier, topBar = {
         Box(
             Modifier
@@ -72,7 +107,7 @@ fun HomeScreen(
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            SearchBarButton(navController = navController)
+            SearchBarButton(onNavigateToSearch = onNavigateToSearch)
         }
     }) { paddingValues ->
         LazyColumn(contentPadding = paddingValues) {
@@ -111,7 +146,7 @@ fun HomeScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.End
                                 ) {
-                                    TextButton(onClick = { viewModel.getWordOfTheDay() }) {
+                                    TextButton(onClick = { getWordOfTheDay() }) {
                                         Text(text = stringResource(id = R.string.retry))
                                     }
                                 }
@@ -121,9 +156,8 @@ fun HomeScreen(
                     }
                 } else {
                     WordOfTheDay(
-                        wordOfTheDay = uiState.wotd!!,
-                        viewModel = viewModel,
-                        navController = navController
+                        wordOfTheDay = uiState.wotd,
+                        onNavigateToDefinition = { onNavigateToDefinition(it, true) }
                     )
                 }
 
@@ -135,14 +169,7 @@ fun HomeScreen(
                         )
                     },
                     modifier = Modifier.clickable {
-                        viewModel.viewModelScope.launch {
-                            viewModel.getRandomWord()
-                            uiState.randomWord?.let {
-                                viewModel.navigateToDefinitionScreen(
-                                    it.word, navController = navController
-                                )
-                            }
-                        }
+                        getRandomWord()
                     })
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.favorites)) },
                     leadingContent = {
@@ -152,9 +179,7 @@ fun HomeScreen(
                         )
                     },
                     modifier = Modifier.clickable {
-                        navController.navigate(
-                            FavouriteScreenDestination, onlyIfResumed = true
-                        )
+                        onNavigateToFavorites()
                     })
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.history)) },
                     leadingContent = {
@@ -163,7 +188,7 @@ fun HomeScreen(
                             contentDescription = stringResource(id = R.string.history),
                         )
                     },
-                    modifier = Modifier.clickable { navController.navigate(HistoryScreenDestination) })
+                    modifier = Modifier.clickable { onNavigateToHistory() })
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.settings)) },
                     leadingContent = {
                         Icon(
@@ -171,7 +196,7 @@ fun HomeScreen(
                             contentDescription = stringResource(id = R.string.settings),
                         )
                     },
-                    modifier = Modifier.clickable { navController.navigate(SettingsScreenDestination) })
+                    modifier = Modifier.clickable { onNavigateToSettings() })
             }
         }
     }
@@ -186,7 +211,7 @@ fun HomeScreen(
                 Toast.LENGTH_LONG
             ).show()
 
-            viewModel.clearError()
+            clearError()
         }
     }
 }
@@ -195,8 +220,7 @@ fun HomeScreen(
 @Composable
 private fun WordOfTheDay(
     wordOfTheDay: Wotd,
-    viewModel: HomeScreenViewModel,
-    navController: DestinationsNavigator,
+    onNavigateToDefinition: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -221,9 +245,7 @@ private fun WordOfTheDay(
                 ?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
 
             TextButton(onClick = {
-                viewModel.navigateToDefinitionScreen(
-                    word = wordOfTheDay.word, fromWotd = true, navController
-                )
+                onNavigateToDefinition(wordOfTheDay.word)
             }, modifier = Modifier.align(Alignment.End)) {
                 Text(text = stringResource(id = R.string.learn_more))
             }
@@ -234,9 +256,9 @@ private fun WordOfTheDay(
 
 @Composable
 @Preview
-private fun SearchBarButton(navController: DestinationsNavigator = EmptyDestinationsNavigator) {
+private fun SearchBarButton(onNavigateToSearch: () -> Unit = {}) {
     Button(
-        onClick = { navController.navigate(SearchScreenDestination, onlyIfResumed = true) },
+        onClick = onNavigateToSearch,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,

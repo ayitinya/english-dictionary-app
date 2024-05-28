@@ -34,19 +34,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.BuildConfig
 import com.ayitinya.englishdictionary.R
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object OssLicencesRoute
+
+fun NavGraphBuilder.ossLicenses(modifier: Modifier = Modifier, onBack: () -> Unit) {
+    composable<OssLicencesRoute> {
+        OssLicences(modifier = modifier, onBack = onBack)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
 @Composable
-fun OssLicences(
-    navController: DestinationsNavigator,
+private fun OssLicences(
     modifier: Modifier = Modifier,
+    onBack: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -54,7 +63,7 @@ fun OssLicences(
         TopAppBar(
             title = { Text(text = stringResource(id = R.string.about)) },
             navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(onClick = onBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(id = R.string.back)

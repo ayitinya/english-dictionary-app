@@ -5,6 +5,7 @@ import android.speech.tts.TextToSpeech
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
 import com.ayitinya.englishdictionary.data.history.HistoryRepository
@@ -13,7 +14,6 @@ import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.settings.source.local.readBoolean
 import com.ayitinya.englishdictionary.data.settings.source.local.saveBoolean
 import com.ayitinya.englishdictionary.domain.ActivateWotdNotificationUseCase
-import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,8 +40,7 @@ class DefinitionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var textToSpeech: TextToSpeech
-    private val _navArgs: DefinitionScreenNavArgs =
-        DefinitionScreenDestination.argsFrom(savedStateHandle)
+    private val _navArgs = savedStateHandle.toRoute<DefinitionRoute>()
 
 //    private var analytics: FirebaseAnalytics = Firebase.analytics
 
@@ -73,7 +72,7 @@ class DefinitionViewModel @Inject constructor(
                 }
             }
 
-            if (_navArgs.fromWotd) {
+            if (_navArgs.isWotd) {
                 context.readBoolean(SettingsKeys.WOTD_MODAL_DISPLAY).take(1).collect { state ->
                     if (!state) {
                         context.saveBoolean(SettingsKeys.WOTD_MODAL_DISPLAY, true)

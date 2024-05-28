@@ -186,8 +186,8 @@ dependencies {
     testImplementation(libs.io.ktor.client.mock)
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
 
-    implementation(libs.io.github.raamcosta.compose.destinations.animations.core)
-    ksp(libs.io.github.raamcosta.compose.destinations.ksp)
+//    implementation(libs.io.github.raamcosta.compose.destinations.animations.core)
+//    ksp(libs.io.github.raamcosta.compose.destinations.ksp)
 
     implementation(libs.accompanist.permissions)
 

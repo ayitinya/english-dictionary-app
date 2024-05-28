@@ -5,12 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.favourite_words.Favourite
 import com.ayitinya.englishdictionary.data.favourite_words.FavouritesRepository
-import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +20,7 @@ class FavouriteViewModel @Inject constructor(
     analytics: FirebaseAnalytics?
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FavouriteScreenUiState())
-    val uiState: MutableStateFlow<FavouriteScreenUiState> = _uiState
+    val uiState: StateFlow<FavouriteScreenUiState> = _uiState
 
     init {
         viewModelScope.launch {
@@ -47,10 +46,6 @@ class FavouriteViewModel @Inject constructor(
                 }
             })
         }
-    }
-
-    fun navigateToDefinitionScreen(word: String, navController: DestinationsNavigator) {
-        navController.navigate(DefinitionScreenDestination(word = word), onlyIfResumed = true)
     }
 
     suspend fun deleteSelectedFavoriteItems() {

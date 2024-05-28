@@ -6,10 +6,8 @@ import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
-import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -102,14 +100,4 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    fun navigateToDefinitionScreen(
-        word: String, fromWotd: Boolean? = false, navController: DestinationsNavigator
-    ) {
-        viewModelScope.launch {
-            navController.navigate(
-                DefinitionScreenDestination(word = word, fromWotd = fromWotd ?: false),
-                onlyIfResumed = true
-            )
-        }
-    }
 }

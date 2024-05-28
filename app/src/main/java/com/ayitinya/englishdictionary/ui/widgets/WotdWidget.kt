@@ -28,7 +28,6 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.DefaultWotdRepository
-import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
@@ -71,10 +70,9 @@ class WotdWidget() : GlanceAppWidget() {
         provideContent {
             GlanceTheme {
                 if (wotd != null) {
-                    val definitionScreenRoute = DefinitionScreenDestination(word = wotd.word).route
                     val intent = Intent(
                         Intent.ACTION_VIEW,
-                        "app://com.ayitinya.englishdictionary/$definitionScreenRoute".toUri()
+                        "app://com.ayitinya.englishdictionary/${wotd.word}".toUri()
                     )
                     intent.apply {
                         `package` = context.packageName

@@ -31,19 +31,19 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.R
-import com.ayitinya.englishdictionary.ui.destinations.OssLicencesDestination
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
@@ -51,30 +51,65 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object SettingsRoute
+
+fun NavGraphBuilder.settingsScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToAbout: () -> Unit,
+    onBack: () -> Unit
+) {
+    composable<SettingsRoute> {
+        val viewModel: SettingsViewModel = hiltViewModel()
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+        SettingsScreen(
+            modifier = modifier,
+            uiState = uiState.value,
+            onNavigateToAbout = {
+                viewModel.analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "AboutScreen")
+                    param(FirebaseAnalytics.Param.SCREEN_CLASS, "AboutScreen.kt")
+                }
+                onNavigateToAbout()
+            },
+            toastShown = viewModel::toastShown,
+            clearFavorites = viewModel::clearFavourites,
+            toggleHistory = viewModel::toggleHistory,
+            clearHistory = viewModel::clearHistory,
+            toggleEtymologyCollapsed = viewModel::toggleEtymologyCollapsed,
+            toggleNotifyWordOfTheDay = viewModel::toggleNotifyWordOfTheDay,
+            onBack = onBack
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
-@Destination
 @Composable
-fun SettingsScreen(
-    navController: DestinationsNavigator,
+private fun SettingsScreen(
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = hiltViewModel()
+    uiState: SettingsScreenUiState,
+    toggleNotifyWordOfTheDay: (Boolean) -> Unit,
+    toggleEtymologyCollapsed: (Boolean) -> Unit,
+    toggleHistory: (Boolean) -> Unit,
+    clearHistory: () -> Unit,
+    clearFavorites: () -> Unit,
+    toastShown: () -> Unit,
+    onNavigateToAbout: () -> Unit,
+    onBack: () -> Unit,
 ) {
 
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-
-    val uiState by viewModel.uiState.collectAsState()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var permissionState: PermissionState? = null
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
-            if (it) {
-                viewModel.viewModelScope.launch { viewModel.toggleNotifyWordOfTheDay(true) }
-            }
+            if (it) toggleNotifyWordOfTheDay(true)
         }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -90,7 +125,7 @@ fun SettingsScreen(
             LargeTopAppBar(
                 title = { Text(text = stringResource(id = R.string.settings)) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.back)
@@ -108,14 +143,12 @@ fun SettingsScreen(
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && it) {
                                 when (permissionState!!.status) {
                                     PermissionStatus.Granted -> {
-                                        viewModel.viewModelScope.launch {
-                                            viewModel.toggleNotifyWordOfTheDay(it)
-                                        }
+                                        toggleNotifyWordOfTheDay(it)
                                     }
 
                                     else -> {
                                         if (permissionState.status.shouldShowRationale) {
-                                            viewModel.viewModelScope.launch {
+                                            coroutineScope.launch {
                                                 val result = snackbarHostState.showSnackbar(
                                                     message = "This feature requires notification permission",
                                                     actionLabel = "Go to settings",
@@ -140,40 +173,28 @@ fun SettingsScreen(
                                     }
                                 }
                             } else {
-                                viewModel.viewModelScope.launch {
-                                    viewModel.toggleNotifyWordOfTheDay(it)
-                                }
+                                toggleNotifyWordOfTheDay(it)
                             }
                         })
                     })
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.collapse_etymology)) },
                     trailingContent = {
-                        Switch(checked = uiState.etymologyCollapsed, onCheckedChange = {
-                            viewModel.viewModelScope.launch {
-                                viewModel.toggleEtymologyCollapsed(it)
-                            }
-                        })
+                        Switch(
+                            checked = uiState.etymologyCollapsed,
+                            onCheckedChange = toggleEtymologyCollapsed
+                        )
                     })
-                DeactivateHistory(state = uiState.isHistoryDeactivated, onConfirm = {
-                    viewModel.viewModelScope.launch {
-                        viewModel.toggleHistory(it)
-                    }
-                })
-                ClearOption(headlineContent = stringResource(id = R.string.clear_history),
+                DeactivateHistory(state = uiState.isHistoryDeactivated, onConfirm = toggleHistory)
+                ClearOption(
+                    headlineContent = stringResource(id = R.string.clear_history),
                     supportingContent = stringResource(id = R.string.clear_history_rationale),
-                    onConfirm = {
-                        viewModel.viewModelScope.launch {
-                            viewModel.clearHistory()
-                        }
-                    })
+                    onConfirm = clearHistory
+                )
                 ClearOption(
                     headlineContent = stringResource(id = R.string.clear_favorites),
                     supportingContent = stringResource(id = R.string.clear_favorites_rationale),
-                    onConfirm = {
-                        viewModel.viewModelScope.launch {
-                            viewModel.clearFavourites()
-                        }
-                    })
+                    onConfirm = clearFavorites
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
@@ -217,11 +238,8 @@ fun SettingsScreen(
                 )
 
                 ListItem(modifier = Modifier.clickable {
-                    viewModel.analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-                        param(FirebaseAnalytics.Param.SCREEN_NAME, "AboutScreen")
-                        param(FirebaseAnalytics.Param.SCREEN_CLASS, "AboutScreen.kt")
-                    }
-                    navController.navigate(OssLicencesDestination)
+                    onNavigateToAbout()
+
                 }, headlineContent = { Text(text = stringResource(id = R.string.about)) })
 
             }
@@ -231,7 +249,7 @@ fun SettingsScreen(
     LaunchedEffect(key1 = uiState.toastMessage) {
         if (uiState.toastMessage != null) {
             Toast.makeText(context, uiState.toastMessage, Toast.LENGTH_SHORT).show()
-            viewModel.toastShown()
+            toastShown()
         }
     }
 }

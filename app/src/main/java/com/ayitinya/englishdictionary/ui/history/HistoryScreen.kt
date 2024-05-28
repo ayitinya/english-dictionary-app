@@ -29,7 +29,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -38,26 +37,61 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.R
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object HistoryRoute
+
+fun NavGraphBuilder.historyScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToDefinition: (String) -> Unit,
+    onBack: () -> Unit
+) {
+    composable<HistoryRoute> {
+        val viewModel = hiltViewModel<HistoryViewModel>()
+        val uiState = viewModel.uiState.collectAsState()
+
+        HistoryScreen(
+            modifier = modifier,
+            uiState = uiState.value,
+            deselectAllHistoryItems = viewModel::deselectAllHistoryItems,
+            selectAllHistoryItems = viewModel::selectAllHistoryItems,
+            deleteSelectedHistoryItems = {
+                viewModel.viewModelScope.launch {
+                    viewModel.deleteSelectedHistoryItems()
+                }
+            },
+            selectHistoryItem = viewModel::selectHistoryItem,
+            toggleWordSelection = viewModel::toggleWordSelection,
+            toastShown = viewModel::toastShown,
+            onNavigateToDefinition = onNavigateToDefinition,
+            onBack = onBack
+        )
+    }
+}
 
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalFoundationApi::class,
 )
-@Destination
 @Composable
 fun HistoryScreen(
-    navController: DestinationsNavigator,
     modifier: Modifier = Modifier,
-    viewModel: HistoryViewModel = hiltViewModel()
+    uiState: HistoryScreenUiState,
+    deselectAllHistoryItems: () -> Unit,
+    selectAllHistoryItems: () -> Unit,
+    deleteSelectedHistoryItems: () -> Unit,
+    selectHistoryItem: (String) -> Unit,
+    toggleWordSelection: (String) -> Unit,
+    toastShown: () -> Unit,
+    onNavigateToDefinition: (String) -> Unit,
+    onBack: () -> Unit
 ) {
     val context = LocalContext.current
-
-    val uiState by viewModel.uiState.collectAsState()
-
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
@@ -78,11 +112,7 @@ fun HistoryScreen(
             ) {
                 when (it) {
                     true -> {
-                        IconButton(onClick = {
-                            viewModel.viewModelScope.launch {
-                                viewModel.deselectAllHistoryItems()
-                            }
-                        }) {
+                        IconButton(onClick = deselectAllHistoryItems) {
                             Icon(
                                 Icons.Outlined.Close,
                                 contentDescription = stringResource(id = R.string.back)
@@ -90,7 +120,7 @@ fun HistoryScreen(
                         }
                     }
 
-                    false -> IconButton(onClick = { navController.popBackStack() }) {
+                    false -> IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.back)
@@ -101,29 +131,17 @@ fun HistoryScreen(
 
         }, actions = {
             if (uiState.selectedHistory.isNotEmpty()) {
-                IconButton(onClick = {
-                    viewModel.viewModelScope.launch {
-                        viewModel.selectAllHistoryItems()
-                    }
-                }) {
+                IconButton(onClick = selectAllHistoryItems) {
                     Checkbox(checked = uiState.selectedHistory.size == uiState.historyList.size,
                         onCheckedChange = {
                             if (it) {
-                                viewModel.viewModelScope.launch {
-                                    viewModel.selectAllHistoryItems()
-                                }
+                                selectAllHistoryItems()
                             } else {
-                                viewModel.viewModelScope.launch {
-                                    viewModel.deselectAllHistoryItems()
-                                }
+                                deselectAllHistoryItems()
                             }
                         })
                 }
-                IconButton(onClick = {
-                    viewModel.viewModelScope.launch {
-                        viewModel.deleteSelectedHistoryItems()
-                    }
-                }) {
+                IconButton(onClick = deleteSelectedHistoryItems) {
                     Icon(
                         Icons.Filled.Delete, contentDescription = null
                     )
@@ -161,13 +179,11 @@ fun HistoryScreen(
                         ListItem(
                             headlineContent = { Text(text = history.word) },
                             modifier = Modifier.combinedClickable(onLongClick = {
-                                viewModel.selectHistoryItem(history.word)
+                                selectHistoryItem(
+                                    history.word
+                                )
                             }) {
-                                viewModel.viewModelScope.launch {
-                                    viewModel.navigateToDefinitionScreen(
-                                        history.word, navController
-                                    )
-                                }
+                                onNavigateToDefinition(history.word)
                             },
                         )
                     }
@@ -177,14 +193,14 @@ fun HistoryScreen(
                             leadingContent = {
                                 Checkbox(checked = uiState.selectedHistory.contains(history),
                                     onCheckedChange = {
-                                        viewModel.toggleWordSelection(history.word)
+                                        toggleWordSelection(history.word)
                                     })
                             },
                             headlineContent = { Text(text = history.word) },
                             modifier = Modifier.combinedClickable(onLongClick = {
-                                viewModel.toggleWordSelection(history.word)
+                                toggleWordSelection(history.word)
                             }) {
-                                viewModel.toggleWordSelection(history.word)
+                                toggleWordSelection(history.word)
                             },
                         )
                     }
@@ -195,16 +211,13 @@ fun HistoryScreen(
     }
 
     BackHandler(enabled = uiState.selectedHistory.isNotEmpty()) {
-        viewModel.viewModelScope.launch {
-            viewModel.deselectAllHistoryItems()
-        }
+        deselectAllHistoryItems()
     }
 
     LaunchedEffect(key1 = uiState.toastMessage) {
-        println("toastMessage: ${uiState.toastMessage}")
         if (uiState.toastMessage != null) {
             Toast.makeText(context, uiState.toastMessage, Toast.LENGTH_SHORT).show()
-            viewModel.toastShown()
+            toastShown()
         }
     }
 }

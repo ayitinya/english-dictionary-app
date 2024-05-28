@@ -25,7 +25,6 @@ import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.settings.source.local.WorkManagerKeys
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.DefaultWotdRepository
-import com.ayitinya.englishdictionary.ui.destinations.DefinitionScreenDestination
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.Calendar
@@ -41,11 +40,10 @@ class WotdNotificationService @AssistedInject constructor(
 
     private suspend fun showNotification() {
         val wotd = wotdRepository.getWordOfTheDay() ?: return
-        val definitionScreenRoute = DefinitionScreenDestination(word = wotd.word).route
 
         val intent = Intent(
             Intent.ACTION_VIEW,
-            "app://com.ayitinya.englishdictionary/$definitionScreenRoute".toUri()
+            "app://com.ayitinya.englishdictionary/${wotd.word}".toUri()
         ).apply {
             `package` = applicationContext.packageName
         }
