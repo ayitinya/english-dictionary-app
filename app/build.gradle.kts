@@ -25,8 +25,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = versionProperties.getProperty("VERSION_CODE")
-            .toInt() + 39 // 39 is the last version code before migrating to GHA for builds
+        versionCode = (versionProperties?.getProperty("VERSION_CODE")
+            ?.toInt() ?: 0) + 39 // 39 is the last version code before migrating to GHA for builds
         versionName = "2.1.0"
 
 
@@ -44,9 +44,9 @@ android {
         create("release") {
             val secretProperties = readProperties(file("../secret.properties"))
             storeFile = file("../keystore/keys.jks")
-            storePassword = secretProperties.getProperty("SIGNING_STORE_PASSWORD")
-            keyAlias = secretProperties.getProperty("SIGNING_KEY_ALIAS")
-            keyPassword = secretProperties.getProperty("SIGNING_KEY_PASSWORD")
+            storePassword = secretProperties?.getProperty("SIGNING_STORE_PASSWORD")
+            keyAlias = secretProperties?.getProperty("SIGNING_KEY_ALIAS")
+            keyPassword = secretProperties?.getProperty("SIGNING_KEY_PASSWORD")
         }
     }
 
@@ -229,6 +229,12 @@ hilt {
     enableAggregatingTask = true
 }
 
-fun readProperties(propertiesFile: File) = Properties().apply {
-    propertiesFile.inputStream().use { load(it) }
+fun readProperties(propertiesFile: File): Properties? {
+    return try {
+        Properties().apply {
+            propertiesFile.inputStream().use { load(it) }
+        }
+    } catch (e: Exception) {
+        null
+    }
 }
