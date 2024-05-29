@@ -35,6 +35,8 @@
     <string name="clear_favorites_rationale">This will clear all favorites. Are you sure you want to continue?</string>
     <string name="version">Version info</string>
     <string name="share_app">Share App</string>
+    <string name="buy_me_a_coffee" translatable="false">Buy me a coffee</string>
+    <string name="buy_me_a_coffee_rationale" translatable="false">Like this app? Buy me a coffee!</string>
     <string name="about">About, licenses and privacy</string>
     <string name="oss_licenses">Open Source Licenses</string>
 

@@ -58,9 +58,7 @@ import kotlinx.serialization.Serializable
 data object SettingsRoute
 
 fun NavGraphBuilder.settingsScreen(
-    modifier: Modifier = Modifier,
-    onNavigateToAbout: () -> Unit,
-    onBack: () -> Unit
+    modifier: Modifier = Modifier, onNavigateToAbout: () -> Unit, onBack: () -> Unit
 ) {
     composable<SettingsRoute> {
         val viewModel: SettingsViewModel = hiltViewModel()
@@ -80,6 +78,16 @@ fun NavGraphBuilder.settingsScreen(
             clearFavorites = viewModel::clearFavourites,
             toggleHistory = viewModel::toggleHistory,
             clearHistory = viewModel::clearHistory,
+            onBuyMeACoffee = {
+                viewModel.analytics?.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+                    param(FirebaseAnalytics.Param.ITEM_NAME, "Buy me a coffee")
+                }
+            },
+            onShareApp = {
+                viewModel.analytics?.logEvent(FirebaseAnalytics.Event.SHARE) {
+                    param(FirebaseAnalytics.Param.ITEM_NAME, "Share app")
+                }
+            },
             toggleEtymologyCollapsed = viewModel::toggleEtymologyCollapsed,
             toggleNotifyWordOfTheDay = viewModel::toggleNotifyWordOfTheDay,
             onBack = onBack
@@ -97,6 +105,8 @@ private fun SettingsScreen(
     toggleHistory: (Boolean) -> Unit,
     clearHistory: () -> Unit,
     clearFavorites: () -> Unit,
+    onBuyMeACoffee: () -> Unit,
+    onShareApp: () -> Unit,
     toastShown: () -> Unit,
     onNavigateToAbout: () -> Unit,
     onBack: () -> Unit,
@@ -233,9 +243,21 @@ private fun SettingsScreen(
                         )
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         context.startActivity(Intent.createChooser(intent, "Share with"))
+                        onShareApp()
                     },
                     headlineContent = { Text(text = stringResource(id = R.string.share_app)) },
                 )
+
+                ListItem(modifier = Modifier.clickable {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW, Uri.parse("https://www.buymeacoffee.com/ayitinya")
+                    )
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Buy me a coffee")
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                    onBuyMeACoffee()
+                },
+                    headlineContent = { Text(text = stringResource(id = R.string.buy_me_a_coffee)) })
 
                 ListItem(modifier = Modifier.clickable {
                     onNavigateToAbout()
@@ -256,8 +278,7 @@ private fun SettingsScreen(
 
 @Composable
 private fun DeactivateHistory(
-    state: Boolean,
-    onConfirm: (state: Boolean) -> Unit
+    state: Boolean, onConfirm: (state: Boolean) -> Unit
 ) {
     val dialogOpen = remember { mutableStateOf(false) }
 
