@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -87,6 +88,7 @@ fun NavGraphBuilder.homeScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -155,10 +157,8 @@ private fun HomeScreen(
                         }
                     }
                 } else {
-                    WordOfTheDay(
-                        wordOfTheDay = uiState.wotd,
-                        onNavigateToDefinition = { onNavigateToDefinition(it, true) }
-                    )
+                    WordOfTheDay(wordOfTheDay = uiState.wotd,
+                        onNavigateToDefinition = { onNavigateToDefinition(it, true) })
                 }
 
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.random_word)) },
@@ -206,9 +206,7 @@ private fun HomeScreen(
     LaunchedEffect(key1 = uiState.error) {
         if (uiState.error != null) {
             Toast.makeText(
-                context,
-                uiState.error,
-                Toast.LENGTH_LONG
+                context, uiState.error, Toast.LENGTH_LONG
             ).show()
 
             clearError()
@@ -219,9 +217,7 @@ private fun HomeScreen(
 
 @Composable
 private fun WordOfTheDay(
-    wordOfTheDay: Wotd,
-    onNavigateToDefinition: (String) -> Unit,
-    modifier: Modifier = Modifier
+    wordOfTheDay: Wotd, onNavigateToDefinition: (String) -> Unit, modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
