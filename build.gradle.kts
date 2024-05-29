@@ -7,13 +7,14 @@ buildscript {
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android.gradle.plugin) apply false
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.aboutlibraries.plugin) apply false
-    alias(libs.plugins.sentry.android.gradle.plugin) apply false
-    alias(libs.plugins.sentry.kotlin.compiler.gradle) apply false
     id("com.google.gms.google-services") version "4.4.1" apply false
+    alias(libs.plugins.google.firebase.plugin) apply false
+    id("com.google.firebase.firebase-perf") version "1.4.2" apply false
 }
 
 

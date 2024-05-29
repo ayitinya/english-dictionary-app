@@ -64,36 +64,6 @@
         </receiver>
 
         <meta-data
-            android:name="firebase_analytics_collection_enabled"
-            android:value="false" />
-        <meta-data
-            android:name="io.sentry.environment"
-            android:value="${sentryEnvironment}" />
-        <meta-data
-            android:name="io.sentry.dsn"
-            android:value="https://3ca0752869f44d5aba59b065c69fb597@o1104921.ingest.sentry.io/4505248530563072" />
-        <meta-data
-            android:name="io.sentry.traces.user-interaction.enable"
-            android:value="true" />
-        <meta-data
-            android:name="io.sentry.attach-screenshot"
-            android:value="true" />
-        <meta-data
-            android:name="io.sentry.breadcrumbs.user-interaction"
-            android:value="true" />
-        <meta-data
-            android:name="io.sentry.attach-view-hierarchy"
-            android:value="true" />
-        <meta-data
-            android:name="io.sentry.traces.sample-rate"
-            android:value="0.9" />
-        <meta-data
-            android:name="io.sentry.traces.profiling.sample-rate"
-            android:value="0.9" />
-        <meta-data
-            android:name="io.sentry.traces.profiling.enable-app-start"
-            android:value="true" />
-        <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_name" />
         <!--

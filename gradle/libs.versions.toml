@@ -3,12 +3,12 @@ aboutlibraries-compose = "11.1.3"
 agp = "8.6.0-alpha03"
 anrwatchdog = "1.4.0"
 appwidget-viewer = "0.2.2"
-asset-delivery-ktx = "2.2.1"
-billing-ktx = "6.2.0"
+asset-delivery-ktx = "2.2.2"
+billing-ktx = "7.0.0"
 clarity = "2.2.0"
-datastore-preferences = "1.0.0"
+datastore-preferences = "1.1.1"
 desugar_jdk_libs = "2.0.4"
-firebase-crashlytics-gradle = "2.9.9"
+firebase-crashlytics-gradle = "3.0.1"
 glance-appwidget = "1.0.0"
 glance = "1.0.0"
 google-services = "4.4.1"
@@ -16,45 +16,45 @@ hilt-android-testing = "2.47"
 hilt-compiler = "1.2.0"
 hilt-work = "1.2.0"
 junit-jupiter = "5.10.2"
-kotlin = "1.9.23"
-core-ktx = "1.12.0"
+kotlin = "2.0.0"
+core-ktx = "1.13.1"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
-lifecycle-runtime-ktx = "2.7.0"
-activity-compose = "1.8.2"
-compose-bom = "2024.04.00"
-firebase-bom = "32.8.1"
+lifecycle-runtime-ktx = "2.8.0"
+activity-compose = "1.9.0"
+compose-bom = "2024.05.00"
+firebase-bom = "33.0.0"
 napier = "2.7.1"
 perf-plugin = "1.4.2"
 review-ktx = "2.0.1"
 review = "2.0.1"
 room_version = "2.6.1"
-ksp = "1.9.23-1.0.20"
+ksp = "2.0.0-1.0.21"
 hilt-android = "2.51.1"
 hilt-navigation-compose = "1.2.0"
-lifecycle_version = "2.7.0"
+lifecycle_version = "2.8.0"
 accompanist_version = "0.34.0"
 constraintlayout_version = "1.0.1"
 nav_version = "2.8.0-beta01"
-paging_version = "3.2.1"
-ktor_version = "2.3.10"
-sentry-android = "7.8.0"
+paging_version = "3.3.0"
+ktor_version = "2.3.11"
+sentry-android = "7.9.0"
 serialization_version = "1.6.3"
 compose-destinations = "1.10.2"
 splashscreen-version = "1.0.1"
 firebase-crashlytics-ktx = "18.5.1"
 firebase-analytics-ktx = "21.5.0"
 firebase-perf-ktx = "20.5.0"
-sentry = "4.5.0"
+sentry = "4.6.0"
 sqlite-android = "3.43.0"
 uiautomator = "2.3.0"
-benchmark-macro-junit4 = "1.2.3"
-androidx-baselineprofile = "1.2.3"
+benchmark-macro-junit4 = "1.2.4"
+androidx-baselineprofile = "1.2.4"
 profileinstaller = "1.3.1"
 firebase-messaging-ktx = "23.3.1"
 appcompat = "1.6.1"
-material = "1.11.0"
+material = "1.3.0-beta01"
 window = "1.2.0"
 work_version = "2.9.0"
 
@@ -75,6 +75,7 @@ clarity = { module = "com.microsoft.clarity:clarity", version.ref = "clarity" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
+firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-ndk" }
 google-services = { module = "com.google.gms:google-services", version.ref = "google-services" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-android" }
@@ -99,7 +100,7 @@ ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-material3 = { group = "androidx.compose.material3", name = "material3" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material" }
 
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room_version" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room_version" }
@@ -155,6 +156,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android-gradle-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -163,7 +165,7 @@ sentry-kotlin-compiler-gradle = { id = "io.sentry.kotlin.compiler.gradle", versi
 androidTest = { id = "com.android.test", version.ref = "agp" }
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }
 aboutlibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version = "10.8.3" }
-google-firebase-plugin = { id = "com.google.firebase.crashlytics", version = "2.9.9" }
+google-firebase-plugin = { id = "com.google.firebase.crashlytics", version = "3.0.1" }
 
 [bundles]
 

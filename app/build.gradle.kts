@@ -1,14 +1,16 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.util.Properties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.sentry.android.gradle.plugin)
-    alias(libs.plugins.sentry.kotlin.compiler.gradle)
+    alias(libs.plugins.google.firebase.plugin)
+    id("com.google.firebase.firebase-perf")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.mikepenz.aboutlibraries.plugin")
@@ -26,8 +28,8 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = (versionProperties?.getProperty("VERSION_CODE")
-            ?.toInt() ?: 0) + 39 // 39 is the last version code before migrating to GHA for builds
-        versionName = "2.1.0"
+            ?.toInt() ?: 0) + 40 // 39 is the last version code before migrating to GHA for builds
+        versionName = "2.1.1"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -69,6 +71,16 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
+
+            configure<CrashlyticsExtension> {
+                nativeSymbolUploadEnabled = true
+            }
+
+            packaging {
+                resources {
+                    excludes += "/META-INF/{AL2.0,LGPL2.1}"
+                }
+            }
         }
 
         create("beta") {
@@ -95,11 +107,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.11"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+
 
     packaging {
         resources.excludes.add("META-INF/*")
@@ -108,14 +116,6 @@ android {
     sourceSets {
         getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
-}
-
-
-
-sentry {
-    ignoredBuildTypes.set(setOf("debug", "nonMinifiedRelease"))
-    includeNativeSources.set(true)
-    includeSourceContext.set(true)
 }
 
 
@@ -136,6 +136,9 @@ dependencies {
     implementation(libs.material3)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.perf)
+    implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.profileinstaller)
     implementation(libs.firebase.messaging)
     implementation(libs.work.runtime.ktx)
@@ -186,9 +189,6 @@ dependencies {
     testImplementation(libs.io.ktor.client.mock)
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
 
-//    implementation(libs.io.github.raamcosta.compose.destinations.animations.core)
-//    ksp(libs.io.github.raamcosta.compose.destinations.ksp)
-
     implementation(libs.accompanist.permissions)
 
     implementation(libs.androidx.hilt.work)
@@ -213,9 +213,6 @@ dependencies {
     implementation(libs.aboutlibraries.core)
 
     implementation(libs.sqlite.android)
-
-    implementation(libs.sentry.android)
-    implementation(libs.sentry.compose.android)
 
     implementation(libs.billing.ktx)
 }
