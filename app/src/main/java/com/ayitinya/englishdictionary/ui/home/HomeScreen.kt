@@ -245,7 +245,6 @@ private fun WordOfTheDay(
             }, modifier = Modifier.align(Alignment.End)) {
                 Text(text = stringResource(id = R.string.learn_more))
             }
-
         }
     }
 }
