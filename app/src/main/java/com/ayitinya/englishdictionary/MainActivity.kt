@@ -1,5 +1,3 @@
-//@file:OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
-
 package com.ayitinya.englishdictionary
 
 import android.app.NotificationChannel
@@ -12,17 +10,17 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.glance.appwidget.updateAll
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.coroutineScope
@@ -45,7 +43,6 @@ import com.ayitinya.englishdictionary.services.WotdNotificationService
 import com.ayitinya.englishdictionary.ui.home.HomeScreenViewModel
 import com.ayitinya.englishdictionary.ui.theme.EnglishDictionaryTheme
 import com.ayitinya.englishdictionary.ui.widgets.WotdWidget
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +73,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-//    @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val testLabSetting = Settings.System.getString(contentResolver, "firebase.test.lab")
@@ -94,7 +90,8 @@ class MainActivity : ComponentActivity() {
         val content: View = findViewById(android.R.id.content)
 
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
 
             val composeView = LocalView.current
@@ -120,28 +117,32 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             })
-            val navHostEngine =
-//                rememberAnimatedNavHostEngine(
-//                    navHostContentAlignment = Alignment.TopCenter,
-//                    rootDefaultAnimations = RootNavGraphDefaultAnimations(enterTransition = {
-//                        fadeIn(animationSpec = tween(500))
-//                    }, exitTransition = { fadeOut(animationSpec = tween(500)) })
-//                )
 
             EnglishDictionaryTheme {
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = !isSystemInDarkTheme()
+//                val systemUiController = rememberSystemUiController()
+                val darkTheme = isSystemInDarkTheme()
 
-                DisposableEffect(systemUiController, useDarkIcons) {
+                DisposableEffect(darkTheme) {
                     // Update all the system bar colors to be transparent, and use
                     // dark icons if we're in light theme
 //                    systemUiController.setSystemBarsColor(
 //                        color = Color.Transparent,
 //                        darkIcons = useDarkIcons
 //                    )
-                    systemUiController.setStatusBarColor(
-                        color = Color.Transparent, darkIcons = useDarkIcons
+                    enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(
+                            android.graphics.Color.TRANSPARENT,
+                            android.graphics.Color.TRANSPARENT,
+                        ) { darkTheme },
+                        navigationBarStyle = SystemBarStyle.auto(
+                            android.graphics.Color.argb(
+                                0xe6, 0xFF, 0xFF, 0xFF
+                            ), android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+                        ) { darkTheme },
                     )
+//                    systemUiController.setStatusBarColor(
+//                        color = Color.Transparent, darkIcons = useDarkIcons
+//                    )
 
                     // setStatusBarColor() and setNavigationBarColor() also exist
 
