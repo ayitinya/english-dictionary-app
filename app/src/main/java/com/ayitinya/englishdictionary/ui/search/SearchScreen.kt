@@ -158,6 +158,6 @@ private fun SearchScreen(
         }
     }
     LaunchedEffect(key1 = Unit) {
-        focusRequester.requestFocus()
+//        focusRequester.requestFocus()
     }
 }
