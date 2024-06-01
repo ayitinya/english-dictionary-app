@@ -42,8 +42,6 @@ class DefinitionViewModel @Inject constructor(
     private var textToSpeech: TextToSpeech
     private val _navArgs = savedStateHandle.toRoute<DefinitionRoute>()
 
-//    private var analytics: FirebaseAnalytics = Firebase.analytics
-
     private val _uiState = MutableStateFlow(DefinitionUiState(word = _navArgs.word))
     val uiState: StateFlow<DefinitionUiState> = _uiState
 
@@ -52,24 +50,14 @@ class DefinitionViewModel @Inject constructor(
             onTextToSpeechInit(initState)
         }
         viewModelScope.launch {
-            launch {
-                context.readBoolean(SettingsKeys.ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED)
-                    .take(1)
+            launch(Dispatchers.IO) {
+                context.readBoolean(SettingsKeys.ETYMOLOGY_INITIAL_DISPLAY_COLLAPSED).take(1)
                     .collect {
                         _uiState.update { uiState ->
                             uiState.copy(etymologyCollapsed = !it) // tbh i just had to add the ! to make it work
                         }
 
                     }
-            }
-
-            launch {
-                _uiState.update {
-                    it.copy(
-                        entries = dictionaryRepository.getDictionaryEntries(_navArgs.word),
-                        isFavourite = isFavourite(_navArgs.word)
-                    )
-                }
             }
 
             if (_navArgs.isWotd) {
@@ -134,6 +122,19 @@ class DefinitionViewModel @Inject constructor(
                 insertFavourite(_navArgs.word)
             } else {
                 removeFavourite(_navArgs.word)
+            }
+        }
+    }
+
+    fun loadDefinition() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dictionaryRepository.getDictionaryEntries(_navArgs.word).let { entry ->
+                _uiState.update {
+                    it.copy(
+                        entries = Entries.Success(entry),
+                        isFavourite = isFavourite(_navArgs.word)
+                    )
+                }
             }
         }
     }

@@ -11,6 +11,9 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +46,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -54,7 +58,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -73,6 +77,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -93,17 +98,18 @@ data class DefinitionRoute(val word: String, val isWotd: Boolean = false)
 fun NavGraphBuilder.definitionScreen(
     modifier: Modifier = Modifier,
     onBackButtonClick: () -> Unit,
-    onNavigateToSearch: () -> Unit
+    onNavigateToSearch: () -> Unit,
 ) {
     composable<DefinitionRoute>(deepLinks = listOf(navDeepLink {
         uriPattern = "app://com.ayitinya.englishdictionary/{word}"
     })) {
         val viewModel = hiltViewModel<DefinitionViewModel>()
-        val uiState by viewModel.uiState.collectAsState()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         DefinitionScreen(
             modifier = modifier,
             uiState = uiState,
+            loadDefinition = viewModel::loadDefinition,
             onActivateWotd = {
                 viewModel.viewModelScope.launch { viewModel.activateWotdNotification() }
             },
@@ -111,16 +117,19 @@ fun NavGraphBuilder.definitionScreen(
             onSpeakClick = { viewModel.onSpeakClick() },
             onFavoriteChange = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } },
             onBackButtonClick = onBackButtonClick,
-            onNavigateToSearch = onNavigateToSearch
+            onNavigateToSearch = onNavigateToSearch,
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
+)
 @Composable
-fun DefinitionScreen(
+private fun DefinitionScreen(
     modifier: Modifier = Modifier,
     uiState: DefinitionUiState,
+    loadDefinition: () -> Unit,
     onActivateWotd: () -> Unit,
     onDismissRequest: () -> Unit,
     onSpeakClick: () -> Unit,
@@ -206,7 +215,7 @@ fun DefinitionScreen(
                     word = it,
                     onBackButtonClick = onBackButtonClick,
                     onNavigateToSearch = onNavigateToSearch,
-                    isTextToSpeechReady = uiState.textToSpeechInitState == TextToSpeechInitState.READY
+                    isTextToSpeechReady = uiState.textToSpeechInitState == TextToSpeechInitState.READY,
                 ) { onSpeakClick() }
             }
         },
@@ -235,67 +244,73 @@ fun DefinitionScreen(
         },
 
         ) { paddingValues ->
-        AnimatedVisibility(visible = uiState.entries != null) {
-            LazyColumn(contentPadding = paddingValues, state = lazyListState) {
-                uiState.entries?.let {
-                    if (it.isNotEmpty() && it.first().etymology != null) {
-                        item {
-                            ExpandableCard(
-                                initialState = uiState.etymologyCollapsed,
-                                title = stringResource(R.string.etymology)
-                            ) {
-                                Text(
-                                    text = it.first().etymology!!,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-//                            Card(
-//                                modifier = modifier
-//                                    .fillMaxWidth()
-//                                    .padding(16.dp)
-//                            ) {
-//                                SelectionContainer {
-//                                    Column(
-//                                        verticalArrangement = Arrangement.spacedBy(12.dp),
-//                                        modifier = Modifier.padding(16.dp)
-//                                    ) {
-//                                        Text(
-//                                            text = stringResource(R.string.etymology),
-//                                            style = MaterialTheme.typography.titleLarge
-//                                        )
-//                                        Text(
-//                                            text = it.first().etymology!!,
-//                                            style = MaterialTheme.typography.bodyLarge
-//                                        )
-//                                    }
-//                                }
-//                            }
-                        }
+        LazyColumn(
+            contentPadding = paddingValues,
+            state = lazyListState,
+            modifier = Modifier.animateContentSize()
+        ) {
+            item {
+                Crossfade(
+                    targetState = uiState.entries,
+                    label = "uiState",
+                    modifier = Modifier.fillMaxSize()
+                ) { entries ->
+                    when (entries) {
+                        is Entries.Error -> Unit
 
-                    }
-                    it.forEach { entry ->
-                        entry.senses.forEach { sense ->
-                            item {
-                                Definition(pos = entry.pos,
-                                    glosses = sense.glosses.fold("") { acc, s -> acc.plus("$s\n") }
-                                        .trim(),
-                                    example = sense.examples.fold("") { acc, s -> acc.plus("$s\n") }
-                                        .trim(),
-                                    sounds = entry.sound)
+                        is Entries.Loading -> LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+
+                        is Entries.Success -> {
+                            if (entries.value.isNotEmpty() && entries.value.first().etymology != null) {
+                                ExpandableCard(
+                                    initialState = uiState.etymologyCollapsed,
+                                    title = stringResource(R.string.etymology)
+                                ) {
+                                    Text(
+                                        text = entries.value.first().etymology!!,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            }
+
+                            entries.value.forEach { entry ->
+                                entry.senses.forEach { sense ->
+                                    Definition(
+                                        pos = entry.pos,
+                                        glosses = sense.glosses.fold("") { acc, s ->
+                                            acc.plus(
+                                                "$s\n"
+                                            )
+                                        }.trim(),
+                                        example = sense.examples.fold("") { acc, s ->
+                                            acc.plus(
+                                                "$s\n"
+                                            )
+                                        }.trim(),
+                                        sounds = entry.sound
+                                    )
+                                }
                             }
                         }
                     }
                 }
-                item {
-                    Footer()
-                }
+
+
             }
+            item {
+                Footer()
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            loadDefinition()
         }
 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun TopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
@@ -305,7 +320,6 @@ private fun TopAppBar(
     onNavigateToSearch: () -> Unit,
     onSpeakClick: () -> Unit,
 ) {
-
     LargeTopAppBar(title = {
         BoxWithConstraints {
             if (maxWidth > 300.dp) {
@@ -353,7 +367,6 @@ private fun TopAppBar(
             }
         }
 
-
     }, scrollBehavior = scrollBehavior, navigationIcon = {
         IconButton(onClick = onBackButtonClick) {
             Icon(
@@ -371,7 +384,6 @@ private fun TopAppBar(
             )
         }
     })
-
 }
 
 @Composable
