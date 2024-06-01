@@ -91,7 +91,6 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-//        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
 
             val composeView = LocalView.current
@@ -119,16 +118,9 @@ class MainActivity : ComponentActivity() {
             })
 
             EnglishDictionaryTheme {
-//                val systemUiController = rememberSystemUiController()
                 val darkTheme = isSystemInDarkTheme()
 
                 DisposableEffect(darkTheme) {
-                    // Update all the system bar colors to be transparent, and use
-                    // dark icons if we're in light theme
-//                    systemUiController.setSystemBarsColor(
-//                        color = Color.Transparent,
-//                        darkIcons = useDarkIcons
-//                    )
                     enableEdgeToEdge(
                         statusBarStyle = SystemBarStyle.auto(
                             android.graphics.Color.TRANSPARENT,
@@ -140,20 +132,12 @@ class MainActivity : ComponentActivity() {
                             ), android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
                         ) { darkTheme },
                     )
-//                    systemUiController.setStatusBarColor(
-//                        color = Color.Transparent, darkIcons = useDarkIcons
-//                    )
-
-                    // setStatusBarColor() and setNavigationBarColor() also exist
-
                     onDispose {}
                 }
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     EnglishDictionaryNavHost()
-//                    DestinationsNavHost(navGraph = NavGraphs.root, engine = navHostEngine)
                 }
             }
         }
