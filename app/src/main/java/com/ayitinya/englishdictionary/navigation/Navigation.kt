@@ -1,5 +1,7 @@
 package com.ayitinya.englishdictionary.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -21,11 +23,39 @@ import com.ayitinya.englishdictionary.ui.search.searchScreen
 import com.ayitinya.englishdictionary.ui.settings.SettingsRoute
 import com.ayitinya.englishdictionary.ui.settings.settingsScreen
 
+const val ANIMATION_TWEEN_DURATION = 300
+
 @Composable
 fun EnglishDictionaryNavHost(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
-    NavHost(modifier = modifier, navController = navController, startDestination = Home) {
+    NavHost(modifier = modifier,
+        navController = navController,
+        startDestination = Home,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Start, tween(ANIMATION_TWEEN_DURATION)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Start,
+                tween(ANIMATION_TWEEN_DURATION)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.End,
+                tween(ANIMATION_TWEEN_DURATION)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.End,
+                tween(ANIMATION_TWEEN_DURATION)
+            )
+        }
+    ) {
         aboutScreen(onBackButtonClick = navController::popBackStack,
             onNavigateToOSS = { navController.navigate(OssLicencesRoute) })
 
