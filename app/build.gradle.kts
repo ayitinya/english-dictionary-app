@@ -28,7 +28,7 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = (versionProperties?.getProperty("VERSION_CODE")
-            ?.toInt() ?: 0) + 40 // 39 is the last version code before migrating to GHA for builds
+            ?.toInt() ?: 0) + 39 // 39 is the last version code before migrating to GHA for builds
         versionName = "2.1.1"
 
 
