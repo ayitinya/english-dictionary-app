@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.ayitinya.englishdictionary.ui.definition
 
 import android.Manifest
@@ -10,9 +12,11 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -98,6 +102,7 @@ fun NavGraphBuilder.definitionScreen(
     modifier: Modifier = Modifier,
     onBackButtonClick: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
 ) {
     composable<DefinitionRoute>(deepLinks = listOf(navDeepLink {
         uriPattern = "app://com.ayitinya.englishdictionary/{word}"
@@ -117,6 +122,8 @@ fun NavGraphBuilder.definitionScreen(
             onFavoriteChange = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } },
             onBackButtonClick = onBackButtonClick,
             onNavigateToSearch = onNavigateToSearch,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this@composable
         )
     }
 }
@@ -135,6 +142,8 @@ private fun DefinitionScreen(
     onFavoriteChange: () -> Unit,
     onBackButtonClick: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     val context = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
@@ -215,7 +224,10 @@ private fun DefinitionScreen(
                     onBackButtonClick = onBackButtonClick,
                     onNavigateToSearch = onNavigateToSearch,
                     isTextToSpeechReady = uiState.textToSpeechInitState == TextToSpeechInitState.READY,
-                ) { onSpeakClick() }
+                    onSpeakClick = onSpeakClick,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope
+                )
             }
         },
         floatingActionButton = {
@@ -312,6 +324,8 @@ private fun TopAppBar(
     onBackButtonClick: () -> Unit,
     onNavigateToSearch: () -> Unit,
     onSpeakClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     LargeTopAppBar(title = {
         BoxWithConstraints {
@@ -321,7 +335,16 @@ private fun TopAppBar(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = word, modifier = Modifier.weight(4f))
+                    with(sharedTransitionScope) {
+                        Text(
+                            text = word, modifier = Modifier.Companion
+                                .sharedElement(
+                                    sharedTransitionScope.rememberSharedContentState(key = word),
+                                    animatedVisibilityScope = animatedContentScope
+                                )
+                                .weight(4f)
+                        )
+                    }
                     IconButton(
                         onClick = onSpeakClick,
                         enabled = isTextToSpeechReady,
@@ -449,19 +472,19 @@ private fun DefinitionPreview() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-@Preview
-private fun TopAppBarPreview() {
-    TopAppBar(
-        scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-        word = "Word",
-        isTextToSpeechReady = true,
-        onSpeakClick = {},
-        onBackButtonClick = {},
-        onNavigateToSearch = {}
-    )
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//@Preview
+//private fun TopAppBarPreview() {
+//    TopAppBar(
+//        scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+//        word = "Word",
+//        isTextToSpeechReady = true,
+//        onSpeakClick = {},
+//        onBackButtonClick = {},
+//        onNavigateToSearch = {}
+//    )
+//}
 
 @Composable
 private fun LazyListState.isScrollingUp(): Boolean {

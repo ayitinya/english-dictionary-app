@@ -1,6 +1,11 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.ayitinya.englishdictionary.ui.home
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,7 +64,8 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToDefinition: (word: String, isWotd: Boolean) -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToFavorites: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
 ) {
     composable<Home> {
         val viewModel = hiltViewModel<HomeScreenViewModel>()
@@ -82,7 +88,9 @@ fun NavGraphBuilder.homeScreen(
             onNavigateToDefinition = onNavigateToDefinition,
             onNavigateToFavorites = onNavigateToFavorites,
             onNavigateToHistory = onNavigateToHistory,
-            onNavigateToSettings = onNavigateToSettings
+            onNavigateToSettings = onNavigateToSettings,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this@composable
         )
     }
 }
@@ -100,7 +108,9 @@ private fun HomeScreen(
     onNavigateToDefinition: (String, Boolean) -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToFavorites: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     Scaffold(modifier = modifier, topBar = {
         Box(
@@ -157,8 +167,12 @@ private fun HomeScreen(
                         }
                     }
                 } else {
-                    WordOfTheDay(wordOfTheDay = uiState.wotd,
-                        onNavigateToDefinition = { onNavigateToDefinition(it, true) })
+                    WordOfTheDay(
+                        wordOfTheDay = uiState.wotd,
+                        onNavigateToDefinition = { onNavigateToDefinition(it, true) },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope
+                    )
                 }
 
                 ListItem(headlineContent = { Text(text = stringResource(id = R.string.random_word)) },
@@ -217,7 +231,11 @@ private fun HomeScreen(
 
 @Composable
 private fun WordOfTheDay(
-    wordOfTheDay: Wotd, onNavigateToDefinition: (String) -> Unit, modifier: Modifier = Modifier
+    wordOfTheDay: Wotd,
+    onNavigateToDefinition: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     Card(
         modifier = modifier
@@ -236,7 +254,16 @@ private fun WordOfTheDay(
                 Text(text = stringResource(id = R.string.word_of_the_day))
                 Text("${wordOfTheDay.date.dayOfMonth} ${wordOfTheDay.date.month} ${wordOfTheDay.date.year}")
             }
-            Text(text = wordOfTheDay.word, style = MaterialTheme.typography.headlineLarge)
+            with(sharedTransitionScope) {
+                Text(
+                    text = wordOfTheDay.word,
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier.Companion.sharedElement(
+                        sharedTransitionScope.rememberSharedContentState(key = wordOfTheDay.word),
+                        animatedVisibilityScope = animatedContentScope
+                    )
+                )
+            }
             wordOfTheDay.sense?.glosses?.firstOrNull()
                 ?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
 
