@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -244,17 +243,12 @@ private fun DefinitionScreen(
         },
 
         ) { paddingValues ->
-        LazyColumn(
-            contentPadding = paddingValues,
-            state = lazyListState,
-            modifier = Modifier.animateContentSize()
-        ) {
-            item {
-                Crossfade(
-                    targetState = uiState.entries,
-                    label = "uiState",
-                    modifier = Modifier.fillMaxSize()
-                ) { entries ->
+        Crossfade(targetState = uiState.entries, label = "uiState") { entries ->
+            LazyColumn(
+                contentPadding = paddingValues,
+                state = lazyListState,
+            ) {
+                item {
                     when (entries) {
                         is Entries.Error -> Unit
 
@@ -296,10 +290,9 @@ private fun DefinitionScreen(
                     }
                 }
 
-
-            }
-            item {
-                Footer()
+                item {
+                    Footer()
+                }
             }
         }
 
