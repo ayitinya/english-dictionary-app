@@ -79,9 +79,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -107,23 +104,29 @@ fun NavGraphBuilder.definitionScreen(
     composable<DefinitionRoute>(deepLinks = listOf(navDeepLink {
         uriPattern = "app://com.ayitinya.englishdictionary/{word}"
     })) {
-        val viewModel = hiltViewModel<DefinitionViewModel>()
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+//        val viewModel = hiltViewModel<DefinitionViewModel>()
+//        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         DefinitionScreen(
-            modifier = modifier,
-            uiState = uiState,
-            loadDefinition = viewModel::loadDefinition,
-            onActivateWotd = {
-                viewModel.viewModelScope.launch { viewModel.activateWotdNotification() }
-            },
-            onDismissRequest = viewModel::dismissModal,
-            onSpeakClick = { viewModel.onSpeakClick() },
-            onFavoriteChange = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } },
-            onBackButtonClick = onBackButtonClick,
-            onNavigateToSearch = onNavigateToSearch,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = this@composable
+        )
+    }
+}
+
+@Composable
+private fun DefinitionScreen(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
+) {
+    with(sharedTransitionScope) {
+        Text(
+            text = "definition", modifier = Modifier
+                .sharedElement(
+                    sharedTransitionScope.rememberSharedContentState(key = "hello"),
+                    animatedVisibilityScope = animatedContentScope
+                )
+
         )
     }
 }
@@ -337,12 +340,13 @@ private fun TopAppBar(
                 ) {
                     with(sharedTransitionScope) {
                         Text(
-                            text = word, modifier = Modifier.Companion
+                            text = word, modifier = Modifier
+                                .weight(4f)
                                 .sharedElement(
                                     sharedTransitionScope.rememberSharedContentState(key = word),
                                     animatedVisibilityScope = animatedContentScope
                                 )
-                                .weight(4f)
+
                         )
                     }
                     IconButton(

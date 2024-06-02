@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -45,14 +44,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.R
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.Wotd
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -68,35 +63,35 @@ fun NavGraphBuilder.homeScreen(
     sharedTransitionScope: SharedTransitionScope,
 ) {
     composable<Home> {
-        val viewModel = hiltViewModel<HomeScreenViewModel>()
-        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+//        val viewModel = hiltViewModel<HomeScreenViewModel>()
+//        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
 
         HomeScreen(
-            modifier = modifier,
-            uiState = uiState.value,
-            getRandomWord = {
-                viewModel.viewModelScope.launch {
-                    viewModel.getRandomWord()
-                    uiState.value.randomWord?.let {
-                        onNavigateToDefinition(it.word, false)
-                    }
-                }
-            },
-            getWordOfTheDay = viewModel::getWordOfTheDay,
-            clearError = viewModel::clearError,
-            onNavigateToSearch = onNavigateToSearch,
-            onNavigateToDefinition = onNavigateToDefinition,
-            onNavigateToFavorites = onNavigateToFavorites,
-            onNavigateToHistory = onNavigateToHistory,
-            onNavigateToSettings = onNavigateToSettings,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = this@composable
         )
     }
 }
 
+@Composable
+private fun HomeScreen(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
+) {
+    with(sharedTransitionScope) {
+        Text(
+            text = "hello",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.sharedElement(
+                sharedTransitionScope.rememberSharedContentState(key = "hello"),
+                animatedVisibilityScope = animatedContentScope
+            )
+        )
+    }
+}
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -258,7 +253,7 @@ private fun WordOfTheDay(
                 Text(
                     text = wordOfTheDay.word,
                     style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.Companion.sharedElement(
+                    modifier = Modifier.sharedElement(
                         sharedTransitionScope.rememberSharedContentState(key = wordOfTheDay.word),
                         animatedVisibilityScope = animatedContentScope
                     )
