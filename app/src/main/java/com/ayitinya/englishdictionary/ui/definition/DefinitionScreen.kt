@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,8 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -72,27 +69,7 @@ private fun DefinitionScreen(
             .fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            TopAppBar(
-                word = "hello",
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope
-            )
-        },
-    ) { paddingValues ->
-        LazyColumn(contentPadding = paddingValues) { }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
-@Composable
-private fun TopAppBar(
-    word: String,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
-) {
-    LargeTopAppBar(title = {
-        BoxWithConstraints {
-            if (maxWidth > 300.dp) {
+            LargeTopAppBar(title = {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -100,7 +77,8 @@ private fun TopAppBar(
                 ) {
                     with(sharedTransitionScope) {
                         Text(
-                            text = word, modifier = Modifier
+                            text = "hello", modifier = Modifier
+                                .Companion
                                 .sharedElement(
                                     sharedTransitionScope.rememberSharedContentState(key = "hello"),
                                     animatedContentScope
@@ -110,21 +88,9 @@ private fun TopAppBar(
                     }
                 }
 
-            } else {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = word,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(4f)
-                    )
-                }
-            }
-        }
-
-    })
+            })
+        },
+    ) { paddingValues ->
+        LazyColumn(contentPadding = paddingValues) { }
+    }
 }
