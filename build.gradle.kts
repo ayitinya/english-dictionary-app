@@ -11,10 +11,6 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android.gradle.plugin) apply false
     alias(libs.plugins.androidTest) apply false
-    alias(libs.plugins.aboutlibraries.plugin) apply false
-    alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.google.firebase.plugin) apply false
-    alias(libs.plugins.perf.plugin) apply false
 }
 
 

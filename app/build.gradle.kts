@@ -1,6 +1,3 @@
-import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import java.util.Properties
-
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
@@ -9,11 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.google.firebase.plugin)
-    id("com.google.firebase.firebase-perf")
     id("kotlin-parcelize")
-    id("com.google.gms.google-services")
-    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
@@ -22,13 +15,10 @@ android {
     ndkVersion = "21.4.7075529"
 
     defaultConfig {
-        val versionProperties = readProperties(file("../version.properties"))
-
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 34
-        versionCode = (versionProperties?.getProperty("VERSION_CODE")
-            ?.toInt() ?: 0) + 39 // 39 is the last version code before migrating to GHA for builds
+        versionCode = 1
         versionName = "2.1.1"
 
 
@@ -42,45 +32,23 @@ android {
         buildConfig = true
     }
 
-    signingConfigs {
-        create("release") {
-            val secretProperties = readProperties(file("../secret.properties"))
-            storeFile = file("../keystore/keys.jks")
-            storePassword = secretProperties?.getProperty("SIGNING_STORE_PASSWORD")
-            keyAlias = secretProperties?.getProperty("SIGNING_KEY_ALIAS")
-            keyPassword = secretProperties?.getProperty("SIGNING_KEY_PASSWORD")
-        }
-    }
-
     buildTypes {
         debug {
-            manifestPlaceholders["sentryEnvironment"] = "debug"
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
 
         release {
-            manifestPlaceholders += mapOf("sentryEnvironment" to "release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
 
             ndk {
                 debugSymbolLevel = "FULL"
             }
 
-            configure<CrashlyticsExtension> {
-                nativeSymbolUploadEnabled = true
-            }
-
-            packaging {
-                resources {
-                    excludes += "/META-INF/{AL2.0,LGPL2.1}"
-                }
-            }
         }
 
         create("beta") {
@@ -134,13 +102,7 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics)
-    implementation(libs.firebase.perf)
-    implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.profileinstaller)
-    implementation(libs.firebase.messaging)
     implementation(libs.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -170,23 +132,12 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     ksp(libs.androidx.lifecycle.compiler)
 
-    implementation(libs.accompanist.systemuicontroller)
-
     implementation(libs.androidx.constraintlayout.compose)
 
     implementation(libs.androidx.navigation.compose)
 
-    implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.paging.compose)
-
     implementation(libs.androidx.compose.material.icons.extended)
 
-    implementation(libs.io.ktor.client.core)
-    implementation(libs.io.ktor.client.android)
-    implementation(libs.io.ktor.serialization.kotlinx.json)
-    implementation(libs.io.ktor.client.logging)
-    implementation(libs.io.ktor.client.content.negotiation)
-    testImplementation(libs.io.ktor.client.mock)
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
 
     implementation(libs.accompanist.permissions)
@@ -207,31 +158,11 @@ dependencies {
     implementation(libs.review.ktx)
     debugImplementation(libs.appwidget.viewer)
 
-    implementation(libs.napier)
-
-    implementation(libs.aboutlibraries.compose)
-    implementation(libs.aboutlibraries.core)
-
     implementation(libs.sqlite.android)
 
-    implementation(libs.billing.ktx)
 }
 
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-}
 
 hilt {
     enableAggregatingTask = true
-}
-
-fun readProperties(propertiesFile: File): Properties? {
-    return try {
-        Properties().apply {
-            propertiesFile.inputStream().use { load(it) }
-        }
-    } catch (e: Exception) {
-        null
-    }
 }

@@ -18,7 +18,6 @@ import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
@@ -27,24 +26,8 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.ayitinya.englishdictionary.R
-import com.ayitinya.englishdictionary.data.word_of_the_day.source.DefaultWotdRepository
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 
-class WotdWidget() : GlanceAppWidget() {
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface WotdWidgetEntryPoint {
-        fun wotdRepository(): DefaultWotdRepository
-    }
-
-    private lateinit var analytics: FirebaseAnalytics
+class WotdWidget : GlanceAppWidget() {
 
     companion object {
         private val SMALL_BOX = DpSize(90.dp, 90.dp)
@@ -61,107 +44,67 @@ class WotdWidget() : GlanceAppWidget() {
     )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val hiltEntryPoint =
-            EntryPointAccessors.fromApplication(context, WotdWidgetEntryPoint::class.java)
-        val wotdRepository = hiltEntryPoint.wotdRepository()
-        val wotd = wotdRepository.getWordOfTheDay()
-        analytics = Firebase.analytics
+        val wotd = "hello"
 
         provideContent {
             GlanceTheme {
-                if (wotd != null) {
-                    val intent = Intent(
-                        Intent.ACTION_VIEW,
-                        "app://com.ayitinya.englishdictionary/${wotd.word}".toUri()
-                    )
-                    intent.apply {
-                        `package` = context.packageName
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    Column(
-                        modifier = GlanceModifier.fillMaxSize().padding(16.dp)
-                            .background(GlanceTheme.colors.background).clickable {
-                                analytics.logEvent("wotd_widget_clicked") {
-                                    param("word", wotd.word)
-                                }
-                                context.startActivity(intent)
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        when (LocalSize.current) {
-                            SMALL_BOX, ROW, LARGE_ROW -> {
-                                Text(
-                                    text = context.getString(R.string.word_of_the_day),
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.secondary,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 12.sp
-                                    ),
-                                    modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp)
-                                )
-                                Text(
-                                    text = wotd.word,
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.primary,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = TextUnit(value = 18f, type = TextUnitType.Sp)
-                                    ),
-                                    modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp),
-                                    maxLines = 2,
-                                )
-                            }
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    "app://com.ayitinya.englishdictionary/${wotd}".toUri()
+                )
+                intent.apply {
+                    `package` = context.packageName
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                Column(
+                    modifier = GlanceModifier.fillMaxSize().padding(16.dp)
+                        .background(GlanceTheme.colors.background).clickable {
+                            context.startActivity(intent)
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    when (LocalSize.current) {
+                        SMALL_BOX, ROW, LARGE_ROW -> {
+                            Text(
+                                text = context.getString(R.string.word_of_the_day),
+                                style = TextStyle(
+                                    color = GlanceTheme.colors.secondary,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 12.sp
+                                ),
+                                modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = wotd,
+                                style = TextStyle(
+                                    color = GlanceTheme.colors.primary,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = TextUnit(value = 18f, type = TextUnitType.Sp)
+                                ),
+                                modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp),
+                                maxLines = 2,
+                            )
+                        }
 
-                            BIG_BOX, VERY_BIG_BOX, COLUMN, LARGE_COLUMN -> {
-                                Text(
-                                    text = context.getString(R.string.word_of_the_day),
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.secondary,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 14.sp
-                                    ),
-                                    modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp)
-                                )
-                                Text(
-                                    text = wotd.word,
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.primary,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 18.sp
-                                    ),
-                                    modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp),
-                                    maxLines = 2,
-                                )
-                                wotd.sense?.glosses?.let {
-                                    Text(
-                                        text = it.first(), maxLines = 2, style = TextStyle(
-                                            color = GlanceTheme.colors.primary,
-                                            textAlign = TextAlign.Center,
-                                        ), modifier = GlanceModifier.fillMaxWidth()
-                                    )
-                                }
-                            }
+                        BIG_BOX, VERY_BIG_BOX, COLUMN, LARGE_COLUMN -> {
+                            Text(
+                                text = context.getString(R.string.word_of_the_day),
+                                style = TextStyle(
+                                    color = GlanceTheme.colors.secondary,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 14.sp
+                                ),
+                                modifier = GlanceModifier.fillMaxWidth().padding(bottom = 4.dp)
+                            )
+                        }
 
-                            else -> {
-                                throw IllegalArgumentException("Invalid size not matching the provided ones")
-                            }
+                        else -> {
+                            throw IllegalArgumentException("Invalid size not matching the provided ones")
                         }
                     }
-
-                } else {
-                    Box(
-                        modifier = GlanceModifier.fillMaxSize().padding(16.dp)
-                            .background(GlanceTheme.colors.background),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "Error loading word of the day", style = TextStyle(
-                                color = GlanceTheme.colors.primary,
-                                textAlign = TextAlign.Center,
-                            ), modifier = GlanceModifier.fillMaxWidth()
-                        )
-                    }
                 }
+
             }
 
         }
