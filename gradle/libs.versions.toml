@@ -1,6 +1,6 @@
 [versions]
 aboutlibraries-compose = "11.2.1"
-agp = "8.6.0-alpha06"
+agp = "8.6.0-alpha07"
 anrwatchdog = "1.4.0"
 appwidget-viewer = "0.2.2"
 asset-delivery-ktx = "2.2.2"
