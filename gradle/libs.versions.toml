@@ -166,7 +166,7 @@ sentry-android-gradle-plugin = { id = "io.sentry.android.gradle", version.ref = 
 sentry-kotlin-compiler-gradle = { id = "io.sentry.kotlin.compiler.gradle", version.ref = "sentry" }
 androidTest = { id = "com.android.test", version.ref = "agp" }
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidx-baselineprofile" }
-aboutlibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.2.1" }
+aboutlibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.2.2" }
 google-firebase-plugin = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 perf-plugin = { id = "com.google.firebase.firebase-perf", version.ref = "perf-plugin" }
