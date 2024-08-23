@@ -1,5 +1,5 @@
 [versions]
-aboutlibraries-compose = "11.2.2"
+aboutlibraries-compose = "11.2.3"
 agp = "8.6.0-rc01"
 anrwatchdog = "1.4.0"
 appwidget-viewer = "0.2.2"
