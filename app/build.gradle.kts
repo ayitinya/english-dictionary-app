@@ -1,7 +1,6 @@
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.util.Properties
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -18,7 +17,7 @@ plugins {
 
 android {
     namespace = "com.ayitinya.englishdictionary"
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = "21.4.7075529"
 
     defaultConfig {
@@ -26,9 +25,9 @@ android {
 
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
-        targetSdk = 34
-        versionCode = (versionProperties?.getProperty("VERSION_CODE")
-            ?.toInt() ?: 0) + 39 // 39 is the last version code before migrating to GHA for builds
+        targetSdk = 35
+        versionCode = (versionProperties?.getProperty("VERSION_CODE")?.toInt()
+            ?: 0) + 39 // 39 is the last version code before migrating to GHA for builds
         versionName = "2.1.1"
 
 
@@ -95,11 +94,11 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = "21"
     }
     buildFeatures {
         compose = true

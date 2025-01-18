@@ -28,3 +28,4 @@ google-services.json
 /keystore/
 /secret.properties
 /version.properties
+/parsedict/build/
