@@ -1,11 +1,6 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
 package com.ayitinya.englishdictionary.ui.home
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,7 +60,6 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToHistory: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
 ) {
     composable<Home> {
         val viewModel = hiltViewModel<HomeScreenViewModel>()
@@ -89,8 +83,6 @@ fun NavGraphBuilder.homeScreen(
             onNavigateToFavorites = onNavigateToFavorites,
             onNavigateToHistory = onNavigateToHistory,
             onNavigateToSettings = onNavigateToSettings,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = this@composable
         )
     }
 }
@@ -109,8 +101,6 @@ private fun HomeScreen(
     onNavigateToHistory: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
 ) {
     Scaffold(modifier = modifier, topBar = {
         Box(
@@ -170,12 +160,11 @@ private fun HomeScreen(
                     WordOfTheDay(
                         wordOfTheDay = uiState.wotd,
                         onNavigateToDefinition = { onNavigateToDefinition(it, true) },
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope
                     )
                 }
 
-                ListItem(headlineContent = { Text(text = stringResource(id = R.string.random_word)) },
+                ListItem(
+                    headlineContent = { Text(text = stringResource(id = R.string.random_word)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Default.Refresh,
@@ -185,7 +174,8 @@ private fun HomeScreen(
                     modifier = Modifier.clickable {
                         getRandomWord()
                     })
-                ListItem(headlineContent = { Text(text = stringResource(id = R.string.favorites)) },
+                ListItem(
+                    headlineContent = { Text(text = stringResource(id = R.string.favorites)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Default.Star,
@@ -195,7 +185,8 @@ private fun HomeScreen(
                     modifier = Modifier.clickable {
                         onNavigateToFavorites()
                     })
-                ListItem(headlineContent = { Text(text = stringResource(id = R.string.history)) },
+                ListItem(
+                    headlineContent = { Text(text = stringResource(id = R.string.history)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Default.History,
@@ -203,7 +194,8 @@ private fun HomeScreen(
                         )
                     },
                     modifier = Modifier.clickable { onNavigateToHistory() })
-                ListItem(headlineContent = { Text(text = stringResource(id = R.string.settings)) },
+                ListItem(
+                    headlineContent = { Text(text = stringResource(id = R.string.settings)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Default.Settings,
@@ -234,8 +226,6 @@ private fun WordOfTheDay(
     wordOfTheDay: Wotd,
     onNavigateToDefinition: (String) -> Unit,
     modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
 ) {
     Card(
         modifier = modifier
@@ -254,16 +244,10 @@ private fun WordOfTheDay(
                 Text(text = stringResource(id = R.string.word_of_the_day))
                 Text("${wordOfTheDay.date.dayOfMonth} ${wordOfTheDay.date.month} ${wordOfTheDay.date.year}")
             }
-            with(sharedTransitionScope) {
-                Text(
-                    text = wordOfTheDay.word,
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.Companion.sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(key = wordOfTheDay.word),
-                        animatedVisibilityScope = animatedContentScope
-                    )
-                )
-            }
+            Text(
+                text = wordOfTheDay.word,
+                style = MaterialTheme.typography.headlineLarge,
+            )
             wordOfTheDay.sense?.glosses?.firstOrNull()
                 ?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
 

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
 package com.ayitinya.englishdictionary.ui.definition
 
 import android.Manifest
@@ -12,11 +10,8 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -102,7 +97,6 @@ fun NavGraphBuilder.definitionScreen(
     modifier: Modifier = Modifier,
     onBackButtonClick: () -> Unit,
     onNavigateToSearch: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
 ) {
     composable<DefinitionRoute>(deepLinks = listOf(navDeepLink {
         uriPattern = "app://com.ayitinya.englishdictionary/{word}"
@@ -122,8 +116,6 @@ fun NavGraphBuilder.definitionScreen(
             onFavoriteChange = { viewModel.viewModelScope.launch { viewModel.onIsFavouriteChange(!uiState.isFavourite) } },
             onBackButtonClick = onBackButtonClick,
             onNavigateToSearch = onNavigateToSearch,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = this@composable
         )
     }
 }
@@ -142,8 +134,6 @@ private fun DefinitionScreen(
     onFavoriteChange: () -> Unit,
     onBackButtonClick: () -> Unit,
     onNavigateToSearch: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
 ) {
     val context = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
@@ -225,8 +215,6 @@ private fun DefinitionScreen(
                     onNavigateToSearch = onNavigateToSearch,
                     isTextToSpeechReady = uiState.textToSpeechInitState == TextToSpeechInitState.READY,
                     onSpeakClick = onSpeakClick,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope
                 )
             }
         },
@@ -315,7 +303,7 @@ private fun DefinitionScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
@@ -324,27 +312,18 @@ private fun TopAppBar(
     onBackButtonClick: () -> Unit,
     onNavigateToSearch: () -> Unit,
     onSpeakClick: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
 ) {
     LargeTopAppBar(title = {
         BoxWithConstraints {
-            if (maxWidth > 300.dp) {
+            if (this.maxWidth > 300.dp) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    with(sharedTransitionScope) {
-                        Text(
-                            text = word, modifier = Modifier.Companion
-                                .sharedElement(
-                                    sharedTransitionScope.rememberSharedContentState(key = word),
-                                    animatedVisibilityScope = animatedContentScope
-                                )
-                                .weight(4f)
-                        )
-                    }
+                    Text(
+                        text = word, modifier = Modifier.Companion.weight(4f)
+                    )
                     IconButton(
                         onClick = onSpeakClick,
                         enabled = isTextToSpeechReady,
@@ -669,7 +648,8 @@ private fun ExpandableCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = title,
+                Text(
+                    text = title,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.clickable { expanded = !expanded })
                 IconButton(onClick = { expanded = !expanded }) {

@@ -26,9 +26,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 21
         targetSdk = 35
-        versionCode = (versionProperties?.getProperty("VERSION_CODE")?.toInt()
-            ?: 0) + 39 // 39 is the last version code before migrating to GHA for builds
-        versionName = "2.1.1"
+        versionCode = 43// 39 is the last version code before migrating to GHA for builds
+        versionName = "2.1.2"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"
@@ -168,8 +167,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     ksp(libs.androidx.lifecycle.compiler)
-
-    implementation(libs.accompanist.systemuicontroller)
 
     implementation(libs.androidx.constraintlayout.compose)
 

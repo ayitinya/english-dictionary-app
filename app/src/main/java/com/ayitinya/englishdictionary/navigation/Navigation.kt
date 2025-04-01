@@ -33,7 +33,8 @@ fun EnglishDictionaryNavHost(modifier: Modifier = Modifier) {
     SharedTransitionLayout(modifier = modifier) {
         val navController = rememberNavController()
 
-        NavHost(modifier = modifier,
+        NavHost(
+            modifier = modifier,
             navController = navController,
             startDestination = Home,
             enterTransition = {
@@ -61,22 +62,24 @@ fun EnglishDictionaryNavHost(modifier: Modifier = Modifier) {
                 )
             }
         ) {
-            aboutScreen(onBackButtonClick = navController::popBackStack,
+            aboutScreen(
+                onBackButtonClick = navController::popBackStack,
                 onNavigateToOSS = { navController.navigate(OssLicencesRoute) })
 
             ossLicenses(modifier = modifier, onBack = navController::popBackStack)
 
-            favouriteScreen(onBack = navController::popBackStack,
+            favouriteScreen(
+                onBack = navController::popBackStack,
                 onNavigateToDefinition = { navController.navigate(DefinitionRoute(it)) })
 
-            historyScreen(modifier = modifier,
+            historyScreen(
+                modifier = modifier,
                 onBack = navController::popBackStack,
                 onNavigateToDefinition = { navController.navigate(DefinitionRoute(it)) })
 
             definitionScreen(
                 onBackButtonClick = navController::popBackStack,
                 onNavigateToSearch = { navController.navigate(SearchRoute) },
-                sharedTransitionScope = this@SharedTransitionLayout
             )
 
             homeScreen(
@@ -88,7 +91,6 @@ fun EnglishDictionaryNavHost(modifier: Modifier = Modifier) {
                 onNavigateToSearch = { navController.navigate(SearchRoute) },
                 onNavigateToSettings = { navController.navigate(SettingsRoute) },
                 onNavigateToHistory = { navController.navigate(HistoryRoute) },
-                sharedTransitionScope = this@SharedTransitionLayout
             )
 
 

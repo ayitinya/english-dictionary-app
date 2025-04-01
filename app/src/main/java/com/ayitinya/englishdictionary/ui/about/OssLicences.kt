@@ -38,8 +38,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.BuildConfig
 import com.ayitinya.englishdictionary.R
-import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
-import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibraryDefaults
 import kotlinx.serialization.Serializable
 
 @Serializable

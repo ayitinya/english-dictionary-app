@@ -13,7 +13,8 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.History
@@ -28,6 +29,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -71,7 +73,8 @@ private fun SearchScreen(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    Scaffold(modifier = modifier.fillMaxSize(),
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         topBar = {
@@ -81,19 +84,14 @@ private fun SearchScreen(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .windowInsetsPadding(WindowInsets.statusBars)
             ) {
+                val searchFieldState = rememberTextFieldState()
+
+                LaunchedEffect(Unit) {
+                    snapshotFlow { searchFieldState.text }.collect { updateSearchQuery(it.toString()) }
+                }
+
                 TextField(
-                    keyboardActions = KeyboardActions(onDone = {
-                        if (uiState.searchQuery.isNotBlank() && uiState.searchResults.isNotEmpty()) {
-                            onNavigateToDefinition(uiState.searchResults.first().word)
-                        }
-                    }),
-                    value = uiState.searchQuery,
-                    onValueChange = updateSearchQuery,
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
-                        .fillMaxWidth(),
-                    placeholder = { Text(stringResource(id = R.string.search_hint_details)) },
-                    singleLine = true,
+                    state = searchFieldState,
                     leadingIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
@@ -102,7 +100,18 @@ private fun SearchScreen(
                             )
                         }
                     },
+                    placeholder = { Text(stringResource(id = R.string.search_hint_details)) },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    onKeyboardAction = {
+                        if (uiState.searchQuery.isNotBlank() && uiState.searchResults.isNotEmpty()) {
+                            onNavigateToDefinition(uiState.searchResults.first().word)
+                        }
+                    },
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .fillMaxWidth()
                 )
+
             }
         }) { paddingValues ->
         LazyColumn(
@@ -141,17 +150,18 @@ private fun SearchScreen(
                     )
                 }
                 items(uiState.history) { history ->
-                    ListItem(leadingContent = {
-                        Icon(
-                            imageVector = Icons.Filled.History,
-                            contentDescription = stringResource(R.string.history)
+                    ListItem(
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Filled.History,
+                                contentDescription = stringResource(R.string.history)
+                            )
+                        }, headlineContent = { Text(history.word) }, modifier = Modifier.clickable {
+                            onNavigateToDefinition(history.word)
+                        }, colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                            headlineColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }, headlineContent = { Text(history.word) }, modifier = Modifier.clickable {
-                        onNavigateToDefinition(history.word)
-                    }, colors = ListItemDefaults.colors(
-                        containerColor = Color.Transparent,
-                        headlineColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                     )
                 }
             }
