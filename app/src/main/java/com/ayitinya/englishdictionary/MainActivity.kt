@@ -43,7 +43,12 @@ import com.ayitinya.englishdictionary.services.WotdNotificationService
 import com.ayitinya.englishdictionary.ui.home.HomeScreenViewModel
 import com.ayitinya.englishdictionary.ui.theme.EnglishDictionaryTheme
 import com.ayitinya.englishdictionary.ui.widgets.WotdWidget
+import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+import com.google.firebase.initialize
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.take
@@ -74,6 +79,14 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        Firebase.initialize(context = this)
+
+        if (BuildConfig.DEBUG) Firebase.appCheck.installAppCheckProviderFactory(
+            DebugAppCheckProviderFactory.getInstance()
+        ) else Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance(),
+        )
 
         val testLabSetting = Settings.System.getString(contentResolver, "firebase.test.lab")
         if (testLabSetting == "false" || !BuildConfig.DEBUG) {
