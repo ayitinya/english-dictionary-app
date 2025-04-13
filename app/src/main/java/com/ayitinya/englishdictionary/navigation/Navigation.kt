@@ -29,14 +29,14 @@ const val ANIMATION_TWEEN_DURATION = 300
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun EnglishDictionaryNavHost(modifier: Modifier = Modifier) {
+fun EnglishDictionaryNavHost(modifier: Modifier = Modifier, startDestination: Any = Home) {
     SharedTransitionLayout(modifier = modifier) {
         val navController = rememberNavController()
 
         NavHost(
             modifier = modifier,
             navController = navController,
-            startDestination = Home,
+            startDestination = startDestination,
             enterTransition = {
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start,

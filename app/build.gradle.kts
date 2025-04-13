@@ -217,7 +217,7 @@ dependencies {
     implementation(libs.llama.stack.client.kotlin)
     implementation(files("libs/executorch.aar"))
 
-    implementation("com.google.firebase:firebase-vertexai")
+//    implementation("com.google.firebase:firebase-vertexai")
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
     implementation("com.google.firebase:firebase-appcheck-debug")
 }

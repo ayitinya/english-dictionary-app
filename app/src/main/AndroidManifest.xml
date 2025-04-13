@@ -7,11 +7,11 @@
 
     <application
         android:name=".EnglishDictionaryApplication"
-        android:gwpAsanMode="always"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
+        android:gwpAsanMode="always"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -19,6 +19,17 @@
         android:theme="@style/Theme.App.Starting"
         tools:targetApi="tiramisu">
 
+        <activity
+            android:name=".ContextMenuDefine"
+            android:exported="true"
+            android:label="@string/title_activity_context_menu_define"
+            android:theme="@style/Theme.EnglishDictionary">
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
 
         <provider
             android:name="androidx.startup.InitializationProvider"

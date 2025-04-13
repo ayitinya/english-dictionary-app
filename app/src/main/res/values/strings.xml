@@ -52,4 +52,5 @@
     <string name="failed_to_load_wotd">Failed to load word of the day</string>
     <string name="loading_wotd">Loading word of the day</string>
     <string name="retry">Retry</string>
+    <string name="title_activity_context_menu_define" translatable="false">Define with offline dictionary</string>
 </resources>

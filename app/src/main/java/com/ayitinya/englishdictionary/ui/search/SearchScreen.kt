@@ -40,20 +40,24 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.ayitinya.englishdictionary.R
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object SearchRoute
+data class SearchRoute(val query: String? = null)
 
 fun NavGraphBuilder.searchScreen(
-    modifier: Modifier = Modifier, onNavigateToDefinition: (String) -> Unit, onBack: () -> Unit
+    modifier: Modifier = Modifier,
+    onNavigateToDefinition: (String) -> Unit,
+    onBack: () -> Unit
 ) {
     composable<SearchRoute> {
         val viewModel = hiltViewModel<SearchViewModel>()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
         SearchScreen(
+            initialSearchQuery = if (it.toRoute<SearchRoute>().query.isNullOrBlank()) "" else it.toRoute<SearchRoute>().query!!,
             modifier = modifier,
             uiState = uiState.value,
             updateSearchQuery = viewModel::updateSearchQuery,
@@ -66,6 +70,7 @@ fun NavGraphBuilder.searchScreen(
 @Composable
 private fun SearchScreen(
     modifier: Modifier = Modifier,
+    initialSearchQuery: String = "",
     uiState: SearchScreenUiState,
     updateSearchQuery: (String) -> Unit,
     onNavigateToDefinition: (String) -> Unit,
@@ -84,7 +89,7 @@ private fun SearchScreen(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .windowInsetsPadding(WindowInsets.statusBars)
             ) {
-                val searchFieldState = rememberTextFieldState()
+                val searchFieldState = rememberTextFieldState(initialText = initialSearchQuery)
 
                 LaunchedEffect(Unit) {
                     snapshotFlow { searchFieldState.text }.collect { updateSearchQuery(it.toString()) }
@@ -93,12 +98,13 @@ private fun SearchScreen(
                 TextField(
                     state = searchFieldState,
                     leadingIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = R.string.back)
-                            )
-                        }
+                        if (initialSearchQuery.isEmpty())
+                            IconButton(onClick = onBack) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(id = R.string.back)
+                                )
+                            }
                     },
                     placeholder = { Text(stringResource(id = R.string.search_hint_details)) },
                     lineLimits = TextFieldLineLimits.SingleLine,
@@ -166,8 +172,5 @@ private fun SearchScreen(
                 }
             }
         }
-    }
-    LaunchedEffect(key1 = Unit) {
-//        focusRequester.requestFocus()
     }
 }

@@ -18,7 +18,6 @@ class EnglishDictionaryApplication : Application(), Configuration.Provider {
             .setMinimumLoggingLevel(Log.VERBOSE).build()
 
     override fun onCreate() {
-        Log.d("start", "app start successful")
         super.onCreate()
     }
 

@@ -1,16 +1,13 @@
 package com.ayitinya.englishdictionary.ui.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayitinya.englishdictionary.data.dictionary.DictionaryRepository
 import com.ayitinya.englishdictionary.data.settings.SettingsRepository
 import com.ayitinya.englishdictionary.data.settings.source.local.SettingsKeys
 import com.ayitinya.englishdictionary.data.word_of_the_day.source.WotdRepository
-import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
-import com.google.firebase.vertexai.vertexAI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,16 +52,6 @@ class HomeScreenViewModel @Inject constructor(
             analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "HomeScreen")
                 param(FirebaseAnalytics.Param.SCREEN_CLASS, "HomeScreen.kt")
-            }
-
-            try {
-                val generativeModel = Firebase.vertexAI.generativeModel("gemini-2.0-flash")
-                val prompt = "Write a story about a magic backpack."
-                val response = generativeModel.generateContent(prompt)
-                Log.d("GEN AI", response.text.toString())
-            } catch (e: Exception) {
-                Log.e("GEN AI", e.message.toString())
-                Log.e("GEN AI", e.stackTrace.toString())
             }
 
         }

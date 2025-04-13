@@ -49,7 +49,7 @@ class SearchViewModel @Inject constructor(
             return
         }
         _queryTextChangedJob.value = viewModelScope.launch(Dispatchers.Main) {
-            delay(300L)
+            delay(100L)
             searchDictionary(query)
         }
     }
