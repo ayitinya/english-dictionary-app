@@ -2,7 +2,7 @@
 aboutlibraries-compose = "11.6.3"
 agp = "8.9.1"
 appwidget-viewer = "0.2.2"
-billing-ktx = "7.1.1"
+billing-ktx = "8.0.0"
 datastore-preferences = "1.1.4"
 desugar_jdk_libs = "2.1.5"
 glance-appwidget = "1.1.1"
