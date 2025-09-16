@@ -1,48 +1,48 @@
 [versions]
-aboutlibraries-compose = "11.6.3"
-agp = "8.9.1"
+aboutlibraries-compose = "12.2.4"
+agp = "8.13.0"
 appwidget-viewer = "0.2.2"
-billing-ktx = "7.1.1"
-datastore-preferences = "1.1.4"
+billing-ktx = "8.0.0"
+datastore-preferences = "1.1.7"
 desugar_jdk_libs = "2.1.5"
 glance-appwidget = "1.1.1"
 glance = "1.1.1"
 google-services = "4.4.3"
-hilt-compiler = "1.2.0"
-hilt-work = "1.2.0"
-junit-jupiter = "5.12.2"
-kotlin = "2.1.20"
-core-ktx = "1.16.0"
+hilt-compiler = "1.3.0"
+hilt-work = "1.3.0"
+junit-jupiter = "5.13.4"
+kotlin = "2.2.20"
+core-ktx = "1.17.0"
 junit = "4.13.2"
-androidx-test-ext-junit = "1.2.1"
-espresso-core = "3.6.1"
-lifecycle-runtime-ktx = "2.8.7"
-activity-compose = "1.10.1"
-compose-bom = "2025.04.00"
-firebase-bom = "33.12.0"
+androidx-test-ext-junit = "1.3.0"
+espresso-core = "3.7.0"
+lifecycle-runtime-ktx = "2.9.3"
+activity-compose = "1.11.0"
+compose-bom = "2025.09.00"
+firebase-bom = "34.2.0"
 napier = "2.7.1"
 perf-plugin = "2.0.1"
 review-ktx = "2.0.2"
 review = "2.0.2"
 room_version = "2.8.0"
-ksp = "2.1.20-2.0.0"
-hilt-android = "2.56.2"
-hilt-navigation-compose = "1.2.0"
-lifecycle_version = "2.8.7"
+ksp = "2.2.20-2.0.3"
+hilt-android = "2.57.1"
+hilt-navigation-compose = "1.3.0"
+lifecycle_version = "2.9.3"
 accompanist_version = "0.37.3"
 constraintlayout_version = "1.1.1"
-nav_version = "2.8.9"
+nav_version = "2.9.4"
 paging_version = "3.3.6"
 ktor_version = "3.3.0"
-serialization_version = "1.8.1"
+serialization_version = "1.9.0"
 splashscreen-version = "1.0.1"
-sqlite-android = "3.45.0"
+sqlite-android = "3.49.0"
 profileinstaller = "1.4.1"
 appcompat = "1.7.1"
 material = "1.13.0-alpha12"
 material3 = "1.4.0-rc01"
-window = "1.3.0"
-work_version = "2.10.0"
+window = "1.4.0"
+work_version = "2.10.4"
 compose-ui = "1.7.8"
 
 [libraries]
@@ -73,12 +73,12 @@ napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
 review = { module = "com.google.android.play:review", version.ref = "review" }
 sqlite-android = { module = "com.github.requery:sqlite-android", version.ref = "sqlite-android" }
-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose-ui" }
-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose-ui" }
-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose-ui" }
-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose-ui" }
-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose-ui" }
-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose-ui" }
+ui = { group = "androidx.compose.ui", name = "ui" }
+ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room_version" }
@@ -134,7 +134,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android-gradle-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidTest = { id = "com.android.test", version.ref = "agp" }
-aboutlibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version = "11.6.3" }
+aboutlibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries-compose" }
 google-firebase-plugin = { id = "com.google.firebase.crashlytics", version = "3.0.6" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 perf-plugin = { id = "com.google.firebase.firebase-perf", version.ref = "perf-plugin" }

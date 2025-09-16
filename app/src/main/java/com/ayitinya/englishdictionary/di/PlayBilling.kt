@@ -23,6 +23,5 @@ object PlayBilling {
     @Provides
     fun providesBillingClient(
         @ApplicationContext context: Context, purchasesUpdatedListener: PurchasesUpdatedListener
-    ): BillingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener)
-        .enablePendingPurchases().build()
+    ): BillingClient = BillingClient.newBuilder(context).setListener(purchasesUpdatedListener).build()
 }

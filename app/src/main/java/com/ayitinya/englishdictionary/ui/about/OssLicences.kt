@@ -4,27 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,9 +24,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ayitinya.englishdictionary.BuildConfig
 import com.ayitinya.englishdictionary.R
+import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
+import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import com.mikepenz.aboutlibraries.ui.compose.m3.LibraryDefaults
+import com.mikepenz.aboutlibraries.ui.compose.m3.chipColors
+import com.mikepenz.aboutlibraries.ui.compose.m3.libraryColors
 import kotlinx.serialization.Serializable
+import androidx.core.net.toUri
 
 @Serializable
 data object OssLicencesRoute
@@ -55,9 +45,10 @@ fun NavGraphBuilder.ossLicenses(modifier: Modifier = Modifier, onBack: () -> Uni
 @Composable
 private fun OssLicences(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val libs by rememberLibraries()
 
     Scaffold(modifier = modifier, topBar = {
         TopAppBar(
@@ -73,12 +64,15 @@ private fun OssLicences(
         )
     }) {
         LibrariesContainer(
+            libraries = libs,
             contentPadding = it,
             colors = LibraryDefaults.libraryColors(
                 backgroundColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.onBackground,
-                badgeBackgroundColor = MaterialTheme.colorScheme.primary,
-                badgeContentColor = MaterialTheme.colorScheme.onPrimary,
+                licenseChipColors = LibraryDefaults.chipColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
             ),
             header = {
                 item {
@@ -118,7 +112,7 @@ private fun OssLicences(
                             OutlinedButton(onClick = {
                                 val intent = Intent(Intent.ACTION_VIEW)
                                 intent.data =
-                                    Uri.parse("https://github.com/ayitinya/english-dictionary-app/blob/main/privacy.md")
+                                    "https://github.com/ayitinya/english-dictionary-app/blob/main/privacy.md".toUri()
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 context.startActivity(intent)
                             }) {
@@ -128,7 +122,7 @@ private fun OssLicences(
                             OutlinedButton(onClick = {
                                 val intent = Intent(Intent.ACTION_VIEW)
                                 intent.data =
-                                    Uri.parse("https://github.com/ayitinya/english-dictionary-app")
+                                    "https://github.com/ayitinya/english-dictionary-app".toUri()
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 context.startActivity(intent)
                             }) {
