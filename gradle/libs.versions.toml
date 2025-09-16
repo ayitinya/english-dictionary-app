@@ -1,6 +1,6 @@
 [versions]
 aboutlibraries-compose = "12.2.4"
-agp = "8.12.3"
+agp = "8.13.0"
 appwidget-viewer = "0.2.2"
 billing-ktx = "8.0.0"
 datastore-preferences = "1.1.7"
