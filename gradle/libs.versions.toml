@@ -1,5 +1,5 @@
 [versions]
-aboutlibraries-compose = "11.6.3"
+aboutlibraries-compose = "12.2.4"
 agp = "8.9.1"
 appwidget-viewer = "0.2.2"
 billing-ktx = "7.1.1"
