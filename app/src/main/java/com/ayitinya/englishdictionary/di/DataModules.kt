@@ -95,10 +95,10 @@ object DatabaseModule {
     fun provideDictionaryDatabase(@ApplicationContext context: Context): DictionaryDatabase {
 
         val db = Room.databaseBuilder(
-            context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
-        ).createFromAsset(
-            "database/data.sqlite"
-        ).fallbackToDestructiveMigration().openHelperFactory { configuration ->
+                context.applicationContext, DictionaryDatabase::class.java, "dictionary.db"
+            ).createFromAsset(
+                "database/data.sqlite"
+            ).fallbackToDestructiveMigration(true).openHelperFactory { configuration ->
             val config = SQLiteDatabaseConfiguration(
                 context.getDatabasePath("dictionary.db").path,
                 SQLiteDatabase.OPEN_CREATE or SQLiteDatabase.OPEN_READWRITE

@@ -1,4 +1,5 @@
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 plugins {
@@ -15,16 +16,23 @@ plugins {
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+        freeCompilerArgs.addAll("-Xannotation-default-target=param-property")
+    }
+}
+
 android {
     namespace = "com.ayitinya.englishdictionary"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "21.4.7075529"
 
     defaultConfig {
         val versionProperties = readProperties(file("../version.properties"))
 
         applicationId = "com.ayitinya.englishdictionary"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 35
         versionCode = 43// 39 is the last version code before migrating to GHA for builds
         versionName = "2.1.2"
@@ -95,9 +103,6 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-    kotlinOptions {
-        jvmTarget = "21"
     }
     buildFeatures {
         compose = true
