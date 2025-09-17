@@ -33,9 +33,9 @@ android {
 
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 23
-        targetSdk = 35
-        versionCode = 43// 39 is the last version code before migrating to GHA for builds
-        versionName = "2.1.2"
+        targetSdk = 36
+        versionCode = 44// 39 is the last version code before migrating to GHA for builds
+        versionName = "2.1.3"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"

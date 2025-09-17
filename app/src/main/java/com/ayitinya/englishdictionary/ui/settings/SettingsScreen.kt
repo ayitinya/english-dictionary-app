@@ -53,6 +53,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import androidx.core.net.toUri
 
 @Serializable
 data object SettingsRoute
@@ -78,11 +79,6 @@ fun NavGraphBuilder.settingsScreen(
             clearFavorites = viewModel::clearFavourites,
             toggleHistory = viewModel::toggleHistory,
             clearHistory = viewModel::clearHistory,
-            onBuyMeACoffee = {
-                viewModel.analytics?.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
-                    param(FirebaseAnalytics.Param.ITEM_NAME, "Buy me a coffee")
-                }
-            },
             onShareApp = {
                 viewModel.analytics?.logEvent(FirebaseAnalytics.Event.SHARE) {
                     param(FirebaseAnalytics.Param.ITEM_NAME, "Share app")
@@ -105,7 +101,6 @@ private fun SettingsScreen(
     toggleHistory: (Boolean) -> Unit,
     clearHistory: () -> Unit,
     clearFavorites: () -> Unit,
-    onBuyMeACoffee: () -> Unit,
     onShareApp: () -> Unit,
     toastShown: () -> Unit,
     onNavigateToAbout: () -> Unit,
@@ -213,16 +208,16 @@ private fun SettingsScreen(
                         val packageName = context.packageName
                         try {
                             val intent = Intent(
-                                Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")
+                                Intent.ACTION_VIEW, "market://details?id=$packageName".toUri()
                             )
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             intent.setPackage("com.android.vending") // Specify the package name of the Play Store app
                             context.startActivity(intent)
-                        } catch (e: android.content.ActivityNotFoundException) {
+                        } catch (_: android.content.ActivityNotFoundException) {
                             // If the Play Store app is not installed, open the Play Store website
                             val intent = Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                                "https://play.google.com/store/apps/details?id=$packageName".toUri()
                             )
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             context.startActivity(intent)
@@ -247,17 +242,6 @@ private fun SettingsScreen(
                     },
                     headlineContent = { Text(text = stringResource(id = R.string.share_app)) },
                 )
-
-                ListItem(modifier = Modifier.clickable {
-                    val intent = Intent(
-                        Intent.ACTION_VIEW, Uri.parse("https://www.buymeacoffee.com/ayitinya")
-                    )
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Buy me a coffee")
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-                    onBuyMeACoffee()
-                },
-                    headlineContent = { Text(text = stringResource(id = R.string.buy_me_a_coffee)) })
 
                 ListItem(modifier = Modifier.clickable {
                     onNavigateToAbout()
