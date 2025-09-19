@@ -10,14 +10,11 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -118,22 +115,6 @@ class MainActivity : ComponentActivity() {
             })
 
             EnglishDictionaryTheme {
-                val darkTheme = isSystemInDarkTheme()
-
-                DisposableEffect(darkTheme) {
-                    enableEdgeToEdge(
-                        statusBarStyle = SystemBarStyle.auto(
-                            android.graphics.Color.TRANSPARENT,
-                            android.graphics.Color.TRANSPARENT,
-                        ) { darkTheme },
-                        navigationBarStyle = SystemBarStyle.auto(
-                            android.graphics.Color.argb(
-                                0xe6, 0xFF, 0xFF, 0xFF
-                            ), android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
-                        ) { darkTheme },
-                    )
-                    onDispose {}
-                }
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
