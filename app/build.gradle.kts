@@ -14,6 +14,7 @@ plugins {
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.mikepenz.aboutlibraries.plugin")
+//    id("org.mozilla.rust-android-gradle.rust-android")
 }
 
 kotlin {
@@ -26,7 +27,7 @@ kotlin {
 android {
     namespace = "com.ayitinya.englishdictionary"
     compileSdk = 36
-    ndkVersion = "21.4.7075529"
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
         val versionProperties = readProperties(file("../version.properties"))
@@ -236,3 +237,12 @@ fun readProperties(propertiesFile: File): Properties? {
         null
     }
 }
+
+//cargo {
+//    module = "../sqlite-zstd"       // Or whatever directory contains your Cargo.toml
+//    libname = "sqlite-zstd"          // Or whatever matches Cargo.toml's [package] name.
+//    targets = listOf("arm", "x86", "arm64", "x86_64")  // See bellow for a longer list of options
+//    verbose = true
+//    prebuiltToolchains = true
+//    profile = "release"
+//}
