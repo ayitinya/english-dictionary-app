@@ -42,7 +42,7 @@ appcompat = "1.7.1"
 material = "1.13.0"
 material3 = "1.4.0-rc01"
 window = "1.4.0"
-work_version = "2.10.4"
+work_version = "2.11.0"
 compose-ui = "1.7.8"
 
 [libraries]
