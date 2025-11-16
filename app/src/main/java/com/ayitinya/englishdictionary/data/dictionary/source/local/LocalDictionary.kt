@@ -59,7 +59,7 @@ internal data class DictionaryZstd(
 * */
 @SkipQueryVerification
 @DatabaseView(
-    "SELECT id, word, zstd_decompress_col(data, 1, _data_dict, true) as data from _Dict_zstd",
+    "SELECT id, word, zstd_decompress_col(data, 1, _data_dict, 1) as data from _Dict_zstd",
 )
 data class LocalDictionary(
     val id: Int,

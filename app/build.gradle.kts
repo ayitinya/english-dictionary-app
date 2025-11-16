@@ -26,7 +26,7 @@ kotlin {
 android {
     namespace = "com.ayitinya.englishdictionary"
     compileSdk = 36
-    ndkVersion = "21.4.7075529"
+    ndkVersion = "29.0.14206865"
 
     defaultConfig {
         val versionProperties = readProperties(file("../version.properties"))
@@ -34,8 +34,8 @@ android {
         applicationId = "com.ayitinya.englishdictionary"
         minSdk = 23
         targetSdk = 36
-        versionCode = 44// 39 is the last version code before migrating to GHA for builds
-        versionName = "2.1.3"
+        versionCode = 45// 39 is the last version code before migrating to GHA for builds
+        versionName = "2.1.4"
 
 
         testInstrumentationRunner = "com.ayitinya.englishdictionary.TestRunner"

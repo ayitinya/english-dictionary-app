@@ -17,7 +17,7 @@
 .externalNativeBuild
 .cxx
 local.properties
-google-services.json
+app/google-services.json
 *.apk
 /sentry.properties
 /app/private_key.pepk
